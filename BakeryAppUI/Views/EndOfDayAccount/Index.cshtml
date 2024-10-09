@@ -1,0 +1,728 @@
+﻿@model BakeryAppUI.Models.Date
+
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+<script>
+    function devretClick() {
+        // Gönderilecek veri
+        var requestData = {
+            NetElden: 100,
+            KrediKard: 1000, // Kredi Kardı Yaz
+
+        };
+
+        // jQuery kullanarak AJAX isteği gönderme
+        $.ajax({
+            type: "POST",
+            url: "/EndOfDayAccount/DevretAction",
+            data: requestData,  // Veriyi isteğe ekle
+            success: function (data) {
+                if (data.success) {
+                    alert('Devret işlemi başarıyla gerçekleştirildi.');
+                } else {
+                    alert('Devret işlemi başarısız oldu.');
+                }
+            },
+            error: function () {
+                alert('Bir hata oluştu.');
+            }
+        });
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="row">
+                <label for="inputDate" class="col-sm-2 col-form-label font-weight-bold fs-5">Tarih</label>
+                <div class="col-sm-10">
+                    <div class="input-group input-group-lg">
+                        <input type="date" class="form-control font-weight-bold" id="inputDate"
+                               max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               value="@ViewBag.date.ToString("yyyy-MM-dd")"
+                               onchange="submitForm()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h2 class="text-center mb-4">Gün Sonu Hesap</h2>
+        </div>
+    </div>
+
+
+    @using (Html.BeginForm("PostDate", "EndOfDayAccount", FormMethod.Post, new { id = "myForm" }))
+    {
+        <input type="hidden" id="dateHidden" name="date" />
+    }
+
+    <script>
+        function submitForm() {
+            var selectedDate = document.getElementById("inputDate").value;
+            document.getElementById("dateHidden").value = selectedDate;
+            document.getElementById("myForm").submit();
+        }
+    </script>
+
+    @{
+        double total = ViewBag.EndOfDayAccount.RemainingToday +
+        ViewBag.EndOfDayAccount.TotalBreadGivenToService +
+        ViewBag.EndOfDayAccount.TotalStaleBreadFromService +
+        ViewBag.EndOfDayAccount.EatenBread +
+        ViewBag.EndOfDayAccount.StaleBreadToday +
+        ViewBag.EndOfDayAccount.TotalBreadGivenToGetir;
+    }
+
+    <div class="container mt-5">
+        <button type="button" class="btn btn-primary" onclick="generatePDF()">PDF Oluştur</button>
+
+        <div class="row">
+            <div class="col-md-4">
+
+                <div class="mb-4">
+                    @* <h3 class="text-center">Eksilen Ekmek</h3> *@
+                    <table class="table" id="eksilenEkmekTable">
+                        <tbody>
+                            @* <tr>
+                            <th scope="row">Geri Atılan Hamur</th>
+                            <td>-</td>
+                            </tr> *@
+                            <tr>
+                                <th scope="row">Yarına Kalan Ekmek</th>
+                                <td>@ViewBag.EndOfDayAccount.RemainingToday</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Servis Ekmek</th>
+                                <td>@ViewBag.EndOfDayAccount.TotalBreadGivenToService</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Servis Bayat</th>
+                                <td>@ViewBag.EndOfDayAccount.TotalStaleBreadFromService</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Yenen Ekmek</th>
+                                <td>@ViewBag.EndOfDayAccount.EatenBread</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Bayat</th>
+                                <td>@ViewBag.EndOfDayAccount.StaleBreadToday</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Getir</th>
+                                <td>@ViewBag.EndOfDayAccount.TotalBreadGivenToGetir</td>
+                            </tr>
+                            <tr class="empty-row">
+                                <th scope="row"></th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Toplam</th>
+                                <td>@total</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                @{
+                    double totalBreadProduction = ViewBag.EndOfDayAccount.ProductedToday;
+                    double totalRemainingYesterday = ViewBag.EndOfDayAccount.RemainingYesterday;
+                    double totalPurchasedBread = ViewBag.EndOfDayAccount.PurchasedBread;
+
+                    double total2 = totalBreadProduction + totalRemainingYesterday + totalPurchasedBread;
+
+
+                    double tezgahatSatilanEkmek = total2 - total;
+                }
+                <div class="mb-4">
+                    @*   <h3 class="text-center">Mevcut Ekmek</h3> *@
+                    <table class="table" id="mevcutEkmekTable">
+                        <tbody>
+                            <tr>
+                                <th scope="row">İmalat</th>
+                                <td>@ViewBag.EndOfDayAccount.ProductedToday</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Dünden Kalan</th>
+                                <td>@ViewBag.EndOfDayAccount.RemainingYesterday</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Dışarıdan Alınan</th>
+                                <td>@ViewBag.EndOfDayAccount.PurchasedBread</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Toplam</th>
+                                <td>@total2</td>
+                            </tr>
+                            <tr class="empty-row">
+                                <th scope="row"></th>
+                                <td></td>
+                            </tr>
+                            <tr class="empty-row">
+                                <th scope="row"></th>
+                                <td></td>
+                            </tr>
+                            <tr class="empty-row">
+                                <th scope="row"></th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tezgahta Satılan Ekmek</th>
+                                <td>@tezgahatSatilanEkmek</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            @{
+                double Tezgah = (total2 - total) * Convert.ToDouble(ViewBag.breadPrice);
+
+            }
+            <div class="col-md-4">
+
+                <div class="mb-4">
+                    @* <h3 class="text-center">Kasa</h3> *@
+                    <table class="table" id="kasaTable">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Kasa Devir</th>
+                                <td>@ViewBag.Account.KasaDevir TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Servis</th>
+                                <td>@ViewBag.Account.ServisGelir TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tezgah</th>
+                                <td>@Tezgah TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Pastane</th>
+                                <td>@ViewBag.Pastane TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Gelir</th>
+                                <td>@((decimal)@Tezgah + @ViewBag.Pastane + @ViewBag.Account.ServisGelir) TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Toplam</th>
+                                <td>@((decimal)@Tezgah + @ViewBag.Pastane + @ViewBag.Account.ServisGelir + @ViewBag.Account.KasaDevir) TL</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Gider</th>
+                                <td>@(@ViewBag.totalExpenseAmount == 0 ? "-" : @ViewBag.totalExpenseAmount + "TL") </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Devir</th>
+                                <td>@ViewBag.Account.Devir TL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h3 class="text-center">Giderler</h3>
+                <table class="table table-bordered custom-table" id="giderlerTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Gider</th>
+                            <th scope="col">Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var expense in ViewBag.expense)
+                        {
+                            <tr>
+                                <td>@expense.Detail</td>
+                                <td>@expense.Amount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @{
+                decimal NetElden =
+                ((decimal)@Tezgah + ViewBag.Pastane + ViewBag.Account.ServisGelir + ViewBag.Account.KasaDevir)
+                - ViewBag.totalExpenseAmount - ViewBag.Account.Devir;
+
+            }
+
+
+            <div class="col-md-3 offset-md-1">
+                <div class="text-center" style="background-color: #3498db; color: white; padding: 20px;">
+                    <h5>Kredi Kartı: YAP ₺</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="text-center" style="background-color: #3498db; color: white; padding: 20px;">
+                    <h5>Net Elden: @NetElden ₺</h5>
+                </div>
+            </div>
+
+            <div class="col-md-1">
+                <button class="btn btn-primary btn-lg rounded-pill mt-3" onclick="devretClick()">Devret</button>
+            </div>
+
+
+
+
+            @* <div class="col-md-3 offset-md-5">
+            <div style="background-color: #3498db; color: white; padding: 20px; text-align: center; font-size: 1.5em;">
+            Kredi Kartı: YAP ₺
+            </div>
+
+
+            <div style="background-color: #3498db; color: white; padding: 20px; text-align: center; font-size: 1.5em;">
+            Net Elden: @NetElden ₺
+            </div>
+            </div>
+            *@
+
+
+            @*  <div class="col-md-3 offset-md-5">
+            <div style="background-color: #3498db; color: white; padding: 20px; text-align: center; font-size: 1.5em;">
+            Net Elden: @NetElden ₺
+            </div>
+            </div> *@
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<style>
+    .empty-row {
+        height: 40px;
+    }
+</style>
+
+<!-- PDF önizleme için geniş modal -->
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfPreviewModalLabel">PDF Önizleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <!-- PDF önizleme için iframe -->
+                <iframe id="pdfViewer" class="embed-responsive-item" width="100%" height="500px"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    function generatePDF() {
+        // Controller endpoint'i
+        var controllerEndpoint = '@Url.Action("CreatePdf", "EndOfDayAccount")';
+
+        // Ajax isteği
+        $.ajax({
+            url: controllerEndpoint,
+            type: 'GET',
+            dataType: 'json', // API'den JSON formatında bir yanıt beklediğimizi belirtiyoruz
+            success: function (data) {
+                // API'den gelen PDF verisini modal içindeki iframe'e ekleyerek modal'ı aç
+                var pdfViewer = document.getElementById("pdfViewer");
+                pdfViewer.src = "data:application/pdf;base64," + data;
+
+                var pdfPreviewModal = new bootstrap.Modal(document.getElementById("pdfPreviewModal"));
+                pdfPreviewModal.show();
+
+            },
+            error: function (error) {
+                console.error("API isteği başarısız: ", error);
+            }
+        });
+    }
+</script>
+
+
+
+
+
+
+@* <!-- pdfmake -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+
+
+
+<script>
+    function generatePDF() {
+        // Tablo verileri
+        var eksilenEkmekData = getTableData('#eksilenEkmekTable');
+        var mevcutEkmekData = getTableData('#mevcutEkmekTable');
+        var kasaData = getTableData('#kasaTable');
+        var giderlerData = getTableData('#giderlerTable');
+
+        // Tarih ve firma adı
+        var currentDate = new Date('@ViewBag.date.ToString("yyyy-MM-dd")');
+        var formattedDate = currentDate.toLocaleDateString('tr-TR'); // Türkçe tarih formatı
+        var dayOfWeek = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' }).format(currentDate); // Gün
+
+        var companyName = 'ASLANOĞLU FIRIN';
+
+
+
+        // PDF oluşturma
+        var docDefinition = {
+            content: [
+                {
+                    columns: [
+                        { width: '50%', text: companyName, style: 'companyName' },
+                        { width: '50%', text: formattedDate + ' ' + dayOfWeek, style: 'date', alignment: 'right' },
+                    ],
+                    margin: [0, 0, 0, 10], // Boşluk
+                },
+                {
+                    columns: [
+                        // Eksilen Ekmek Tablosu
+                        {
+                            width: '30%',
+                            stack: [
+
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: eksilenEkmekData,
+                                        heights: Array(eksilenEkmekData.length).fill(15),
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        },
+
+
+
+
+                        // Mevcut Ekmek Tablosu
+                        {
+                            width: '35%',
+                            stack: [
+
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: mevcutEkmekData,
+                                        heights: Array(mevcutEkmekData.length).fill(15),
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        },
+                        // Boşluk
+                        { width: '5%', text: '' },
+                        // Kasa Tablosu
+                        {
+                            width: '30%',
+                            stack: [
+
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: kasaData,
+                                        heights: Array(kasaData.length).fill(15),
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        }
+                    ]
+                },
+                // Giderler Tablosu ve Net Elden
+                {
+                    columns: [
+                        // Sol tarafta Giderler Tablosu
+                        {
+                            width: '50%',
+                            stack: [
+                                { text: 'Giderler', style: 'header' },
+                                giderlerData.length > 0
+                                    ? {
+                                        style: 'table',
+                                        table: {
+                                            headerRows: 1,
+                                            body: giderlerData
+                                        }
+                                    }
+                                    : { text: 'Gider bulunmamaktadır', style: 'noDataMessage' },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        },
+                        // Sağ tarafta Net Elden
+                        {
+                            width: '46%',
+                            columns: [
+                                { text: 'Net Elden: @NetElden ₺', style: 'netElden', alignment: 'right' }, // Combine label and value
+                            ],
+                            margin: [0, 10, 0, 0], // Boşluk
+                        },
+                        { width: '4%', text: '' },
+                    ]
+                }
+
+            ],
+            styles: {
+                noDataMessage: {
+                    fontSize: 12,
+                    italic: true,
+                    color: 'gray'
+                },
+                companyName: {
+                    fontSize: 14,
+                    bold: true,
+                },
+                date: {
+                    fontSize: 12,
+                },
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                },
+                table: {
+                    margin: [0, 5, 0, 15]
+                },
+                netElden: {
+                    fontSize: 14,
+                    color: '#00000', // Beyaz renk
+
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                }
+            },
+            pageMargins: [30, 30, 30, 30] // Sayfa kenar boşlukları
+        };
+
+        // PDF'i oluştur
+        var pdfDoc = pdfMake.createPdf(docDefinition);
+
+        // PDF'i önizleme iframe'ına göster
+        pdfDoc.getDataUrl(function (dataUrl) {
+            var pdfViewer = document.getElementById('pdfViewer');
+            pdfViewer.src = dataUrl;
+
+
+            // Dosya ismi belirleme
+            var fileName = "GünSonuHesap_" + formattedDate + ".pdf";
+
+            // Önceki indirme butonlarını temizle
+            var existingButtons = document.querySelectorAll('.download-btn');
+            existingButtons.forEach(function (button) {
+                button.remove();
+            });
+
+            // "İndir" butonu ekleyerek indirme seçeneğini sağlama
+            var downloadButton = document.createElement('a');
+            downloadButton.href = dataUrl;
+            downloadButton.download = fileName;
+            downloadButton.innerText = "Dosyayı İndir";
+            downloadButton.classList.add("btn", "btn-primary", "download-btn"); // İstenirse bir CSS sınıfı ekleyebilirsiniz
+
+            // "pdfViewer" elementine "downloadButton" elemanını ekleme
+            pdfViewer.parentElement.appendChild(downloadButton);
+
+
+
+            // Modal'ı göster
+            $('#pdfPreviewModal').modal('show');
+        });
+    }
+
+    function getTableData(tableSelector) {
+        var tableData = [];
+
+        $(tableSelector + ' tbody tr').each(function () {
+            var rowData = [];
+            $(this).find('th, td').each(function () {
+                rowData.push($(this).text().trim());
+            });
+            tableData.push(rowData);
+        });
+
+        return tableData;
+    }
+</script> *@
+
+@* <script>
+    function generatePDF() {
+        // Tablo verileri
+        var eksilenEkmekData = getTableData('#eksilenEkmekTable');
+        var mevcutEkmekData = getTableData('#mevcutEkmekTable');
+        var kasaData = getTableData('#kasaTable');
+        var giderlerData = getTableData('.custom-table');
+
+        // Tarih ve firma adı
+        var currentDate = new Date('@DateTime.Now.ToString("yyyy-MM-dd")');
+        var formattedDate = currentDate.toLocaleDateString('tr-TR'); // Türkçe tarih formatı
+        var dayOfWeek = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' }).format(currentDate); // Gün
+
+        var companyName = 'ASLANOĞLU FIRIN';
+
+        // PDF oluşturma
+        var docDefinition = {
+            content: [
+                {
+                    columns: [
+                        { width: '50%', text: companyName, style: 'companyName' },
+                        { width: '50%', text: formattedDate + ' ' + dayOfWeek, style: 'date', alignment: 'right' },
+                    ],
+                    margin: [0, 0, 0, 10], // Boşluk
+                },
+                {
+                    columns: [
+                        // Eksilen Ekmek Tablosu
+                        {
+                            width: '33%',
+                            stack: [
+                                { text: 'Eksilen Ekmek', style: 'header' },
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: eksilenEkmekData
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        },
+                        // Mevcut Ekmek Tablosu
+                        {
+                            width: '33%',
+                            stack: [
+                                { text: 'Mevcut Ekmek', style: 'header' },
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: mevcutEkmekData
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        },
+                        // Kasa Tablosu
+                        {
+                            width: '33%',
+                            stack: [
+                                { text: 'Kasa', style: 'header' },
+                                {
+                                    style: 'table',
+                                    table: {
+                                        headerRows: 1,
+                                        body: kasaData
+                                    }
+                                },
+                                { text: '\n' }, // Boş satır
+                            ]
+                        }
+                    ],
+                    margin: [0, 0, 0, 10], // Boşluk
+                },
+                // Giderler Tablosu
+                { text: 'Giderler', style: 'header' },
+                {
+                    style: 'table',
+                    table: {
+                        headerRows: 1,
+                        body: giderlerData
+                    }
+                },
+                { text: '\n' }, // Boş satır
+                {
+                    columns: [
+                        { text: 'Net Elden: 500₺', style: 'netElden', alignment: 'right' },
+                    ],
+                    margin: [0, 10, 0, 0], // Boşluk
+                }
+            ],
+            styles: {
+                companyName: {
+                    fontSize: 14,
+                    bold: true,
+                },
+                date: {
+                    fontSize: 12,
+                },
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                },
+                table: {
+                    margin: [0, 5, 0, 15]
+                },
+                netElden: {
+                    fontSize: 14,
+                    color: '#000000', // Siyah renk
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                }
+            },
+            pageMargins: [30, 30, 30, 30] // Sayfa kenar boşlukları
+        };
+
+        // PDF'i oluştur
+        var pdfDoc = pdfMake.createPdf(docDefinition);
+
+        // PDF'i önizleme iframe'ına göster
+        pdfDoc.getDataUrl(function (dataUrl) {
+            var pdfViewer = document.getElementById('pdfViewer');
+            pdfViewer.src = dataUrl;
+
+            // Modal'ı göster
+            $('#pdfPreviewModal').modal('show');
+        });
+    }
+
+    function getTableData(tableSelector) {
+        var tableData = [];
+
+        $(tableSelector + ' tbody tr').each(function () {
+            var rowData = [];
+            $(this).find('th, td').each(function () {
+                rowData.push($(this).text().trim());
+            });
+            tableData.push(rowData);
+        });
+
+        return tableData;
+    }
+</script>
+ *@

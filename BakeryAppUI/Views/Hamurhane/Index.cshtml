@@ -1,0 +1,399 @@
+﻿<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables CSS ve JS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.18.0/font/bootstrap-icons.css">
+
+<script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+@model BakeryAppUI.Models.Date
+
+<div class="container mt-5">
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="row">
+                <label for="inputDate" class="col-sm-2 col-form-label font-weight-bold fs-5">Tarih</label>
+                <div class="col-sm-10">
+                    <div class="input-group input-group-lg">
+                        <input type="date" class="form-control font-weight-bold" id="inputDate"
+                               max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               value="@ViewBag.date.ToString("yyyy-MM-dd")"
+                               onchange="submitForm()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @using (Html.BeginForm("PostDate", "Hamurhane", FormMethod.Post, new { id = "myForm" }))
+    {
+        <input type="hidden" id="dateHidden" name="date" />
+    }
+
+    <script>
+        function submitForm() {
+            var selectedDate = document.getElementById("inputDate").value;
+            document.getElementById("dateHidden").value = selectedDate;
+            document.getElementById("myForm").submit();
+        }
+    </script>
+
+
+    @if (ViewBag.doughFactoryListAndDetailDtos.Count != 0)
+    {
+        <div class="container">
+
+            <div class="text-center">
+                <h3>Hamurhane Ürünleri</h3>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="generatePDF()">PDF Oluştur</button>
+
+            <table id="myTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="th-sm">
+                            İMAL EDİLEN ÜRÜNLER
+                        </th>
+
+                        @foreach (var column in ViewBag.doughFactoryListAndDetailDtos[0].DoughFactoryProductQuantity.Keys)
+                        {
+                            <th class="th-sm">
+                                @column
+                            </th>
+                        }
+
+                        <th class="th-sm">
+                            Toplam Adet
+                        </th>
+                        <th class="th-sm">
+                            Birim Fiyatı
+                        </th>
+                        <th class="th-sm">
+                            Gelir
+                        </th>
+
+                        @* <th class="th-sm">
+                    Düzenle
+                    </th>
+                    <th class="th-sm">
+                    Sil
+                    </th> *@
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var a in ViewBag.doughFactoryListAndDetailDtos)
+                    {
+                        <tr>
+                            <td>@a.Name</td>
+
+                            @foreach (var value in a.DoughFactoryProductQuantity.Values)
+                            {
+                                <td>
+                                    @(value == 0 ? "-" : value.ToString())
+                                </td>
+                            }
+                            <td>@a.TotalQuantity</td>
+                            <td>@a.UnitPrice</td>
+                            <td>@(a.TotalQuantity * a.UnitPrice)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+
+            <div class="col-md-3 ms-auto">
+                <div class="alert alert-primary" role="alert">
+                    <h3 class="alert-heading">Toplam Gelir</h3>
+                    <p class="mb-0">@ViewBag.TotalRevenue</p>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <!-- PDF önizleme için geniş modal -->
+        <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfPreviewModalLabel">PDF Önizleme</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- PDF önizleme için iframe -->
+                        <iframe id="pdfViewer" class="embed-responsive-item" width="100%" height="500px"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <script>
+            function generatePDF() {
+                // Controller endpoint'i
+                var controllerEndpoint = '@Url.Action("CreatePdf", "Hamurhane")';
+
+                // Ajax isteği
+                $.ajax({
+                    url: controllerEndpoint,
+                    type: 'GET',
+                    dataType: 'json', // API'den JSON formatında bir yanıt beklediğimizi belirtiyoruz
+                    success: function (data) {
+                        // API'den gelen PDF verisini modal içindeki iframe'e ekleyerek modal'ı aç
+                        var pdfViewer = document.getElementById("pdfViewer");
+                        pdfViewer.src = "data:application/pdf;base64," + data;
+
+                        var pdfPreviewModal = new bootstrap.Modal(document.getElementById("pdfPreviewModal"));
+                        pdfPreviewModal.show();
+
+                    },
+                    error: function (error) {
+                        console.error("API isteği başarısız: ", error);
+                    }
+                });
+            }
+        </script>
+
+
+
+
+       @*  <!-- pdfmake -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+
+        <script>
+            function generatePDF() {
+                // Tablo verileri
+                var data = [];
+                var headers = [];
+
+                // Tablo başlıkları ve verilerini doldurun
+                $('#myTable thead th').each(function () {
+                    headers.push({ text: $(this).text().trim(), style: 'tableHeader' });
+                });
+
+                $('#myTable tbody tr').each(function () {
+                    var rowData = [];
+                    $(this).find('td').each(function () {
+                        rowData.push($(this).text().trim());
+                    });
+                    data.push(rowData);
+                });
+
+                // Tarih ve firma adı
+                var currentDate = new Date('@ViewBag.date.ToString("yyyy-MM-dd")');
+                var formattedDate = currentDate.toLocaleDateString('tr-TR'); // Türkçe tarih formatı
+                var dayOfWeek = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' }).format(currentDate); // Gün
+
+                var companyName = 'ASLANOĞLU FIRIN';
+
+                // Toplam gelir
+                var totalRevenue = parseFloat('@ViewBag.TotalRevenue').toFixed(2);
+
+                // PDF oluşturma
+                var docDefinition = {
+                    content: [
+                        {
+                            columns: [
+                                { width: '50%', text: companyName, style: 'companyName' },
+                                { width: '50%', text: formattedDate + ' ' + dayOfWeek, style: 'date', alignment: 'right' },
+                            ],
+                            margin: [0, 0, 0, 10], // Boşluk
+                        },
+                        { text: 'Hamurhane', style: 'header' },
+                        {
+                            style: 'table',
+                            table: {
+                                headerRows: 1,
+                                body: [headers, ...data]
+                            }
+                        },
+                        { text: '\n' }, // Boş satır
+                        {
+                            columns: [
+                                { text: 'Toplam Gelir: ' + totalRevenue + ' TL', style: 'totalRevenue', alignment: 'right' },
+                            ],
+                            margin: [0, 10, 0, 0], // Boşluk
+                        }
+                    ],
+                    styles: {
+                        companyName: {
+                            fontSize: 14,
+                            bold: true,
+                        },
+                        date: {
+                            fontSize: 12,
+                        },
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 10]
+                        },
+                        table: {
+                            margin: [0, 5, 0, 15]
+                        },
+                        tableHeader: {
+                            bold: true,
+                            fontSize: 13,
+                            color: 'black'
+                        },
+                        totalRevenue: {
+                            fontSize: 14,
+                            bold: true,
+                        }
+                    },
+                    pageMargins: [30, 30, 30, 30] // Sayfa kenar boşlukları
+                };
+
+                // // PDF'i indir
+                // pdfMake.createPdf(docDefinition).download('tablo.pdf');
+
+                // PDF'i oluştur
+                var pdfDoc = pdfMake.createPdf(docDefinition);
+
+                pdfDoc.getDataUrl(function (dataUrl) {
+                    var pdfViewer = document.getElementById('pdfViewer');
+                    pdfViewer.src = dataUrl;
+
+                    // Dosya ismi belirleme
+                    var fileName = "Hamurhane_" + formattedDate + ".pdf";
+
+                    // Önceki indirme butonlarını temizle
+                    var existingButtons = document.querySelectorAll('.download-btn');
+                    existingButtons.forEach(function (button) {
+                        button.remove();
+                    });
+
+                    // "İndir" butonu ekleyerek indirme seçeneğini sağlama
+                    var downloadButton = document.createElement('a');
+                    downloadButton.href = dataUrl;
+                    downloadButton.download = fileName;
+                    downloadButton.innerText = "Dosyayı İndir";
+                    downloadButton.classList.add("btn", "btn-primary", "download-btn"); // İstenirse bir CSS sınıfı ekleyebilirsiniz
+
+                    // "pdfViewer" elementine "downloadButton" elemanını ekleme
+                    pdfViewer.parentElement.appendChild(downloadButton);
+
+
+
+                    // Modal'ı göster
+                    $('#pdfPreviewModal').modal('show');
+                });
+            }
+        </script> *@
+    }
+    else
+    {
+        <div class="text-center mt-5">
+            <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+            <h4 class="mt-3">Üzgünüz, Veri Bulunamadı</h4>
+            <p>Seçtiğiniz tarihte görüntülenecek veri bulunamadı. Lütfen başka bir tarih seçin veya veri ekleyin.</p>
+        </div>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                }
+            });
+        });
+    </script>
+
+
+
+    @* <div class="row">
+    @{
+    int i = 0;
+    }
+    @foreach (var item in ViewBag.doughFactoryListAndDetailDtos)
+    {
+
+    i++;
+
+    <div class="col-md-4 col-12">
+
+    <div class="card">
+    <div class="card-header text-center">
+    <h4 class="card-title">
+    @i. Kayıt
+    </h4>
+    </div>
+
+    <div class="card-body text-center">
+    <p class="fs-4">
+    <span class="iconify" data-icon="mdi-chef-hat" style="font-size: 36px;"></span>
+    @item.Name
+    </p>
+    <!-- Button trigger for basic modal -->
+    <button type="button" class="btn btn-outline-primary block" data-bs-toggle="modal"
+    data-bs-target="#default_@i">
+    Detay
+    </button>
+
+    <!-- Basic Modal -->
+    <div class="modal fade text-left" id="default_@i" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="myModalLabel1">@i. Kayıt</h5>
+    <button type="button" class="close rounded-pill" data-bs-dismiss="modal"
+    aria-label="Kapat">
+    <i data-feather="x"></i>
+    </button>
+    </div>
+    <!-- Modified modal body with tables -->
+    <div class="modal-body">
+    <div class="row mb-3">
+    <div class="col-md-12">
+    <h5>İmal Edilen Ürünler</h5>
+    <table class="table">
+    <thead>
+    <tr>
+    <th>Ürün Adı</th>
+    <th>Ürün Adedi</th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+
+    @foreach (var product in item.getAddedDoughFactoryListDetailDto)
+    {
+    <tr>
+    <td>@product.DoughFactoryProductName</td>
+    <td>@product.Quantity</td>
+    </tr>
+    }
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    }
+
+    </div> *@
+</div>
+
+
