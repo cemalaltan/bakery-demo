@@ -54,7 +54,7 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int id)
         {
-            return _debtMarketDal.IsExist(id);
+            return await _debtMarketDal.IsExist(id);
         }
 
         public async Task<List<DebtMarket>> GetDebtByMarketIdAsync(int marketId)
@@ -64,7 +64,7 @@ namespace Business.Concrete
 
         public async Task<Dictionary<int, decimal>> GetTotalDebtsForMarketsAsync()
         {
-            return  _debtMarketDal.GetTotalDebtsForMarkets();
+            return await  _debtMarketDal.GetTotalDebtsForMarkets();
         }
     }
 }

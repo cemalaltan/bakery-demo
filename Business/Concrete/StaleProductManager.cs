@@ -49,12 +49,12 @@ namespace Business.Concrete
 
         public async Task<List<StaleProductDto>> GetByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return  _staleProductDal.GetByDateAndCategory(date, categoryId);
+            return await  _staleProductDal.GetByDateAndCategory(date, categoryId);
         }
 
         public async Task<List<ProductNotAddedDto>> GetProductsNotAddedToStaleAsync(DateTime date, int categoryId)
         {
-            return  _staleProductDal.GetProductsNotAddedToStale(date, categoryId);
+            return await _staleProductDal.GetProductsNotAddedToStale(date, categoryId);
         }
 
         public async Task<int> GetQuantityStaleProductByDateAndProductIdAsync(DateTime date, int productId)
@@ -65,12 +65,12 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int productId, DateTime date)
         {
-            return  _staleProductDal.IsExist(productId, date);
+            return await _staleProductDal.IsExist(productId, date);
         }
 
         public async Task<Dictionary<int, int>> GetStaleProductsByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return  _staleProductDal.GetStaleProductsByDateAndCategory(date, categoryId);
+            return await _staleProductDal.GetStaleProductsByDateAndCategory(date, categoryId);
         }
     }
 }

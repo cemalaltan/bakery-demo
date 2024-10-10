@@ -52,17 +52,17 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int id, int listId)
         {
-            return  _productionListDetailDal.IsExist(id, listId);
+            return  await _productionListDetailDal.IsExist(id, listId);
         }
 
         public async Task AddListAsync(List<ProductionListDetail> productionListDetails)
         {
-             _productionListDetailDal.AddList(productionListDetails);
+             await _productionListDetailDal.AddList(productionListDetails);
         }
 
         public async Task<List<GetAddedProductsDto>> GetProductsByListIdAsync(int id)
         {
-            return  _productionListDetailDal.GetAddedProducts(id);
+            return  await _productionListDetailDal.GetAddedProducts(id);
         }
 
         public async Task<ProductionListDetail> GetProductionListDetailByDateAndProductIdAsync(DateTime date, Product product)

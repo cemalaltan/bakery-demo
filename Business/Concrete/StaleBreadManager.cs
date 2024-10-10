@@ -49,22 +49,22 @@ namespace Business.Concrete
 
         public async Task<double> GetStaleBreadDailyReportAsync(DateTime date)
         {
-            return  _staleBreadDal.GetReport(date);
+            return  await _staleBreadDal.GetReport(date);
         }
 
         public async Task<List<DoughFactoryProduct>> GetDoughFactoryProductsAsync(DateTime date)
         {
-            return  _staleBreadDal.GetDoughFactoryProductsByDate(date);
+            return  await _staleBreadDal.GetDoughFactoryProductsByDate(date);
         }
 
         public async Task<List<StaleBreadDto>> GetAllByDateAsync(DateTime date)
         {
-            return  _staleBreadDal.GetAllByDate(date);
+            return  await _staleBreadDal.GetAllByDate(date);
         }
 
         public async Task<bool> IsExistAsync(int doughFactoryProductId, DateTime date)
         {
-            return  _staleBreadDal.IsExist(doughFactoryProductId, date);
+            return  await _staleBreadDal.IsExist(doughFactoryProductId, date);
         }
     }
 }

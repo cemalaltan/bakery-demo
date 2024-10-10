@@ -11,6 +11,6 @@ namespace DataAccess.Abstract
 {
     public interface IDoughFactoryListDal : IEntityRepository<DoughFactoryList>
     {
-        List<DoughFactoryListDto> GetAllLists(DateTime date);
+        Task<List<DoughFactoryListDto>> GetAllLists(DateTime date);
     }
 }

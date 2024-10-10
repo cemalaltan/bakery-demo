@@ -13,24 +13,22 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public void DeleteByDateAndMarketId(DateTime date, int marketId)
+        public async Task DeleteByDateAndMarketId(DateTime date, int marketId)
         {
-          
-                var deletedEntity = _context.Entry(_context.Set<StaleBreadReceivedFromMarket>().FirstOrDefault(s => s.Date.Date == date.Date && s.MarketId == marketId));
-                if (deletedEntity != null)
-                {
-                    deletedEntity.State = EntityState.Deleted;
-                _context.SaveChanges();
-                }
-           
+            var entity = await _context.Set<StaleBreadReceivedFromMarket>()
+                .FirstOrDefaultAsync(s => s.Date.Date == date.Date && s.MarketId == marketId);
+
+            if (entity != null)
+            {
+                _context.Set<StaleBreadReceivedFromMarket>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public bool IsExist(int marketId, DateTime date)
+        public async Task<bool> IsExist(int marketId, DateTime date)
         {
-          
-                return _context.Set<StaleBreadReceivedFromMarket>()
-                    .Any(s => s.MarketId == marketId && s.Date.Date == date.Date);
-           
+            return await _context.Set<StaleBreadReceivedFromMarket>()
+                .AnyAsync(s => s.MarketId == marketId && s.Date.Date == date.Date);
         }
     }
 }

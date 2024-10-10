@@ -6,6 +6,6 @@ namespace DataAccess.Abstract
     public interface IMoneyReceivedFromMarketDal : IEntityRepository<MoneyReceivedFromMarket>
     {
       
-        bool IsExist(int marketId, DateTime date);
+        Task<bool> IsExist(int marketId, DateTime date);
     }
 }

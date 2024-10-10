@@ -13,32 +13,28 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
+        public async Task<List<Product>> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
         {
-          
-                if (listId == 0)
-                {
-                    var getCategoryProducts = _context.Products
-                         .Where(p => p.CategoryId == categoryId && p.Status == true)
-                         .ToList();
+            if (listId == 0)
+            {
+                return await _context.Products
+                    .Where(p => p.CategoryId == categoryId && p.Status == true)
+                    .ToListAsync();
+            }
+            else
+            {
+                var productIdsInProductionList = await _context.ProductionListDetails
+                    .Where(m => m.ProductionListId == listId)
+                    .Select(q => q.ProductId)
+                    .ToListAsync();
 
-                    return getCategoryProducts;
-                }
-                else
-                {
-                    var productIdsInProductionList = _context.ProductionListDetails
-                   .Where(m => m.ProductionListId == listId)
-                   .Select(q => q.ProductId)
-                   .ToList();
+                var productsNotInProductionList = await _context.Products
+                    .Where(p => p.CategoryId == categoryId && !productIdsInProductionList.Contains(p.Id) && p.Status == true)
+                    .ToListAsync();
 
-                    var productsNotInProductionList = _context.Products
-                        .Where(p => p.CategoryId == categoryId && !productIdsInProductionList.Contains(p.Id) && p.Status == true)
-                        .ToList();
-
-                    return productsNotInProductionList;
-              
-
+                return productsNotInProductionList;
             }
         }
     }
-}
+    }
+

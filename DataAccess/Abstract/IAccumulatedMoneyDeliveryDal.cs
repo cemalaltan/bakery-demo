@@ -7,6 +7,6 @@ namespace DataAccess.Abstract
     {
       
 
-        AccumulatedMoneyDelivery? GetLatestDelivery(int type);
+        Task<AccumulatedMoneyDelivery?> GetLatestDelivery(int type);
     }
 }

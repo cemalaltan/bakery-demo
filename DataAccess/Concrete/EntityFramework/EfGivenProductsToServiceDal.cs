@@ -15,32 +15,24 @@ namespace DataAccess.Concrete.EntityFramework
         }
 
 
-        public List<GivenProductsToService> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId)
+        public async Task<List<GivenProductsToServiceTotalResultDto>> GetTotalQuantityResultByDate(DateTime date)
         {
-         
-                var result = _context.GivenProductsToServices
-                    .Where(x => x.Date.Date == date.Date && x.ServiceTypeId == servisTypeId)
-                    .ToList();
-
-                return result;
-          
+            return await _context.GivenProductsToServices
+                .Where(x => x.Date.Date == date.Date)
+                .GroupBy(x => x.ServiceTypeId)
+                .Select(group => new GivenProductsToServiceTotalResultDto
+                {
+                    ServiceTypeName = _context.ServiceTypes.FirstOrDefault(st => st.Id == group.Key).Name,
+                    TotalQuantity = group.Sum(x => x.Quantity)
+                })
+                .ToListAsync();
         }
 
-        public List<GivenProductsToServiceTotalResultDto> GetTotalQuantityResultByDate(DateTime date)
+        public async Task<List<GivenProductsToService>> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId)
         {
-         
-                var result = _context.GivenProductsToServices
-                    .Where(x => x.Date.Date == date.Date)
-                    .GroupBy(x => x.ServiceTypeId)
-                    .Select(group => new GivenProductsToServiceTotalResultDto
-                    {
-                        ServiceTypeName = _context.ServiceTypes.FirstOrDefault(st => st.Id == group.Key).Name,
-                        TotalQuantity = group.Sum(x => x.Quantity)
-                    })
-                    .ToList();
-
-                return result;
-          
+            return await _context.GivenProductsToServices
+                .Where(x => x.Date.Date == date.Date && x.ServiceTypeId == servisTypeId)
+                .ToListAsync();
         }
     }
 }

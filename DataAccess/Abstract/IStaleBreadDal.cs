@@ -7,9 +7,9 @@ namespace DataAccess.Abstract
     public interface IStaleBreadDal : IEntityRepository<StaleBread>
     {
    
-        List<DoughFactoryProduct> GetDoughFactoryProductsByDate(DateTime date);
-        double GetReport(DateTime date);
-        List<StaleBreadDto> GetAllByDate(DateTime date);
-        bool IsExist(int doughFactoryProductId, DateTime date);
+        Task<List<DoughFactoryProduct>> GetDoughFactoryProductsByDate(DateTime date);
+        Task<double> GetReport(DateTime date);
+        Task<List<StaleBreadDto>> GetAllByDate(DateTime date);
+        Task<bool> IsExist(int doughFactoryProductId, DateTime date);
     }
 }

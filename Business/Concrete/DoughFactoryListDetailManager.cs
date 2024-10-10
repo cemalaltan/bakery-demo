@@ -47,7 +47,7 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int id, int listId)
         {
-            return  _doughFactoryListDetailDal.IsExist(id, listId);
+            return await  _doughFactoryListDetailDal.IsExist(id, listId);
         }
 
         public async Task UpdateAsync(DoughFactoryListDetail doughFactoryListDetail)

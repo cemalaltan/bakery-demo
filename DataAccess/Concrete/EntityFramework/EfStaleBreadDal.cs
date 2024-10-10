@@ -16,23 +16,17 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public bool IsExist(int doughFactoryProductId, DateTime date)
+        public async Task<bool> IsExist(int doughFactoryProductId, DateTime date)
         {
-         
-
-                bool exists = _context.StaleBread
-                    .Any(sp => sp.Date.Date == date.Date && sp.DoughFactoryProductId == doughFactoryProductId);
-
-                return exists;
-        
+            return await _context.StaleBread
+                .AnyAsync(sp => sp.Date.Date == date.Date && sp.DoughFactoryProductId == doughFactoryProductId);
         }
 
-        public List<StaleBreadDto> GetAllByDate(DateTime date)
+        public async Task<List<StaleBreadDto>> GetAllByDate(DateTime date)
         {
-           
-                var doughFactoryProducts = _context.StaleBread
-                    .Where(x => x.Date.Date == date.Date)
-                    .Join(_context.DoughFactoryProducts,
+            return await _context.StaleBread
+                .Where(x => x.Date.Date == date.Date)
+                .Join(_context.DoughFactoryProducts,
                     x => x.DoughFactoryProductId,
                     df => df.Id,
                     (x, df) => new StaleBreadDto
@@ -42,42 +36,30 @@ namespace DataAccess.Concrete.EntityFramework
                         Date = x.Date,
                         DoughFactoryProductId = x.DoughFactoryProductId,
                         DoughFactoryProductName = df.Name
-                    }
-                    )
-                    .ToList();
-
-                return doughFactoryProducts;
-         
+                    })
+                .ToListAsync();
         }
 
-        public List<DoughFactoryProduct> GetDoughFactoryProductsByDate(DateTime date)
+        public async Task<List<DoughFactoryProduct>> GetDoughFactoryProductsByDate(DateTime date)
         {
-          
-                var doughFactoryProducts = _context.DoughFactoryProducts
-                   .Where(df => !_context.StaleBread.Any(sb => sb.DoughFactoryProductId == df.Id && sb.Date.Date == date.Date) && df.Status == true)
-                    .ToList();
-
-                return doughFactoryProducts;
-            
+            return await _context.DoughFactoryProducts
+                .Where(df => !_context.StaleBread.Any(sb => sb.DoughFactoryProductId == df.Id && sb.Date.Date == date.Date) && df.Status == true)
+                .ToListAsync();
         }
 
-        public double GetReport(DateTime date)
+        public async Task<double> GetReport(DateTime date)
         {
-           
-                var result = _context.StaleBread
-                    .Where(sb => sb.Date.Date == date.Date)
-                    .Join(_context.DoughFactoryProducts,
-                        sb => sb.DoughFactoryProductId,
-                        dfp => dfp.Id,
-                        (sb, dfp) => new
-                        {
-                            BreadEquivalent = dfp.BreadEquivalent,
-                            Quantity = sb.Quantity
-                        })
-                    .Sum(item => item.BreadEquivalent * item.Quantity);
-
-                return result;
-          
+            return await _context.StaleBread
+                .Where(sb => sb.Date.Date == date.Date)
+                .Join(_context.DoughFactoryProducts,
+                    sb => sb.DoughFactoryProductId,
+                    dfp => dfp.Id,
+                    (sb, dfp) => new
+                    {
+                        BreadEquivalent = dfp.BreadEquivalent,
+                        Quantity = sb.Quantity
+                    })
+                .SumAsync(item => item.BreadEquivalent * item.Quantity);
         }
     }
 }

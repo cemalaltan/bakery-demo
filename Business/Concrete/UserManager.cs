@@ -17,7 +17,7 @@ namespace Business.Concrete
 
         public async Task<List<OperationClaim>> GetClaimsAsync(User user)
         {
-            return  _userDal.GetClaims(user);
+            return  await _userDal.GetClaims(user);
         }
 
         public async Task AddAsync(User user)

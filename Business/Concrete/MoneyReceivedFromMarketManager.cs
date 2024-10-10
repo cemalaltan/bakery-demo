@@ -63,7 +63,7 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int marketId, DateTime date)
         {
-            return  _moneyReceivedFromMarketDal.IsExist(marketId, date);
+            return  await _moneyReceivedFromMarketDal.IsExist(marketId, date);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Business.Concrete
 
         public async Task<List<DoughFactoryListDto>> GetByDateAsync(DateTime date)
         {
-            return  _doughFactoryListDal.GetAllLists(date);
+            return  await _doughFactoryListDal.GetAllLists(date);
         }
 
         public async Task<DoughFactoryList> GetByIdAsync(int id)

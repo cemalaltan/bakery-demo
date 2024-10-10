@@ -49,7 +49,7 @@ namespace Business.Concrete
 
         public async Task<List<Product>> GetNotAddedProductsByListAndCategoryIdAsync(int listId, int categoryId)
         {
-            return  _productDal.GetNotAddedProductsByListAndCategoryId(listId, categoryId);
+            return  await _productDal.GetNotAddedProductsByListAndCategoryId(listId, categoryId);
         }
 
         public async Task<decimal> GetPriceByIdAsync(int id)

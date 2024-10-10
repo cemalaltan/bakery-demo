@@ -14,24 +14,22 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public List<DoughFactoryListDto> GetAllLists(DateTime date)
+        public async Task<List<DoughFactoryListDto>> GetAllLists(DateTime date)
         {
-        
-                var doughListDto = (
-                    from dough in _context.DoughFactoryLists
-                    join user in _context.Users on dough.UserId equals user.Id
-                    where dough.Date.Date == date.Date
-                    select new DoughFactoryListDto
-                    {
-                        Id = dough.Id,
-                        UserId = dough.UserId,
-                        UserName = user.FirstName+" "+user.LastName, // Assuming there's a property like UserName in your User entity
-                        Date = dough.Date
-                    }
-                ).ToList();
 
-                return doughListDto;
-         
+            return await (
+                from dough in _context.DoughFactoryLists
+                join user in _context.Users on dough.UserId equals user.Id
+                where dough.Date.Date == date.Date
+                select new DoughFactoryListDto
+                {
+                    Id = dough.Id,
+                    UserId = dough.UserId,
+                    UserName = user.FirstName + " " + user.LastName,
+                    Date = dough.Date
+                }
+            ).ToListAsync();
+
         }
     }
 }

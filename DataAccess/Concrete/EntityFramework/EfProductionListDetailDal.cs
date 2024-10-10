@@ -14,44 +14,35 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public void AddList(List<ProductionListDetail> productionListDetail)
+        public async Task<List<GetAddedProductsDto>> GetAddedProducts(int id)
         {
-          
-                foreach (var production in productionListDetail)
-                {
-                    var deletedEntity = _context.Entry(production);
-                    deletedEntity.State = EntityState.Added;
-                }
-            _context.SaveChanges();
-
-           
+            return await (from plDetail in _context.Set<ProductionListDetail>()
+                          join product in _context.Set<Product>() on plDetail.ProductId equals product.Id
+                          where plDetail.ProductionListId == id
+                          select new GetAddedProductsDto
+                          {
+                              Id = plDetail.Id,
+                              ProductId = plDetail.ProductId,
+                              ProductName = product.Name, // Assuming you want the product name
+                              Price = plDetail.Price,
+                              ProductionListId = plDetail.ProductionListId,
+                              Quantity = plDetail.Quantity
+                          }).ToListAsync();
         }
 
-
-        public List<GetAddedProductsDto> GetAddedProducts(int id)
+        public async Task<bool> IsExist(int id, int listId)
         {
-           
-                var addedProducts = (from plDetail in _context.Set<ProductionListDetail>()
-                                     join product in _context.Set<Product>() on plDetail.ProductId equals product.Id
-                                     where plDetail.ProductionListId == id
-                                     select new GetAddedProductsDto
-                                     {
-                                         Id = plDetail.Id,
-                                         ProductId = plDetail.ProductId,
-                                         ProductName = product.Name, // Assuming you want the product name
-                                         Price = plDetail.Price,
-                                         ProductionListId = plDetail.ProductionListId,
-                                         Quantity = plDetail.Quantity
-                                     }).ToList();
-                return addedProducts;
-           
+            return await _context.ProductionListDetails
+                .AnyAsync(p => p.ProductId == id && p.ProductionListId == listId);
         }
 
-        public bool IsExist(int id, int listId)
+        public async Task AddList(List<ProductionListDetail> productionListDetail)
         {
-           
-                return (_context.ProductionListDetails?.Any(p => p.ProductId == id && p.ProductionListId == listId)).GetValueOrDefault();
-           
+            foreach (var production in productionListDetail)
+            {
+                _context.Entry(production).State = EntityState.Added;
+            }
+            await _context.SaveChangesAsync();
         }
 
     }

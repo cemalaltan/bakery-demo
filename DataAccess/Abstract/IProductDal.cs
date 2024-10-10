@@ -7,6 +7,6 @@ namespace DataAccess.Abstract
     {
     
 
-        List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId);
+        Task<List<Product>> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId);
     }
 }

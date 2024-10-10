@@ -8,9 +8,9 @@ namespace DataAccess.Abstract
     {
        
 
-        Dictionary<int, int> GetStaleProductsByDateAndCategory(DateTime date, int categoryId);
-        List<StaleProductDto> GetByDateAndCategory(DateTime date, int categoryId);
-        List<ProductNotAddedDto> GetProductsNotAddedToStale(DateTime date, int categoryId);
-        bool IsExist(int productId, DateTime date);
+        Task<Dictionary<int, int>> GetStaleProductsByDateAndCategory(DateTime date, int categoryId);
+        Task<List<StaleProductDto>> GetByDateAndCategory(DateTime date, int categoryId);
+        Task<List<ProductNotAddedDto>> GetProductsNotAddedToStale(DateTime date, int categoryId);
+        Task<bool> IsExist(int productId, DateTime date);
     }
 }

@@ -49,12 +49,12 @@ namespace Business.Concrete
 
         public async Task<List<GivenProductsToServiceTotalResultDto>> GetTotalQuantityByDateAsync(DateTime date)
         {
-            return  _givenProductsToServiceDal.GetTotalQuantityResultByDate(date);
+            return await  _givenProductsToServiceDal.GetTotalQuantityResultByDate(date);
         }
 
         public async Task<List<GivenProductsToService>> GetAllByDateAndServisTypeIdAsync(DateTime date, int servisTypeId)
         {
-            return  _givenProductsToServiceDal.GetAllByDateAndServisTypeId(date, servisTypeId);
+            return  await _givenProductsToServiceDal.GetAllByDateAndServisTypeId(date, servisTypeId);
         }
     }
 }

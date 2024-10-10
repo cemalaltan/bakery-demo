@@ -6,6 +6,6 @@ namespace DataAccess.Abstract
     public interface IDoughFactoryListDetailDal : IEntityRepository<DoughFactoryListDetail>
     {
     
-        bool IsExist(int id, int listId);
+        Task<bool> IsExist(int id, int listId);
     }
 }

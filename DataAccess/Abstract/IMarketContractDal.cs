@@ -7,7 +7,7 @@ namespace DataAccess.Abstract
     public interface IMarketContractDal : IEntityRepository<MarketContract>
     {
       
-        List<Market> GetMarketsNotHaveContract();
-        List<MarketContractDto> GetAllContractWithMarketsName();
+        Task<List<Market>> GetMarketsNotHaveContract();
+        Task<List<MarketContractDto>> GetAllContractWithMarketsName();
     }
 }

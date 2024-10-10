@@ -13,23 +13,22 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public void DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
+        public async Task<bool> IsExist(int serviceListId, int marketContractId)
         {
-           
-                var deletedEntity = _context.Entry(_context.Set<ServiceListDetail>().FirstOrDefault(s=>s.ServiceListId ==serviceListId && s.MarketContractId == marketContracId));
-                if (deletedEntity != null)
-                {
-                    deletedEntity.State = EntityState.Deleted;
-                _context.SaveChanges();
-                }                
-          
+            return await _context.Set<ServiceListDetail>()
+                .AnyAsync(s => s.MarketContractId == marketContractId && s.ServiceListId == serviceListId);
         }
 
-        public bool IsExist(int serviceListId, int marketContractId)
+        public async Task DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
         {
-                        
-                return _context.Set<ServiceListDetail>().Any(s => s.MarketContractId == marketContractId && s.ServiceListId == serviceListId);
-       
+            var entity = await _context.Set<ServiceListDetail>()
+                .FirstOrDefaultAsync(s => s.ServiceListId == serviceListId && s.MarketContractId == marketContracId);
+
+            if (entity != null)
+            {
+                _context.Set<ServiceListDetail>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
         }
 
     }

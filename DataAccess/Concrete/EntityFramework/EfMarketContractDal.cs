@@ -16,28 +16,21 @@ namespace DataAccess.Concrete.EntityFramework
 
 
 
-        public List<MarketContractDto> GetAllContractWithMarketsName()
+        public async Task<List<Market>> GetMarketsNotHaveContract()
         {
-        
-                var list = _context.MarketContractView.ToList();
-                return list;
-    
+            return await (from market in _context.Markets
+                          where market.IsActive
+                          join contract in _context.MarketContracts
+                          on market.Id equals contract.MarketId into gj
+                          from subContract in gj.DefaultIfEmpty()
+                          where subContract == null
+                          select market)
+                         .ToListAsync();
         }
 
-        public List<Market> GetMarketsNotHaveContract()
+        public async Task<List<MarketContractDto>> GetAllContractWithMarketsName()
         {
-           
-                var marketList = (from market in _context.Markets
-                                  where market.IsActive
-                                  join contract in _context.MarketContracts
-                                  on market.Id equals contract.MarketId into gj
-                                  from subContract in gj.DefaultIfEmpty()
-                                  where subContract == null
-                                  select market).ToList();
-
-                return marketList;
-          
-            
+            return await _context.MarketContractView.ToListAsync();
         }
     }
 }

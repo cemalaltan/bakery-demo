@@ -66,17 +66,17 @@ namespace Business.Concrete
 
         public async Task AddListAsync(List<ProductsCounting> productsCountings)
         {
-             _productsCountingDal.AddList(productsCountings);
+             await _productsCountingDal.AddList(productsCountings);
         }
 
         public async Task<Dictionary<int, int>> GetDictionaryProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return  _productsCountingDal.GetDictionaryProductsCountingByDateAndCategory(date, categoryId);
+            return  await _productsCountingDal.GetDictionaryProductsCountingByDateAndCategory(date, categoryId);
         }
 
         public async Task<List<ProductsCountingDto>> GetProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return  _productsCountingDal.GetProductsCountingByDateAndCategory(date, categoryId);
+            return  await _productsCountingDal.GetProductsCountingByDateAndCategory(date, categoryId);
         }
     }
 }

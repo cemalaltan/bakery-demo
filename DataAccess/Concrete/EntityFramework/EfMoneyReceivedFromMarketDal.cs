@@ -16,11 +16,10 @@ namespace DataAccess.Concrete.EntityFramework
 
 
 
-        public bool IsExist(int marketId, DateTime date)
+        public async Task<bool> IsExist(int marketId, DateTime date)
         {
-                       
-                return _context.Set<MoneyReceivedFromMarket>()
-                                    .Any(m => m.MarketId == marketId && m.Date.Date == date.Date);
+
+            return await _context.MoneyReceivedFromMarkets.AnyAsync(m => m.MarketId == marketId && m.Date.Date == date.Date);
           
         }
 

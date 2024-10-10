@@ -13,11 +13,10 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public bool IsExist(int id, int listId)
+        public async Task<bool> IsExist(int id, int listId)
         {
-          
-                return (_context.DoughFactoryListDetails?.Any(p => p.DoughFactoryProductId == id && p.DoughFactoryListId == listId)).GetValueOrDefault();
-           
+            return await _context.DoughFactoryListDetails
+                .AnyAsync(p => p.DoughFactoryProductId == id && p.DoughFactoryListId == listId);
         }
     }
 }

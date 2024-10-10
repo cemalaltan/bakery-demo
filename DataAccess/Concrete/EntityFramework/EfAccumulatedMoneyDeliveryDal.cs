@@ -14,12 +14,12 @@ namespace DataAccess.Concrete.EntityFramework
         }
 
 
-        public  AccumulatedMoneyDelivery? GetLatestDelivery(int type)
+        public async Task<AccumulatedMoneyDelivery?> GetLatestDelivery(int type)
         {
-                return _context.Set<AccumulatedMoneyDelivery>()
-                    .Where(d => d.Type == type)
-                    .OrderByDescending(d => d.CreatedAt)
-                    .FirstOrDefault();
+            return await _context.Set<AccumulatedMoneyDelivery>()
+                .Where(d => d.Type == type)
+                .OrderByDescending(d => d.CreatedAt)
+                .FirstOrDefaultAsync();
         }
 
 

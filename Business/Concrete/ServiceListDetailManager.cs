@@ -58,7 +58,7 @@ namespace Business.Concrete
 
         public async Task DeleteByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContractId)
         {
-             _serviceListDetailDal.DeleteByServiceListIdAndMarketContracId(serviceListId, marketContractId);
+           await  _serviceListDetailDal.DeleteByServiceListIdAndMarketContracId(serviceListId, marketContractId);
         }
 
         public async Task<ServiceListDetail> GetByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContractId)
@@ -68,7 +68,7 @@ namespace Business.Concrete
 
         public async Task<bool> IsExistAsync(int serviceListId, int marketContractId)
         {
-            return  _serviceListDetailDal.IsExist(serviceListId, marketContractId);
+            return await _serviceListDetailDal.IsExist(serviceListId, marketContractId);
         }
     }
 }

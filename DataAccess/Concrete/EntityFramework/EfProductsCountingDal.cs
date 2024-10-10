@@ -14,54 +14,46 @@ namespace DataAccess.Concrete.EntityFramework
             _context = context;
         }
 
-        public void AddList(List<ProductsCounting> productsCountings)
+        public async Task AddList(List<ProductsCounting> productsCountings)
         {
-
-            _context.ProductsCountings.AddRange(productsCountings);
-            _context.SaveChanges();
-          
+            await _context.ProductsCountings.AddRangeAsync(productsCountings);
+            await _context.SaveChangesAsync();
         }
 
-   
-
-        public Dictionary<int, int> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public async Task<Dictionary<int, int>> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
-          
-                var productsCountingQuantities = _context.ProductsCountings
-                    .Where(pc => pc.Date.Date == date.Date)
-                    .Join(_context.Products,
-                          counting => counting.ProductId,
-                          product => product.Id,
-                          (counting, product) => new { Counting = counting, Product = product })
-                    .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
-                    .ToDictionary(pair => pair.Counting.ProductId, pair => pair.Counting.Quantity);
+            var productsCountingQuantities = await _context.ProductsCountings
+                .Where(pc => pc.Date.Date == date.Date)
+                .Join(_context.Products,
+                      counting => counting.ProductId,
+                      product => product.Id,
+                      (counting, product) => new { Counting = counting, Product = product })
+                .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
+                .ToDictionaryAsync(pair => pair.Counting.ProductId, pair => pair.Counting.Quantity);
 
-                return productsCountingQuantities;
-           
+            return productsCountingQuantities;
         }
 
-        public List<ProductsCountingDto> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public async Task<List<ProductsCountingDto>> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
-           
-                var productsCountingList = _context.ProductsCountings
-                    .Where(pc => pc.Date.Date == date.Date)
-                    .Join(_context.Products,
-                          counting => counting.ProductId,
-                          product => product.Id,
-                          (counting, product) => new { Counting = counting, Product = product })
-                    .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
-                    .Select(pair => new ProductsCountingDto
-                    {
-                        Id = pair.Counting.Id,
-                        ProductId = pair.Counting.ProductId,
-                        Quantity = pair.Counting.Quantity,
-                        ProductName = pair.Product.Name,
-                        Date = pair.Counting.Date,
-                    })
-                    .ToList();
+            var productsCountingList = await _context.ProductsCountings
+                .Where(pc => pc.Date.Date == date.Date)
+                .Join(_context.Products,
+                      counting => counting.ProductId,
+                      product => product.Id,
+                      (counting, product) => new { Counting = counting, Product = product })
+                .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
+                .Select(pair => new ProductsCountingDto
+                {
+                    Id = pair.Counting.Id,
+                    ProductId = pair.Counting.ProductId,
+                    Quantity = pair.Counting.Quantity,
+                    ProductName = pair.Product.Name,
+                    Date = pair.Counting.Date,
+                })
+                .ToListAsync();
 
-                return productsCountingList;
-            
+            return productsCountingList;
         }
     }
 }

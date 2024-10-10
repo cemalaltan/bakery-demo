@@ -6,9 +6,9 @@ namespace DataAccess.Abstract
     public interface IServiceListDetailDal : IEntityRepository<ServiceListDetail>
     {
      
-        bool IsExist(int serviceListId, int marketContractId);
+        Task<bool> IsExist(int serviceListId, int marketContractId);
 
-        void DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId);
+        Task DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId);
 
     }
 }

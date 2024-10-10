@@ -64,12 +64,12 @@ namespace Business.Concrete
 
         public async Task<List<Market>> GetMarketsNotHaveContractAsync()
         {
-            return  _marketContractDal.GetMarketsNotHaveContract();
+            return await  _marketContractDal.GetMarketsNotHaveContract();
         }
 
         public async Task<List<MarketContractDto>> GetAllContractWithMarketsNameAsync()
         {
-            return  _marketContractDal.GetAllContractWithMarketsName();
+            return  await _marketContractDal.GetAllContractWithMarketsName();
         }
     }
 }
