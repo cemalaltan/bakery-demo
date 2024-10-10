@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BakeryAppContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
 // Autofac kullanmak i�in burda 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
