@@ -20,11 +20,11 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetCashCountingByDate")]
-        public ActionResult GetCashCountingByDate(DateTime date)
+        public async Task<ActionResult> GetCashCountingByDate(DateTime date)
         {
             try
             {
-                var result = _cashCountingService.GetOneCashCountingByDate(date);
+                var result = await _cashCountingService.GetOneCashCountingByDateAsync(date);
                 if (result != null)
                 {
                     return Ok(result);
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddCashCounting")]
-        public ActionResult AddCashCounting(CashCounting cashCounting)
+        public async Task<ActionResult> AddCashCounting(CashCounting cashCounting)
         {
             if (cashCounting == null || cashCounting.TotalMoney < 0 || cashCounting.RemainedMoney < 0)
             {
@@ -51,11 +51,11 @@ namespace WebAPI.Controllers
 
             try
             {
-                if (_cashCountingService.GetOneCashCountingByDate(cashCounting.Date) != null)
+                if (_cashCountingService.GetOneCashCountingByDateAsync(cashCounting.Date) != null)
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
-                _cashCountingService.Add(cashCounting);
+               await _cashCountingService.AddAsync(cashCounting);
                 return Ok();
             }
             catch (Exception e)
@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteCashCountingById")]
-        public ActionResult DeleteCashCountingById(int id)
+        public async Task<ActionResult> DeleteCashCountingById(int id)
         {
             if (id <= 0)
             {
@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                _cashCountingService.DeleteById(id);
+               await _cashCountingService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -87,7 +87,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateCashCounting")]
-        public ActionResult UpdateCashCounting(CashCounting cashCounting)
+        public async Task<ActionResult> UpdateCashCounting(CashCounting cashCounting)
         {
             if (cashCounting == null || cashCounting.TotalMoney < 0 || cashCounting.RemainedMoney < 0)
             {
@@ -98,11 +98,11 @@ namespace WebAPI.Controllers
             {
                 if (cashCounting.TotalMoney == 0 && cashCounting.RemainedMoney == 0)
                 {
-                    _cashCountingService.DeleteById(cashCounting.Id);
+                 await   _cashCountingService.DeleteByIdAsync(cashCounting.Id);
                 }
                 else
                 {
-                    _cashCountingService.Update(cashCounting);
+                  await  _cashCountingService.UpdateAsync(cashCounting);
                 }
 
                 return Ok();

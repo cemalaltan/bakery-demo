@@ -1,61 +1,62 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ProductionListManager : IProductionListService
     {
-
-
-        IProductionListDal _productionListDal;
+        private readonly IProductionListDal _productionListDal;
 
         public ProductionListManager(IProductionListDal productionListDal)
         {
             _productionListDal = productionListDal;
         }
 
-        public int Add(ProductionList productionList)
+        public async Task<int> AddAsync(ProductionList productionList)
         {
-            _productionListDal.Add(productionList);
+            await _productionListDal.Add(productionList);
             return productionList.Id;
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _productionListDal.DeleteById(id);
+            await _productionListDal.DeleteById(id);
         }
 
-        public void Delete(ProductionList productionList)
+        public async Task DeleteAsync(ProductionList productionList)
         {
-            _productionListDal.Delete(productionList);
-        }
-        public List<ProductionList> GetAll()
-        {
-            return _productionListDal.GetAll();
+            await _productionListDal.Delete(productionList);
         }
 
-        public ProductionList GetById(int id)
+        public async Task<List<ProductionList>> GetAllAsync()
         {
-            return _productionListDal.Get(d => d.Id == id);
+            return await _productionListDal.GetAll();
         }
 
-        public void Update(ProductionList productionList)
+        public async Task<ProductionList> GetByIdAsync(int id)
         {
-            _productionListDal.Update(productionList);
+            return await _productionListDal.Get(d => d.Id == id);
         }
 
-
-
-        public int GetByDateAndCategoryId(DateTime date, int categoryId)
+        public async Task UpdateAsync(ProductionList productionList)
         {
-            ProductionList productList = _productionListDal.Get(p => p.Date.Date == date.Date && p.CategoryId == categoryId);
+            await _productionListDal.Update(productionList);
+        }
+
+        public async Task<int> GetByDateAndCategoryIdAsync(DateTime date, int categoryId)
+        {
+            ProductionList productList = await _productionListDal.Get(p => p.Date.Date == date.Date && p.CategoryId == categoryId);
             return productList == null ? 0 : productList.Id;
         }
 
-        public List<int> GetByDate(DateTime date)
+        public async Task<List<int>> GetByDateAsync(DateTime date)
         {
-            List<ProductionList> productList = _productionListDal.GetAll(p => p.Date.Date == date.Date);
+            List<ProductionList> productList =await _productionListDal.GetAll(p => p.Date.Date == date.Date);
             if (productList != null && productList.Any())
             {
                 List<int> productListIds = productList.Select(p => p.Id).ToList();

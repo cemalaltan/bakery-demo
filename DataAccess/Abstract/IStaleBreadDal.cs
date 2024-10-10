@@ -6,7 +6,7 @@ namespace DataAccess.Abstract
 {
     public interface IStaleBreadDal : IEntityRepository<StaleBread>
     {
-        void DeleteById(int id);
+   
         List<DoughFactoryProduct> GetDoughFactoryProductsByDate(DateTime date);
         double GetReport(DateTime date);
         List<StaleBreadDto> GetAllByDate(DateTime date);

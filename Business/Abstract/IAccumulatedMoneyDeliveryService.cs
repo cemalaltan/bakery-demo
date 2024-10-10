@@ -5,14 +5,15 @@ namespace Business.Abstract
     public interface IAccumulatedMoneyDeliveryService
     {
 
-        
-        List<AccumulatedMoneyDelivery> GetAll();
-        List<AccumulatedMoneyDelivery> GetBetweenDates(DateTime startDate, DateTime endDate);
-        AccumulatedMoneyDelivery? GetLastDelivery(int type);
-        void Add(AccumulatedMoneyDelivery delivery);
-        void DeleteById(int id);
-        void Delete(AccumulatedMoneyDelivery delivery);
-        void Update(AccumulatedMoneyDelivery delivery);
-        AccumulatedMoneyDelivery GetById(int id);
+
+        Task<List<AccumulatedMoneyDelivery>> GetAllAsync();
+        Task<List<AccumulatedMoneyDelivery>> GetBetweenDatesAsync(DateTime startDate, DateTime endDate);
+        Task<AccumulatedMoneyDelivery?> GetLastDeliveryAsync(int type);
+        Task AddAsync(AccumulatedMoneyDelivery delivery);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(AccumulatedMoneyDelivery delivery);
+        Task UpdateAsync(AccumulatedMoneyDelivery delivery);
+        Task<AccumulatedMoneyDelivery> GetByIdAsync(int id);
+
     }
 }

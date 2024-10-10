@@ -19,11 +19,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetGivenProductsToServiceByDateAndServisTypeId")]
-        public ActionResult GetGivenProductsToServiceByDateAndServisTypeId(DateTime date, int servisTypeId)
+        public async Task<ActionResult> GetGivenProductsToServiceByDateAndServisTypeId(DateTime date, int servisTypeId)
         {
             try
             {
-                var result = _givenProductsToServiceService.GetAllByDateAndServisTypeId(date, servisTypeId);
+                var result =await _givenProductsToServiceService.GetAllByDateAndServisTypeIdAsync(date, servisTypeId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -35,11 +35,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetGivenProductsToServiceDayResultByDateAndServiceType")]
-        public ActionResult GetGivenProductsToServiceDayResult(DateTime date)
+        public async Task<ActionResult> GetGivenProductsToServiceDayResult(DateTime date)
         {
             try
             {
-                var result = _givenProductsToServiceService.GetTotalQuantityByDate(date);
+                var result = await _givenProductsToServiceService.GetTotalQuantityByDateAsync(date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -51,11 +51,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByIdGivenProductsToService")]
-        public ActionResult GetByIdGivenProductsToService(int id)
+        public async Task<ActionResult> GetByIdGivenProductsToService(int id)
         {
             try
             {
-                var result = _givenProductsToServiceService.GetById(id);
+                var result = await _givenProductsToServiceService.GetByIdAsync(id);
                 return Ok(result);
 
             }
@@ -68,11 +68,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddGivenProductsToService")]
-        public ActionResult AddGivenProductsToService(GivenProductsToService givenProductsToService)
+        public async Task<ActionResult> AddGivenProductsToService(GivenProductsToService givenProductsToService)
         {
             try
             {
-                _givenProductsToServiceService.Add(givenProductsToService);
+                await _givenProductsToServiceService.AddAsync(givenProductsToService);
                 return Ok();
             }
             catch (Exception e)
@@ -84,11 +84,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteGivenProductsToServiceById")]
-        public ActionResult DeleteGivenProductsToServiceById(int id)
+        public async Task<ActionResult> DeleteGivenProductsToServiceById(int id)
         {
             try
             {
-                _givenProductsToServiceService.DeleteById(id);
+               await _givenProductsToServiceService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -100,11 +100,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateGivenProductsToService")]
-        public ActionResult UpdateGivenProductsToService(GivenProductsToService givenProductsToService)
+        public async Task<ActionResult> UpdateGivenProductsToService(GivenProductsToService givenProductsToService)
         {
             try
             {
-                _givenProductsToServiceService.Update(givenProductsToService);
+               await _givenProductsToServiceService.UpdateAsync(givenProductsToService);
                 return Ok();
             }
             catch (Exception e)

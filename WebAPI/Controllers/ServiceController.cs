@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByDateServiceList")]
-        public ActionResult GetByDateServiceList(DateTime date)
+        public async Task<ActionResult> GetByDateServiceList(DateTime date)
         {
             if (date.Date > DateTime.Now.Date)
             {
@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                var result = _serviceListService.GetByDate(date.Date);
+                var result = await _serviceListService.GetByDateAsync(date.Date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddServiceListAndListDetail")]
-        public ActionResult AddService(List<ServiceListDetailDto> serviceListDetailDto, int userId)
+        public async Task<ActionResult> AddService(List<ServiceListDetailDto> serviceListDetailDto, int userId)
         {
 
             if (serviceListDetailDto.IsNullOrEmpty())
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
                 bool IsNewList = false;
                 if (id == 0)
                 {
-                    id = _serviceListService.Add(new ServiceList { Id = 0, UserId = userId, Date = DateTime.Now });
+                    id = await _serviceListService.AddAsync(new ServiceList { Id = 0, UserId = userId, Date = DateTime.Now });
                     IsNewList = true;
                 }
 
@@ -79,16 +79,16 @@ namespace WebAPI.Controllers
                     }
 
 
-                    serviceListDetail.MarketContractId = _marketContractService.GetIdByMarketId(serviceListDetailDto[i].MarketId);
+                    serviceListDetail.MarketContractId = await _marketContractService.GetIdByMarketIdAsync(serviceListDetailDto[i].MarketId);
 
-                    if (_serviceListDetailService.IsExist(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId))
+                    if (await _serviceListDetailService.IsExistAsync(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId))
                     {
                         return Conflict(Messages.Conflict);
                     }
 
-                    serviceListDetail.Price = _marketContractService.GetPriceById(serviceListDetail.MarketContractId);
+                    serviceListDetail.Price = await _marketContractService.GetPriceByIdAsync(serviceListDetail.MarketContractId);
                     serviceListDetail.Quantity = serviceListDetailDto[i].Quantity;
-                    _serviceListDetailService.Add(serviceListDetail);
+                  await  _serviceListDetailService.AddAsync(serviceListDetail);
                 }
                 return Ok(id);
 
@@ -102,11 +102,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAddedMarketByServiceListId")]
-        public ActionResult GetAddedMarketByServiceListId(int listId)
+        public async Task<ActionResult> GetAddedMarketByServiceListId(int listId)
         {
             try
             {
-                List<ServiceListDetail> serviceListDetail = _serviceListDetailService.GetByListId(listId);
+                List<ServiceListDetail> serviceListDetail = await _serviceListDetailService.GetByListIdAsync(listId);
 
                 List<GetAddedServiceListDetailDto> List = new List<GetAddedServiceListDetailDto>();
 
@@ -117,9 +117,9 @@ namespace WebAPI.Controllers
                     addedServiceListDetailDto.ServiceListId = serviceListDetail[i].ServiceListId;
                     addedServiceListDetailDto.Quantity = serviceListDetail[i].Quantity;
 
-                    addedServiceListDetailDto.MarketId = _marketContractService.GetMarketIdById(serviceListDetail[i].MarketContractId);
+                    addedServiceListDetailDto.MarketId = await _marketContractService.GetMarketIdByIdAsync(serviceListDetail[i].MarketContractId);
 
-                    addedServiceListDetailDto.MarketName = _marketService.GetNameById(addedServiceListDetailDto.MarketId);
+                    addedServiceListDetailDto.MarketName = await _marketService.GetNameByIdAsync(addedServiceListDetailDto.MarketId);
 
                     List.Add(addedServiceListDetailDto);
                 }
@@ -134,21 +134,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetMarketByServiceListId")]
-        public ActionResult GetMarketByServiceListId(int listId)
+        public async Task<ActionResult> GetMarketByServiceListId(int listId)
         {
 
 
             try
             {
-                List<Market> allMarkets = _marketService.GetAllActive();
+                List<Market> allMarkets = await _marketService.GetAllActiveAsync();
 
                 if (listId == 0)
                 {
                     return Ok(allMarkets);
                 }
 
-                List<ServiceListDetail> serviceListDetail = _serviceListDetailService.GetByListId(listId);
-                List<int> marketIds = serviceListDetail.Select(detail => _marketContractService.GetMarketIdById(detail.MarketContractId)).ToList();
+                List<ServiceListDetail> serviceListDetail = await _serviceListDetailService.GetByListIdAsync(listId);
+                List<int> marketIds = serviceListDetail.Select( detail =>  _marketContractService.GetMarketIdByIdAsync(detail.MarketContractId).Result).ToList();
 
                 // Using LINQ to filter markets
                 List<Market> filteredMarkets = allMarkets.Where(m => !marketIds.Contains(m.Id)).ToList();
@@ -162,7 +162,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteServiceListDetail")]
-        public ActionResult DeleteServiceListDetail(int id)
+        public async Task<ActionResult> DeleteServiceListDetail(int id)
         {
             if (id <= 0)
             {
@@ -171,7 +171,7 @@ namespace WebAPI.Controllers
 
             try
             {
-                _serviceListDetailService.DeleteById(id);
+               await _serviceListDetailService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -182,7 +182,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateServiceListDetail")]
-        public ActionResult UpdateServiceListDetail(ServiceListDetailDto serviceListDetailDto)
+        public async Task<ActionResult> UpdateServiceListDetail(ServiceListDetailDto serviceListDetailDto)
         {
             if (serviceListDetailDto == null)
             {
@@ -192,17 +192,17 @@ namespace WebAPI.Controllers
             {    
                 ServiceListDetail serviceListDetail = new();
                 serviceListDetail.ServiceListId = serviceListDetailDto.ServiceListId;                
-                serviceListDetail.MarketContractId = _marketContractService.GetIdByMarketId(serviceListDetailDto.MarketId);
+                serviceListDetail.MarketContractId = await _marketContractService.GetIdByMarketIdAsync(serviceListDetailDto.MarketId);
 
-                if (! _serviceListDetailService.IsExist(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId))
+                if (!await _serviceListDetailService.IsExistAsync(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId))
                 {
                     return Conflict(Messages.WrongInput);
                 }
 
                 serviceListDetail.Quantity = serviceListDetailDto.Quantity;
-                serviceListDetail.Price = _marketContractService.GetPriceById(serviceListDetail.MarketContractId);
-                serviceListDetail.Id = _serviceListDetailService.GetIdByServiceListIdAndMarketContracId(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId);
-                _serviceListDetailService.Update(serviceListDetail);
+                serviceListDetail.Price = await _marketContractService.GetPriceByIdAsync(serviceListDetail.MarketContractId);
+                serviceListDetail.Id = _serviceListDetailService.GetIdByServiceListIdAndMarketContractIdAsync(serviceListDetail.ServiceListId, serviceListDetail.MarketContractId).Result;
+               await _serviceListDetailService.UpdateAsync(serviceListDetail);
                 return Ok();
             }
             catch (Exception e)

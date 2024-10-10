@@ -1,58 +1,60 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class AccumulatedMoneyDeliveryManager : IAccumulatedMoneyDeliveryService
     {
+        private readonly IAccumulatedMoneyDeliveryDal _deliveryDal;
 
-
-        IAccumulatedMoneyDeliveryDal _deliveryDal;
-
-        public AccumulatedMoneyDeliveryManager(IAccumulatedMoneyDeliveryDal deliveryDal, IAccumulatedMoneyDal netEldenAmountDal)
+        public AccumulatedMoneyDeliveryManager(IAccumulatedMoneyDeliveryDal deliveryDal)
         {
             _deliveryDal = deliveryDal;
         }
 
-        public void Add(AccumulatedMoneyDelivery delivery)
+        public async Task AddAsync(AccumulatedMoneyDelivery delivery)
         {
-            _deliveryDal.Add(delivery);
+            await Task.Run(() => _deliveryDal.Add(delivery));
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _deliveryDal.DeleteById(id);
+            await Task.Run(() => _deliveryDal.DeleteById(id));
         }
 
-        public void Delete(AccumulatedMoneyDelivery delivery)
+        public async Task DeleteAsync(AccumulatedMoneyDelivery delivery)
         {
-            _deliveryDal.Delete(delivery);
-        }
-        public List<AccumulatedMoneyDelivery> GetAll()
-        {
-            return _deliveryDal.GetAll();
+            await Task.Run(() => _deliveryDal.Delete(delivery));
         }
 
-        public AccumulatedMoneyDelivery GetById(int id)
+        public async Task<List<AccumulatedMoneyDelivery>> GetAllAsync()
         {
-            return _deliveryDal.Get(d => d.Id == id);
+            return await Task.Run(() => _deliveryDal.GetAll());
         }
 
-        public void Update(AccumulatedMoneyDelivery delivery)
+        public async Task<AccumulatedMoneyDelivery> GetByIdAsync(int id)
         {
-            _deliveryDal.Update(delivery);
+            return await Task.Run(() => _deliveryDal.Get(d => d.Id == id));
         }
 
-
-        public List<AccumulatedMoneyDelivery> GetBetweenDates(DateTime startDate, DateTime endDate)
+        public async Task UpdateAsync(AccumulatedMoneyDelivery delivery)
         {
-            return _deliveryDal.GetAll(delivery => delivery.CreatedAt >= startDate && delivery.CreatedAt <= endDate.AddDays(1));
+            await Task.Run(() => _deliveryDal.Update(delivery));
         }
 
-        public AccumulatedMoneyDelivery? GetLastDelivery(int type)
+        public async Task<List<AccumulatedMoneyDelivery>> GetBetweenDatesAsync(DateTime startDate, DateTime endDate)
         {
-            return _deliveryDal.GetLatestDelivery(type);
+            return await Task.Run(() =>
+                _deliveryDal.GetAll(delivery => delivery.CreatedAt >= startDate && delivery.CreatedAt <= endDate.AddDays(1)));
+        }
+
+        public async Task<AccumulatedMoneyDelivery?> GetLastDeliveryAsync(int type)
+        {
+            return await Task.Run(() => _deliveryDal.GetLatestDelivery(type));
         }
     }
 }

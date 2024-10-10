@@ -7,25 +7,18 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductDal : EfEntityRepositoryBase<Product, BakeryAppContext>, IProductDal
     {
-
-        public void DeleteById(int id)
+        private readonly BakeryAppContext _context;
+        public EfProductDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<Product>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
+            _context = context;
         }
 
         public List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
         {
-            using (BakeryAppContext context = new())
-            {
+          
                 if (listId == 0)
                 {
-                    var getCategoryProducts = context.Products
+                    var getCategoryProducts = _context.Products
                          .Where(p => p.CategoryId == categoryId && p.Status == true)
                          .ToList();
 
@@ -33,17 +26,17 @@ namespace DataAccess.Concrete.EntityFramework
                 }
                 else
                 {
-                    var productIdsInProductionList = context.ProductionListDetails
+                    var productIdsInProductionList = _context.ProductionListDetails
                    .Where(m => m.ProductionListId == listId)
                    .Select(q => q.ProductId)
                    .ToList();
 
-                    var productsNotInProductionList = context.Products
+                    var productsNotInProductionList = _context.Products
                         .Where(p => p.CategoryId == categoryId && !productIdsInProductionList.Contains(p.Id) && p.Status == true)
                         .ToList();
 
                     return productsNotInProductionList;
-                }
+              
 
             }
         }

@@ -22,11 +22,11 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetStaleBreadListByDate")]
-        public ActionResult GetStaleBreadListByDate(DateTime date)
+        public async Task<ActionResult> GetStaleBreadListByDate(DateTime date)
         {
             try
             {
-                var result = _staleBreadService.GetAllByDate(date);
+                var result = await _staleBreadService.GetAllByDateAsync(date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -38,11 +38,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetStaleBreadDailyReport")]
-        public ActionResult GetStaleBreadDailyReport(DateTime date)
+        public async Task<ActionResult> GetStaleBreadDailyReport(DateTime date)
         {
             try
             {
-                var result = _staleBreadService.GetStaleBreadDailyReport(date);
+                var result = await _staleBreadService.GetStaleBreadDailyReportAsync(date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -54,11 +54,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetDoughFactoryProducts")]
-        public ActionResult GetDoughFactoryProducts(DateTime date)
+        public async Task<ActionResult> GetDoughFactoryProducts(DateTime date)
         {
             try
             {
-                var result = _staleBreadService.GetDoughFactoryProducts(date);
+                var result = await _staleBreadService.GetDoughFactoryProductsAsync(date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -72,12 +72,12 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("AddStaleBread")]
-        public ActionResult AddStaleBread(StaleBread staleBread)
+        public async Task<ActionResult> AddStaleBread(StaleBread staleBread)
         {
 
             try
             {
-                if (_staleBreadService.IsExist(staleBread.DoughFactoryProductId, staleBread.Date))
+                if (await _staleBreadService.IsExistAsync(staleBread.DoughFactoryProductId, staleBread.Date))
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
@@ -87,7 +87,7 @@ namespace WebAPI.Controllers
                 }
 
 
-                _staleBreadService.Add(staleBread);
+               await _staleBreadService.AddAsync(staleBread);
                 return Ok();
             }
             catch (Exception e)
@@ -99,11 +99,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteStaleBread")]
-        public ActionResult DeleteStaleBread(int id)
+        public async Task<ActionResult> DeleteStaleBread(int id)
         {
             try
             {
-                _staleBreadService.DeleteById(id);
+               await _staleBreadService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -115,11 +115,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateStaleBread")]
-        public ActionResult UpdateStaleBread(StaleBread staleBread)
+        public async Task<ActionResult> UpdateStaleBread(StaleBread staleBread)
         {
             try
             {
-                _staleBreadService.Update(staleBread);
+               await _staleBreadService.UpdateAsync(staleBread);
                 return Ok();
             }
             catch (Exception e)

@@ -21,37 +21,37 @@ namespace WebAPI.Controllers
         
 
         [HttpGet("GetAllServiceProduct")]
-        public ActionResult GetServiceProduct()
+        public async Task<ActionResult> GetServiceProduct()
         {
-            var result = _serviceProductService.GetAll();
+            var result = await _serviceProductService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("GetByIdServiceProduct")]
-        public ActionResult GetByIdServiceProduct(int id)
+        public async Task<ActionResult> GetByIdServiceProduct(int id)
         {
-            var result = _serviceProductService.GetById(id);
+            var result = await _serviceProductService.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost("AddServiceProduct")]
-        public ActionResult AddServiceProduct(ServiceProduct serviceProduct)
+        public async Task<ActionResult> AddServiceProduct(ServiceProduct serviceProduct)
         {
-            _serviceProductService.Add(serviceProduct);
+           await  _serviceProductService.AddAsync(serviceProduct);
             return Ok();
         }
 
         [HttpDelete("DeleteServiceProduct")]
-        public ActionResult DeleteServiceProduct(int id)
+        public async Task<ActionResult> DeleteServiceProduct(int id)
         {
-            _serviceProductService.DeleteById(id);
+           await _serviceProductService.DeleteByIdAsync(id);
             return Ok();
         }
 
         [HttpPut("UpdateServiceProduct")]
-        public ActionResult UpdateServiceProduct(ServiceProduct serviceProduct)
+        public async Task<ActionResult> UpdateServiceProduct(ServiceProduct serviceProduct)
         {
-            _serviceProductService.Update(serviceProduct);
+           await _serviceProductService.UpdateAsync(serviceProduct);
             return Ok();
         }
     }

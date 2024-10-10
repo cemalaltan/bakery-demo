@@ -4,17 +4,16 @@ namespace Business.Abstract
 {
     public interface IProductService
     {
-        List<Product> GetAll();
- 
-        List<Product> GetAllByCategoryId(int categoryId);
-        void Add(Product product);
-        void DeleteById(int id);
-        void Delete(Product product);
-        void Update(Product product);
-        Product GetById(int id);
+        Task<List<Product>> GetAllAsync();
+        Task<List<Product>> GetAllByCategoryIdAsync(int categoryId);
+        Task AddAsync(Product product);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(Product product);
+        Task UpdateAsync(Product product);
+        Task<Product> GetByIdAsync(int id);
+        Task<List<Product>> GetNotAddedProductsByListAndCategoryIdAsync(int listId, int categoryId);
+        Task<List<Product>> GetAllProductsByCategoryIdAsync(int categoryId);
+        Task<decimal> GetPriceByIdAsync(int id);
 
-        List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId);
-        List<Product> GetAllProductsByCategoryId(int categoryId);
-        decimal GetPriceById(int id);
     }
 }

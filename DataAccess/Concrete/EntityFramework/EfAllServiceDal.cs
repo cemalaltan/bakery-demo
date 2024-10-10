@@ -7,17 +7,11 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfAllServiceDal : EfEntityRepositoryBase<AllService, BakeryAppContext>, IAllServiceDal
     {
-
-        public void DeleteById(int id)
+        public EfAllServiceDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<AllService>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
         }
+
+       
 
     }
 }

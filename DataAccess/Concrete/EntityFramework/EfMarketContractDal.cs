@@ -8,41 +8,35 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfMarketContractDal : EfEntityRepositoryBase<MarketContract, BakeryAppContext>, IMarketContractDal
     {
-
-        public void DeleteById(int id)
+        private readonly BakeryAppContext _context;
+        public EfMarketContractDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<MarketContract>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
+            _context = context;
         }
+
+
 
         public List<MarketContractDto> GetAllContractWithMarketsName()
         {
-            using (BakeryAppContext context = new())
-            {
-                var list = context.MarketContractView.ToList();
+        
+                var list = _context.MarketContractView.ToList();
                 return list;
-            }
+    
         }
 
         public List<Market> GetMarketsNotHaveContract()
         {
-            using (BakeryAppContext context = new())
-            {
-                var marketList = (from market in context.Markets
+           
+                var marketList = (from market in _context.Markets
                                   where market.IsActive
-                                  join contract in context.MarketContracts
+                                  join contract in _context.MarketContracts
                                   on market.Id equals contract.MarketId into gj
                                   from subContract in gj.DefaultIfEmpty()
                                   where subContract == null
                                   select market).ToList();
 
                 return marketList;
-            }
+          
             
         }
     }

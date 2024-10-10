@@ -1,47 +1,48 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceProductManager : IServiceProductService
     {
+        private readonly IServiceProductDal _serviceProductDal;
 
-
-        IServiceProductDal _serviceProductDal;
-        
         public ServiceProductManager(IServiceProductDal serviceProductDal)
         {
-            _serviceProductDal = serviceProductDal;  
+            _serviceProductDal = serviceProductDal;
         }
 
-        public void Add(ServiceProduct serviceProduct)
+        public async Task AddAsync(ServiceProduct serviceProduct)
         {
-            _serviceProductDal.Add(serviceProduct);
+            await _serviceProductDal.Add(serviceProduct);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _serviceProductDal.DeleteById(id);
+            await _serviceProductDal.DeleteById(id);
         }
 
-        public void Delete(ServiceProduct serviceProduct)
+        public async Task DeleteAsync(ServiceProduct serviceProduct)
         {
-            _serviceProductDal.Delete(serviceProduct);
-        }
-        public List<ServiceProduct> GetAll()
-        {
-           return _serviceProductDal.GetAll();
+            await _serviceProductDal.Delete(serviceProduct);
         }
 
-        public ServiceProduct GetById(int id)
+        public async Task<List<ServiceProduct>> GetAllAsync()
         {
-            return _serviceProductDal.Get(d => d.Id == id);
+            return await _serviceProductDal.GetAll();
         }
 
-        public void Update(ServiceProduct serviceProduct)
+        public async Task<ServiceProduct> GetByIdAsync(int id)
         {
-            _serviceProductDal.Update(serviceProduct);
+            return await _serviceProductDal.Get(d => d.Id == id);
+        }
+
+        public async Task UpdateAsync(ServiceProduct serviceProduct)
+        {
+            await _serviceProductDal.Update(serviceProduct);
         }
     }
 }

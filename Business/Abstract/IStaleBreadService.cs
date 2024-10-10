@@ -5,15 +5,16 @@ namespace Business.Abstract
 {
     public interface IStaleBreadService
     {
-        List<StaleBread> GetAll();
-        List<StaleBreadDto> GetAllByDate(DateTime date);
-        void Add(StaleBread staleBread);
-        void DeleteById(int id);
-        void Delete(StaleBread staleBread);
-        void Update(StaleBread staleBread);
-        StaleBread GetById(int id);
-        double GetStaleBreadDailyReport(DateTime date);
-        List<DoughFactoryProduct> GetDoughFactoryProducts(DateTime date);
-        bool IsExist(int doughFactoryProductId, DateTime date);
+  Task<List<StaleBread>> GetAllAsync();
+Task<List<StaleBreadDto>> GetAllByDateAsync(DateTime date);
+Task AddAsync(StaleBread staleBread);
+Task DeleteByIdAsync(int id);
+Task DeleteAsync(StaleBread staleBread);
+Task UpdateAsync(StaleBread staleBread);
+Task<StaleBread> GetByIdAsync(int id);
+Task<double> GetStaleBreadDailyReportAsync(DateTime date);
+Task<List<DoughFactoryProduct>> GetDoughFactoryProductsAsync(DateTime date);
+Task<bool> IsExistAsync(int doughFactoryProductId, DateTime date);
+
     }
 }

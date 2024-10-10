@@ -6,7 +6,6 @@ namespace DataAccess.Abstract
 {
     public interface IProductionListDetailDal : IEntityRepository<ProductionListDetail>
     {
-        void DeleteById(int id);
 
         List<GetAddedProductsDto> GetAddedProducts(int id);
 

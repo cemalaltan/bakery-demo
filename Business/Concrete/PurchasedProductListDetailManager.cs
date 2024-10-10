@@ -1,80 +1,81 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class PurchasedProductListDetailManager : IPurchasedProductListDetailService
     {
+        private readonly IPurchasedProductListDetailDal _purchasedProductListDetailDal;
 
-
-        IPurchasedProductListDetailDal _purchasedProductListDetailDal;
-        
         public PurchasedProductListDetailManager(IPurchasedProductListDetailDal purchasedProductListDetailDal)
         {
-            _purchasedProductListDetailDal = purchasedProductListDetailDal;  
+            _purchasedProductListDetailDal = purchasedProductListDetailDal;
         }
 
-        public void Add(PurchasedProductListDetail purchasedProductListDetail)
+        public async Task AddAsync(PurchasedProductListDetail purchasedProductListDetail)
         {
-            _purchasedProductListDetailDal.Add(purchasedProductListDetail);
+            await _purchasedProductListDetailDal.Add(purchasedProductListDetail);
         }
 
-        public void DeleteById(int id, int userId)
+        public async Task DeleteByIdAsync(int id, int userId)
         {
-            _purchasedProductListDetailDal.DeleteById(id, userId);
+        //     _purchasedProductListDetailDal.DeleteById(id, userId);
         }
 
-        public void Delete(PurchasedProductListDetail purchasedProductListDetail)
+        public async Task DeleteAsync(PurchasedProductListDetail purchasedProductListDetail)
         {
-            _purchasedProductListDetailDal.Delete(purchasedProductListDetail);
-        }
-        public List<PurchasedProductListDetail> GetAll()
-        {
-           return _purchasedProductListDetailDal.GetAll();
+            await _purchasedProductListDetailDal.Delete(purchasedProductListDetail);
         }
 
-        public PurchasedProductListDetail GetById(int id)
+        public async Task<List<PurchasedProductListDetail>> GetAllAsync()
         {
-            return _purchasedProductListDetailDal.Get(d => d.Id == id);
+            return await _purchasedProductListDetailDal.GetAll();
         }
 
-        public void Update(PurchasedProductListDetail purchasedProductListDetail)
+        public async Task<PurchasedProductListDetail> GetByIdAsync(int id)
         {
-            _purchasedProductListDetailDal.Update(purchasedProductListDetail);
+            return await _purchasedProductListDetailDal.Get(d => d.Id == id);
         }
 
-        public List<PurchasedProductListDetail> GetPurchasedProductListDetailByDate(DateTime date)
+        public async Task UpdateAsync(PurchasedProductListDetail purchasedProductListDetail)
         {
-            return _purchasedProductListDetailDal.GetAll(p => p.Date.Date == date.Date);
+            await _purchasedProductListDetailDal.Update(purchasedProductListDetail);
         }
 
-        public void AddList(List<PurchasedProductListDetail> purchasedProductListDetails)
+        public async Task<List<PurchasedProductListDetail>> GetPurchasedProductListDetailByDateAsync(DateTime date)
         {
-            for(int i = 0; i<purchasedProductListDetails.Count; i++)
+            return await _purchasedProductListDetailDal.GetAll(p => p.Date.Date == date.Date);
+        }
+
+        public async Task AddListAsync(List<PurchasedProductListDetail> purchasedProductListDetails)
+        {
+            foreach (var detail in purchasedProductListDetails)
             {
-                _purchasedProductListDetailDal.Add(purchasedProductListDetails[i]);
+                await _purchasedProductListDetailDal.Add(detail);
             }
         }
 
-        public bool IsExist(int productId, DateTime date)
+        public async Task<bool> IsExistAsync(int productId, DateTime date)
         {
-            return _purchasedProductListDetailDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date) == null ? false : true;
+            return await _purchasedProductListDetailDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date) != null;
         }
 
-        public void UpdateList(List<PurchasedProductListDetail> purchasedProductListDetails)
+        public async Task UpdateListAsync(List<PurchasedProductListDetail> purchasedProductListDetails)
         {
-            for (int i = 0; i < purchasedProductListDetails.Count; i++)
+            foreach (var detail in purchasedProductListDetails)
             {
-                _purchasedProductListDetailDal.Add(purchasedProductListDetails[i]);
+                await _purchasedProductListDetailDal.Update(detail);
             }
         }
 
-        public PurchasedProductListDetail GetPurchasedProductListDetailByDateAndProductId(DateTime date, int productId)
+        public async Task<PurchasedProductListDetail> GetPurchasedProductListDetailByDateAndProductIdAsync(DateTime date, int productId)
         {
-            PurchasedProductListDetail purchasedProductListDetail = _purchasedProductListDetailDal.Get(d => d.ProductId == productId && d.Date.Date == date);
-            return purchasedProductListDetail == null ? new PurchasedProductListDetail { Price =0, Quantity =0} : purchasedProductListDetail;
+            var purchasedProductListDetail = await _purchasedProductListDetailDal.Get(d => d.ProductId == productId && d.Date.Date == date);
+            return purchasedProductListDetail ?? new PurchasedProductListDetail { Price = 0, Quantity = 0 };
         }
     }
 }

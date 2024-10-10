@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface IAccumulatedMoneyDal : IEntityRepository<AccumulatedMoney>
     {
-        void DeleteById(int id);
+
     }
 }

@@ -4,13 +4,14 @@ namespace Business.Abstract
 {
     public interface IDoughFactoryListDetailService
     {
-        List<DoughFactoryListDetail> GetAll();
-        List<DoughFactoryListDetail> GetByDoughFactoryList(int id);
-        void Add(DoughFactoryListDetail doughFactoryListDetail);
-        void Delete(DoughFactoryListDetail doughFactoryListDetail);
-        void DeleteById(int id);
-        void Update(DoughFactoryListDetail doughFactoryListDetail);
-        DoughFactoryListDetail GetById(int id);
-        bool IsExist(int id, int listId);
+        Task<List<DoughFactoryListDetail>> GetAllAsync();
+        Task<List<DoughFactoryListDetail>> GetByDoughFactoryListAsync(int id);
+        Task AddAsync(DoughFactoryListDetail doughFactoryListDetail);
+        Task DeleteAsync(DoughFactoryListDetail doughFactoryListDetail);
+        Task DeleteByIdAsync(int id);
+        Task UpdateAsync(DoughFactoryListDetail doughFactoryListDetail);
+        Task<DoughFactoryListDetail> GetByIdAsync(int id);
+        Task<bool> IsExistAsync(int id, int listId);
+
     }
 }

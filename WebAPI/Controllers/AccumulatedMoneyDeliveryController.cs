@@ -22,38 +22,38 @@ namespace WebAPI.Controllers
         
 
         [HttpGet("GetAccumulatedMoney")]
-        public ActionResult GetAccumulatedMoney(int type)
+        public async Task<ActionResult> GetAccumulatedMoney(int type)
         {
 
-            decimal total = getAccumulatedTotalMoneyByType(type);
+            decimal total = await getAccumulatedTotalMoneyByType(type);
             return Ok(total);
         }
 
         [HttpGet("GetAccumulatedMoneyDeliveryByDateRange")]
-        public ActionResult GetAccumulatedMoneyDeliveryByDateRange(DateTime startDate, DateTime endDate)
+        public async Task<ActionResult> GetAccumulatedMoneyDeliveryByDateRange(DateTime startDate, DateTime endDate)
         {
-            var result = _accumulatedMoneyDeliveryService.GetBetweenDates(startDate,endDate);
+            var result = await _accumulatedMoneyDeliveryService.GetBetweenDatesAsync(startDate,endDate);
             return Ok(result);
         }
         
         [HttpGet("GetAllAccumulatedMoneyDelivery")]
-        public ActionResult GetAllAccumulatedMoneyDelivery()
+        public async Task<ActionResult> GetAllAccumulatedMoneyDelivery()
         {
-            var result = _accumulatedMoneyDeliveryService.GetAll();
+            var result = await _accumulatedMoneyDeliveryService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("GetAccumulatedMoneyDeliveryById")]
-        public ActionResult GetAccumulatedMoneyDeliveryById(int id)
+        public async Task<ActionResult> GetAccumulatedMoneyDeliveryById(int id)
         {
-            var result = _accumulatedMoneyDeliveryService.GetById(id);
+            var result = await _accumulatedMoneyDeliveryService.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost("AddAccumulatedMoneyDelivery")]
-        public ActionResult AddAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
+        public async Task<ActionResult> AddAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
         {
-            decimal total = getAccumulatedTotalMoneyByType(accumulatedMoneyDelivery.Type);
+            decimal total = await  getAccumulatedTotalMoneyByType(accumulatedMoneyDelivery.Type);
             if (accumulatedMoneyDelivery.AccumulatedAmount > total || accumulatedMoneyDelivery.AccumulatedAmount < 0)
             {
                 return BadRequest("Accumulated amount can not be greater than total accumulated money");
@@ -62,21 +62,21 @@ namespace WebAPI.Controllers
             decimal remaining = total + accumulatedMoneyDelivery.AccumulatedAmount - accumulatedMoneyDelivery.Amount;
             accumulatedMoneyDelivery.AccumulatedAmount = remaining;
 
-            _accumulatedMoneyDeliveryService.Add(accumulatedMoneyDelivery);
+            await _accumulatedMoneyDeliveryService.AddAsync(accumulatedMoneyDelivery);
             return Ok();
         }
 
         [HttpDelete("DeleteAccumulatedMoneyDelivery")]
-        public ActionResult DeleteAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
+        public async Task<ActionResult> DeleteAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
         {
-            _accumulatedMoneyDeliveryService.Delete(accumulatedMoneyDelivery);
+           await _accumulatedMoneyDeliveryService.DeleteAsync(accumulatedMoneyDelivery);
             return Ok();
         }
 
         [HttpPut("UpdateAccumulatedMoneyDelivery")]
-        public ActionResult UpdateAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
+        public async Task<ActionResult> UpdateAccumulatedMoneyDelivery(AccumulatedMoneyDelivery accumulatedMoneyDelivery)
         {
-            AccumulatedMoneyDelivery originalData = _accumulatedMoneyDeliveryService.GetById(accumulatedMoneyDelivery.Id);
+            AccumulatedMoneyDelivery originalData = await _accumulatedMoneyDeliveryService.GetByIdAsync(accumulatedMoneyDelivery.Id);
             var total = originalData.AccumulatedAmount + originalData.Amount;
             if (accumulatedMoneyDelivery.AccumulatedAmount > total || accumulatedMoneyDelivery.AccumulatedAmount < 0)
             {
@@ -84,16 +84,16 @@ namespace WebAPI.Controllers
             }
             decimal remaining = total  - accumulatedMoneyDelivery.Amount;
             accumulatedMoneyDelivery.AccumulatedAmount = remaining;
-            _accumulatedMoneyDeliveryService.Update(accumulatedMoneyDelivery);
+            _accumulatedMoneyDeliveryService.UpdateAsync(accumulatedMoneyDelivery);
             return Ok();
         }
 
-        decimal getAccumulatedTotalMoneyByType(int type)
+        async Task<decimal> getAccumulatedTotalMoneyByType(int type)
         {
-            var lastDelivery = _accumulatedMoneyDeliveryService.GetLastDelivery(type);
+            var lastDelivery = await _accumulatedMoneyDeliveryService.GetLastDeliveryAsync(type);
             DateTime date = lastDelivery == null ? new DateTime(2024, 1, 1) : lastDelivery.CreatedAt;
 
-            var accumulatedMoney = _accumulatedMoneyService.GetTotalAccumulatedMoneyByDateAndType(date, type);
+            var accumulatedMoney = await _accumulatedMoneyService.GetTotalAccumulatedMoneyByDateAndTypeAsync(date, type);
             var total = accumulatedMoney + (lastDelivery?.AccumulatedAmount ?? 0);
             return total;
         }

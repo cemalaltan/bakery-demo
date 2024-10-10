@@ -29,17 +29,17 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetStaleBreadReceivedFromMarketByDate")]
-        public ActionResult GetStaleBreadReceivedFromMarketByDate(DateTime date)
+        public async Task<ActionResult> GetStaleBreadReceivedFromMarketByDate(DateTime date)
         {
             try
             {
-                List<StaleBreadReceivedFromMarket> staleBreadReceivedFromMarket = _staleBreadReceivedFromMarketService.GetByDate(date);
+                List<StaleBreadReceivedFromMarket> staleBreadReceivedFromMarket = await _staleBreadReceivedFromMarketService.GetByDateAsync(date);
                 List<StaleBreadReceivedFromMarketDto> staleBreadReceivedFromMarketDto = staleBreadReceivedFromMarket
-                            .Select(item => new StaleBreadReceivedFromMarketDto
+                            .Select( item => new StaleBreadReceivedFromMarketDto
                             {
                                 id = item.Id,
                                 MarketId = item.MarketId,
-                                MarketName = _marketService.GetNameById(item.MarketId),
+                                MarketName =  _marketService.GetNameByIdAsync(item.MarketId).Result,
                                 Quantity = item.Quantity
                             })
                                 .ToList();
@@ -56,21 +56,21 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetNoBreadReceivedMarketListByDate")]
-        public ActionResult GetNoMoneyReceivedMarketListByDate(DateTime date)
+        public async Task<ActionResult> GetNoMoneyReceivedMarketListByDate(DateTime date)
         {
             try
             {
                 List<int> MarketIds = new List<int>();
-                List<ServiceList> serviceList = _serviceListService.GetByDate(date);
+                List<ServiceList> serviceList = await _serviceListService.GetByDateAsync(date);
 
                 for (int i = 0; i < serviceList.Count; i++)
                 {
-                    List<ServiceListDetail> serviceListDetail = _serviceListDetailService.GetByListId(serviceList[i].Id);
+                    List<ServiceListDetail> serviceListDetail = await _serviceListDetailService.GetByListIdAsync(serviceList[i].Id);
 
                     for (int j = 0; j < serviceListDetail.Count; j++)
                     {
 
-                        var newMarketId = _marketContractService.GetMarketIdById(serviceListDetail[j].MarketContractId);
+                        var newMarketId = await _marketContractService.GetMarketIdByIdAsync(serviceListDetail[j].MarketContractId);
                         if (!MarketIds.Contains(newMarketId))
                         {
                             MarketIds.Add(newMarketId);
@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                List<StaleBreadReceivedFromMarket> staleBreadReceivedFromMarket = _staleBreadReceivedFromMarketService.GetByDate(date);
+                List<StaleBreadReceivedFromMarket> staleBreadReceivedFromMarket = await _staleBreadReceivedFromMarketService.GetByDateAsync(date);
 
                 List<int> filteredMarkets = MarketIds.Except(staleBreadReceivedFromMarket.Select(s => s.MarketId)).ToList();
 
@@ -88,7 +88,7 @@ namespace WebAPI.Controllers
                 {
                     NoStaleBreadReceivedFromMarketDto s = new();
                     s.MarketId = filteredMarkets[i];
-                    s.MarketName = _marketService.GetNameById(filteredMarkets[i]);
+                    s.MarketName = await _marketService.GetNameByIdAsync(filteredMarkets[i]);
                     noStaleBreadReceivedFromMarketDto.Add(s);
                 }
 
@@ -103,11 +103,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetStaleBreadReceivedFromMarketByMarketId")]
-        public ActionResult GetStaleBreadReceivedFromMarket(int marketId, DateTime date)
+        public async Task<ActionResult> GetStaleBreadReceivedFromMarket(int marketId, DateTime date)
         {
             try
             {
-                var result = _staleBreadReceivedFromMarketService.GetByMarketId(marketId, date);
+                var result = await _staleBreadReceivedFromMarketService.GetByMarketIdAsync(marketId, date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -118,12 +118,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByIdStaleBreadReceivedFromMarket")]
-        public ActionResult GetByIdStaleBreadReceivedFromMarket(int id)
+        public async Task<ActionResult> GetByIdStaleBreadReceivedFromMarket(int id)
         {
 
             try
             {
-                var result = _staleBreadReceivedFromMarketService.GetById(id);
+                var result = await _staleBreadReceivedFromMarketService.GetByIdAsync(id);
                 return Ok(result);
             }
             catch (Exception e)
@@ -134,21 +134,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddStaleBreadReceivedFromMarket")]
-        public ActionResult AddStaleBreadReceivedFromMarket(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
+        public async Task<ActionResult> AddStaleBreadReceivedFromMarket(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
         {
             if (staleBreadReceivedFromMarket == null || staleBreadReceivedFromMarket.Quantity < 0)
             {
                 return BadRequest(Messages.WrongInput);
             }
             
-            if (_staleBreadReceivedFromMarketService.IsExist(staleBreadReceivedFromMarket.MarketId,staleBreadReceivedFromMarket.Date))
+            if (await _staleBreadReceivedFromMarketService.IsExistAsync(staleBreadReceivedFromMarket.MarketId,staleBreadReceivedFromMarket.Date))
             {
                 return BadRequest(Messages.Conflict);
             }
 
             try
             {
-                _staleBreadReceivedFromMarketService.Add(staleBreadReceivedFromMarket);
+               await _staleBreadReceivedFromMarketService.AddAsync(staleBreadReceivedFromMarket);
                 return Ok();
             }
             catch (Exception e)
@@ -159,12 +159,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteStaleBreadReceivedFromMarketById")]
-        public ActionResult DeleteStaleBreadReceivedFromMarket(int id)
+        public async Task<ActionResult> DeleteStaleBreadReceivedFromMarket(int id)
         {
 
             try
             {
-                _staleBreadReceivedFromMarketService.DeleteById(id);
+               await _staleBreadReceivedFromMarketService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -175,12 +175,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteByDateAndMarketId")]
-        public ActionResult DeleteByDateAndMarketId(DataForDeleteForStaleBreadReceivedFromMarket dataForDeleteForStaleBreadReceivedFromMarket)
+        public async Task<ActionResult> DeleteByDateAndMarketId(DataForDeleteForStaleBreadReceivedFromMarket dataForDeleteForStaleBreadReceivedFromMarket)
         {
 
             try
             {
-                _staleBreadReceivedFromMarketService.DeleteByDateAndMarketId(dataForDeleteForStaleBreadReceivedFromMarket.Date, dataForDeleteForStaleBreadReceivedFromMarket.MarketId);
+                await _staleBreadReceivedFromMarketService.DeleteByDateAndMarketIdAsync(dataForDeleteForStaleBreadReceivedFromMarket.Date, dataForDeleteForStaleBreadReceivedFromMarket.MarketId);
                 return Ok();
             }
             catch (Exception e)
@@ -191,13 +191,13 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateStaleBreadReceivedFromMarket")]
-        public ActionResult UpdateStaleBreadReceivedFromMarket(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
+        public async Task<ActionResult> UpdateStaleBreadReceivedFromMarket(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
         {
 
 
             try
             {
-                _staleBreadReceivedFromMarketService.Update(staleBreadReceivedFromMarket);
+              await  _staleBreadReceivedFromMarketService.UpdateAsync(staleBreadReceivedFromMarket);
                 return Ok();
             }
             catch (Exception e)

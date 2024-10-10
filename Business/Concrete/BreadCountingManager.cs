@@ -1,60 +1,58 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 
 namespace Business.Concrete
 {
     public class BreadCountingManager : IBreadCountingService
     {
+        private readonly IBreadCountingDal _breadCountingDal;
 
-
-        IBreadCountingDal _breadCountingDal;
-        
         public BreadCountingManager(IBreadCountingDal breadCountingDal)
         {
             _breadCountingDal = breadCountingDal;  
         }
 
-        public void Add(BreadCounting breadCounting)
+        public async Task AddAsync(BreadCounting breadCounting)
         {
-            _breadCountingDal.Add(breadCounting);
+            await _breadCountingDal.Add(breadCounting); 
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _breadCountingDal.DeleteById(id);
+            await _breadCountingDal.DeleteById(id); 
         }
 
-        public void Delete(BreadCounting breadCounting)
+        public async Task DeleteAsync(BreadCounting breadCounting)
         {
-            _breadCountingDal.Delete(breadCounting);
-        }
-        public List<BreadCounting> GetAll()
-        {
-           return _breadCountingDal.GetAll();
+            await _breadCountingDal.Delete(breadCounting);
         }
 
-        public BreadCounting GetById(int id)
+        public async Task<List<BreadCounting>> GetAllAsync()
         {
-            return _breadCountingDal.Get(d => d.Id == id);
+           return await _breadCountingDal.GetAll();
         }
 
-        public void Update(BreadCounting breadCounting)
+        public async Task<BreadCounting> GetByIdAsync(int id)
         {
-            _breadCountingDal.Update(breadCounting);
+            return await _breadCountingDal.Get(d => d.Id == id); 
         }
 
-        public BreadCounting GetBreadCountingByDate(DateTime date)
+        public async Task UpdateAsync(BreadCounting breadCounting)
         {
-           return _breadCountingDal.Get(b=>b.Date.Date == date.Date);
+            await _breadCountingDal.Update(breadCounting); 
         }
 
-        public void AddList(List<BreadCounting> breadCounting)
+        public async Task<BreadCounting> GetBreadCountingByDateAsync(DateTime date)
         {
-            for (int i = 0; i < breadCounting.Count; i++)
+            return await _breadCountingDal.Get(b => b.Date.Date == date.Date); 
+        }
+
+        public async Task AddListAsync(List<BreadCounting> breadCounting)
+        {
+            foreach (var item in breadCounting)
             {
-                _breadCountingDal.Add(breadCounting[i]);
+                await _breadCountingDal.Add(item); 
             }
         }
     }

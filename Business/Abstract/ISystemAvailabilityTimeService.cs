@@ -10,8 +10,9 @@ namespace Business.Abstract
 {
     public interface ISystemAvailabilityTimeService
     {
-        SystemAvailabilityTime GetSystemAvailabilityTime();
-        void UpdateSystemAvailabilityTime(SystemAvailabilityTime systemAvailabilityTime);
+        Task<SystemAvailabilityTime> GetSystemAvailabilityTimeAsync();
+        Task UpdateSystemAvailabilityTimeAsync(SystemAvailabilityTime systemAvailabilityTime);
+
 
     }
 }

@@ -1,18 +1,18 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTOs;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ProductionListDetailManager : IProductionListDetailService
     {
-
-
-        IProductionListDetailDal _productionListDetailDal;
-        IProductionListService _productionListService;
+        private readonly IProductionListDetailDal _productionListDetailDal;
+        private readonly IProductionListService _productionListService;
 
         public ProductionListDetailManager(IProductionListService productionListService, IProductionListDetailDal productionListDetailDal)
         {
@@ -20,65 +20,64 @@ namespace Business.Concrete
             _productionListService = productionListService;
         }
 
-        public void Add(ProductionListDetail productionListDetail)
+        public async Task AddAsync(ProductionListDetail productionListDetail)
         {
-            _productionListDetailDal.Add(productionListDetail);
+            await _productionListDetailDal.Add(productionListDetail);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _productionListDetailDal.DeleteById(id);
+            await _productionListDetailDal.DeleteById(id);
         }
 
-        public void Delete(ProductionListDetail productionListDetail)
+        public async Task DeleteAsync(ProductionListDetail productionListDetail)
         {
-            _productionListDetailDal.Delete(productionListDetail);
-        }
-        public List<ProductionListDetail> GetAll()
-        {
-            return _productionListDetailDal.GetAll();
+            await _productionListDetailDal.Delete(productionListDetail);
         }
 
-        public ProductionListDetail GetById(int id)
+        public async Task<List<ProductionListDetail>> GetAllAsync()
         {
-            return _productionListDetailDal.Get(d => d.Id == id);
+            return await _productionListDetailDal.GetAll();
         }
 
-        public void Update(ProductionListDetail productionListDetail)
+        public async Task<ProductionListDetail> GetByIdAsync(int id)
         {
-            _productionListDetailDal.Update(productionListDetail);
+            return await _productionListDetailDal.Get(d => d.Id == id);
         }
 
-        public bool IsExist(int id, int listId)
+        public async Task UpdateAsync(ProductionListDetail productionListDetail)
         {
-            return _productionListDetailDal.IsExist(id, listId);
+            await _productionListDetailDal.Update(productionListDetail);
         }
 
-        public void AddList(List<ProductionListDetail> productionListDetail)
+        public async Task<bool> IsExistAsync(int id, int listId)
         {
-            _productionListDetailDal.AddList(productionListDetail);
+            return  _productionListDetailDal.IsExist(id, listId);
         }
 
-        public List<GetAddedProductsDto> GetProductsByListId(int id)
+        public async Task AddListAsync(List<ProductionListDetail> productionListDetails)
         {
-            return _productionListDetailDal.GetAddedProducts(id);
-
+             _productionListDetailDal.AddList(productionListDetails);
         }
 
-        public ProductionListDetail GetProductionListDetailByDateAndProductId(DateTime date, Product product)
+        public async Task<List<GetAddedProductsDto>> GetProductsByListIdAsync(int id)
         {
+            return  _productionListDetailDal.GetAddedProducts(id);
+        }
 
-            int productionListId = _productionListService.GetByDateAndCategoryId(date,product.CategoryId);
+        public async Task<ProductionListDetail> GetProductionListDetailByDateAndProductIdAsync(DateTime date, Product product)
+        {
+            int productionListId = await _productionListService.GetByDateAndCategoryIdAsync(date, product.CategoryId);
 
             if (productionListId <= 0)
             {
                 return new ProductionListDetail { Quantity = 0, Price = 0 };
             }
 
-            ProductionListDetail productionListDetail =
-                    _productionListDetailDal.Get(d => d.ProductId == product.Id && d.ProductionListId == productionListId);
- 
-            return productionListDetail == null ? new ProductionListDetail { Quantity = 0, Price = 0 } : productionListDetail;
+            ProductionListDetail productionListDetail = await
+                _productionListDetailDal.Get(d => d.ProductId == product.Id && d.ProductionListId == productionListId);
+
+            return productionListDetail ?? new ProductionListDetail { Quantity = 0, Price = 0 };
         }
     }
 }

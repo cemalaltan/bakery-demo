@@ -7,17 +7,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfReceivedMoneyDal : EfEntityRepositoryBase<ReceivedMoney, BakeryAppContext>, IReceivedMoneyDal
     {
-
-        public void DeleteById(int id)
+        public EfReceivedMoneyDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<ReceivedMoney>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
         }
-
     }
 }

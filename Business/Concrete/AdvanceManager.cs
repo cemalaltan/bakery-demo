@@ -1,70 +1,91 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class AdvanceManager : IAdvanceService
     {
+        private readonly IAdvanceDal _advanceDal;
+        private readonly ISalaryPaymentDal _salaryPaymentDal;
 
-
-        IAdvanceDal _advanceDal;
-        ISalaryPaymentDal _salaryPaymentDal;
-
-        public AdvanceManager(IAdvanceDal AdvanceDal, ISalaryPaymentDal salaryPaymentDal)
+        public AdvanceManager(IAdvanceDal advanceDal, ISalaryPaymentDal salaryPaymentDal)
         {
-            _advanceDal = AdvanceDal;
+            _advanceDal = advanceDal;
             _salaryPaymentDal = salaryPaymentDal;
         }
 
-        public void Add(Advance Advance)
+        public async Task AddAsync(Advance advance)
         {
-            bool isSalaryPaid = _salaryPaymentDal.GetAll(d => d.EmployeeId == Advance.EmployeeId && d.Year == Advance.Year && d.Month == Advance.Month).Count > 0;
+            // Check if the salary has already been paid
+            var salaryPayments = await _salaryPaymentDal.GetAll(d =>
+                d.EmployeeId == advance.EmployeeId &&
+                d.Year == advance.Year &&
+                d.Month == advance.Month);
+
+            bool isSalaryPaid = salaryPayments.Count > 0;
+
             if (isSalaryPaid)
             {
                 throw new Exception("Salary has already been paid for this month!");
             }
-            _advanceDal.Add(Advance);
+
+            // Add the advance asynchronously
+            await _advanceDal.Add(advance);
         }
 
-        public void DeleteById(int id)
+
+        public async Task DeleteByIdAsync(int id)
         {
-            _advanceDal.DeleteById(id);
+            await Task.Run(() => _advanceDal.DeleteById(id));
         }
 
-        public void Delete(Advance Advance)
+        public async Task DeleteAsync(Advance advance)
         {
-            _advanceDal.Delete(Advance);
-        }
-        public List<Advance> GetAll()
-        {
-            return _advanceDal.GetAll();
+            await Task.Run(() => _advanceDal.Delete(advance));
         }
 
-        public Advance GetById(int id)
+        public async Task<List<Advance>> GetAllAsync()
         {
-            return _advanceDal.Get(d => d.Id == id);
+            return await Task.Run(() => _advanceDal.GetAll());
         }
 
-        public void Update(Advance Advance)
+        public async Task<Advance> GetByIdAsync(int id)
         {
-            _advanceDal.Update(Advance);
+            return await Task.Run(() => _advanceDal.Get(d => d.Id == id));
         }
 
-        public List<Advance> GetEmployeeAdvancesByDate(int id, int year, int month)
+        public async Task UpdateAsync(Advance advance)
         {
-            return _advanceDal.GetAll(d => d.EmployeeId == id && d.Year == year && d.Month == month);
+            await Task.Run(() => _advanceDal.Update(advance));
         }
 
-        public decimal GetTotalAdvancesAmountByDate(int id, int year, int month)
+        public async Task<List<Advance>> GetEmployeeAdvancesByDateAsync(int id, int year, int month)
         {
-            return _advanceDal.GetAll(d => d.EmployeeId == id && d.Year == year && d.Month == month).Sum(d => d.Amount);
+            return await Task.Run(() => _advanceDal.GetAll(d =>
+                d.EmployeeId == id &&
+                d.Year == year &&
+                d.Month == month));
         }
 
-        public List<Advance> GetAllAdvancesByDate(int year, int month)
+        public async Task<decimal> GetTotalAdvancesAmountByDateAsync(int id, int year, int month)
         {
-            return _advanceDal.GetAll(d => d.Year == year && d.Month == month);
+            return await Task.Run(() =>
+                _advanceDal.GetAll(d =>
+                    d.EmployeeId == id &&
+                    d.Year == year &&
+                    d.Month == month).Result.Sum(d => d.Amount));
+        }
+
+        public async Task<List<Advance>> GetAllAdvancesByDateAsync(int year, int month)
+        {
+            return await Task.Run(() => _advanceDal.GetAll(d =>
+                d.Year == year &&
+                d.Month == month));
         }
     }
-
 }

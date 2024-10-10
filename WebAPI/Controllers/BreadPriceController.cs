@@ -21,11 +21,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllBreadPrices")]
-        public ActionResult GetAllBreadPrices()
+        public async Task<ActionResult> GetAllBreadPrices()
         {
             try
             {
-                List<BreadPrice> price = _breadPriceService.GetAll();
+                List<BreadPrice> price = await _breadPriceService.GetAllAsync();
                 return Ok(price);
             }
             catch (Exception e)
@@ -37,11 +37,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetBreadPriceByDate")]
-        public ActionResult GetBreadPriceByDate(DateTime date)
+        public async Task<ActionResult> GetBreadPriceByDate(DateTime date)
         {
             try
             {
-                decimal price = _breadPriceService.BreadPriceByDate(date);
+                decimal price = await _breadPriceService.BreadPriceByDateAsync(date);
                 return Ok(price);
             }
             catch (Exception e)
@@ -53,12 +53,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddBreadPrice")]
-        public ActionResult AddBreadPrice(BreadPrice breadPrice)
+        public async Task<ActionResult> AddBreadPrice(BreadPrice breadPrice)
         {
 
             try
             {
-                if (_breadPriceService.IsExistByDate(breadPrice.Date))
+                if (await _breadPriceService.IsExistByDateAsync(breadPrice.Date))
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
@@ -68,7 +68,7 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-                _breadPriceService.Add(breadPrice);
+               await  _breadPriceService.AddAsync(breadPrice);
                 return Ok();
             }
             catch (Exception e)
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteBreadPriceById")]
-        public ActionResult DeleteBreadPriceById(int id)
+        public async Task<ActionResult> DeleteBreadPriceById(int id)
         {
             if (id <= 0)
             {
@@ -88,7 +88,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                _breadPriceService.DeleteById(id);
+               await _breadPriceService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateBreadPrice")]
-        public ActionResult UpdateBreadPrice(BreadPrice breadPrice)
+        public async Task<ActionResult> UpdateBreadPrice(BreadPrice breadPrice)
         {
             if (breadPrice == null || breadPrice.Price <= 0)
             {
@@ -111,11 +111,11 @@ namespace WebAPI.Controllers
             {
                 if (breadPrice.Price == 0)
                 {
-                    _breadPriceService.DeleteById(breadPrice.Id);
+                   await _breadPriceService.DeleteByIdAsync(breadPrice.Id);
                 }
                 else
                 {
-                    _breadPriceService.Update(breadPrice);
+                   await _breadPriceService.UpdateAsync(breadPrice);
 
                 }
 

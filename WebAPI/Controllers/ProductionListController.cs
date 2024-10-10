@@ -24,39 +24,39 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAddedProductsByDateAndCategoryId")]
-        public ActionResult GetAddedProductsByDateAndCategoryId(DateTime date, int categoryId)
+        public async Task<ActionResult> GetAddedProductsByDateAndCategoryId(DateTime date, int categoryId)
         {
             if (categoryId == 0 || date.Date > DateTime.Now.Date)
             {
                 return BadRequest(Messages.WrongInput);
             }
-            var listId = _productionListService.GetByDateAndCategoryId(date, categoryId);
-            var productsList = _productionListDetailService.GetProductsByListId(listId);
+            var listId = await _productionListService.GetByDateAndCategoryIdAsync(date, categoryId);
+            var productsList = await _productionListDetailService.GetProductsByListIdAsync(listId);
             return Ok(productsList);
         }
 
         [HttpGet("GetNotAddedProductsByListAndCategoryId")]
-        public ActionResult GetNotAddedProductsByListAndCategoryId(DateTime date, int categoryId)
+        public async Task<ActionResult> GetNotAddedProductsByListAndCategoryId(DateTime date, int categoryId)
         {
             if(categoryId == 0 || date.Date >  DateTime.Now.Date) {
                 return BadRequest(Messages.WrongInput);
             }
 
-            var listId = _productionListService.GetByDateAndCategoryId(date,categoryId);
+            var listId = await _productionListService.GetByDateAndCategoryIdAsync(date,categoryId);
          
 
             if(listId == 0)
             {
-                var productList = _productService.GetAllByCategoryId(categoryId);
+                var productList =await _productService.GetAllByCategoryIdAsync(categoryId);
                 return Ok(productList);
             }
-            var productListNotAdded = _productService.GetNotAddedProductsByListAndCategoryId(listId,categoryId);
+            var productListNotAdded = await _productService.GetNotAddedProductsByListAndCategoryIdAsync(listId,categoryId);
             return Ok(productListNotAdded);
 
         }
 
         [HttpPost("AddProductionListAndDetail")]
-        public ActionResult AddProductionDetailList(List<ProductionListDetail> productionListDetail, int userId, int categoryId, DateTime date)
+        public async Task<ActionResult> AddProductionDetailList(List<ProductionListDetail> productionListDetail, int userId, int categoryId, DateTime date)
         {
 
             if (productionListDetail == null || productionListDetail.Count == 0)
@@ -64,11 +64,11 @@ namespace WebAPI.Controllers
                 return BadRequest("Product list is null or empty.");
             }
 
-            var listId = _productionListService.GetByDateAndCategoryId(DateTime.Now, categoryId);
+            var listId = await _productionListService.GetByDateAndCategoryIdAsync(DateTime.Now, categoryId);
 
             if (listId == 0)
             {
-                listId = _productionListService.Add(new ProductionList { Id = listId, UserId = userId, Date = date , CategoryId= categoryId});
+                listId = await _productionListService.AddAsync(new ProductionList { Id = listId, UserId = userId, Date = date , CategoryId= categoryId});
                 
             }
 
@@ -76,29 +76,29 @@ namespace WebAPI.Controllers
             {  
                     productionListDetail[i].ProductionListId = listId;
               
-                    if (_productionListDetailService.IsExist(productionListDetail[i].ProductId, productionListDetail[i].ProductionListId))
+                    if ( await _productionListDetailService.IsExistAsync(productionListDetail[i].ProductId, productionListDetail[i].ProductionListId))
                     {
                         return Conflict("A product already exist in the list.");
                     }
                
-               productionListDetail[i].Price = _productService.GetPriceById(productionListDetail[i].ProductId);
+               productionListDetail[i].Price =await _productService.GetPriceByIdAsync(productionListDetail[i].ProductId);
             }
 
-            _productionListDetailService.AddList(productionListDetail);
+          await  _productionListDetailService.AddListAsync(productionListDetail);
             return Ok();
         }
 
         [HttpDelete("DeleteProductionListDetail")]
-        public ActionResult DeleteDoughFactoryListDetail(int id)
+        public async Task<ActionResult> DeleteDoughFactoryListDetail(int id)
         {
-            _productionListDetailService.DeleteById(id);
+            await _productionListDetailService.DeleteByIdAsync(id);
             return Ok();
         }
 
         [HttpPut("UpdateProductionListDetail")]
-        public ActionResult UpdateDoughFactoryListDetail(ProductionListDetail productionListDetail)
+        public async Task<ActionResult> UpdateDoughFactoryListDetail(ProductionListDetail productionListDetail)
         {
-            _productionListDetailService.Update(productionListDetail);
+          await  _productionListDetailService.UpdateAsync(productionListDetail);
             return Ok();
         }
 

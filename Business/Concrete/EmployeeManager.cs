@@ -1,53 +1,53 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class EmployeeManager : IEmployeeService
     {
+        private readonly IEmployeeDal _employeeDal;
 
-
-        IEmployeeDal _employeeDal;
-
-        public EmployeeManager(IEmployeeDal EmployeeDal)
+        public EmployeeManager(IEmployeeDal employeeDal)
         {
-            _employeeDal = EmployeeDal;
+            _employeeDal = employeeDal;
         }
 
-        public void Add(Employee Employee)
+        public async Task AddAsync(Employee employee)
         {
-            _employeeDal.Add(Employee);
+            await _employeeDal.Add(employee);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _employeeDal.DeleteById(id);
+            await _employeeDal.DeleteById(id);
         }
 
-        public void Delete(Employee Employee)
+        public async Task DeleteAsync(Employee employee)
         {
-            _employeeDal.Delete(Employee);
-        }
-        public List<Employee> GetAll()
-        {
-            return _employeeDal.GetAll();
+            await _employeeDal.Delete(employee);
         }
 
-        public Employee GetById(int id)
+        public async Task<List<Employee>> GetAllAsync()
         {
-            return _employeeDal.Get(d => d.Id == id);
+            return await _employeeDal.GetAll();
         }
 
-        public void Update(Employee Employee)
+        public async Task<Employee> GetByIdAsync(int id)
         {
-            _employeeDal.Update(Employee);
+            return await _employeeDal.Get(d => d.Id == id);
         }
 
-        public List<Employee> GetAllActive()
+        public async Task UpdateAsync(Employee employee)
         {
-            return _employeeDal.GetAll(d => d.Status == true);
+            await _employeeDal.Update(employee);
+        }
+
+        public async Task<List<Employee>> GetAllActiveAsync()
+        {
+            return await _employeeDal.GetAll(d => d.Status == true);
         }
     }
-
 }

@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface IMarketDal : IEntityRepository<Market>
     {
-        void DeleteById(int id);
+   
     }
 }

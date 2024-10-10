@@ -6,7 +6,7 @@ namespace DataAccess.Abstract
 {
     public interface IStaleProductDal : IEntityRepository<StaleProduct>
     {
-        void DeleteById(int id);
+       
 
         Dictionary<int, int> GetStaleProductsByDateAndCategory(DateTime date, int categoryId);
         List<StaleProductDto> GetByDateAndCategory(DateTime date, int categoryId);

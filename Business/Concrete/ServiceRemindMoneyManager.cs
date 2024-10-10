@@ -1,47 +1,48 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceRemindMoneyManager : IServiceRemindMoneyService
     {
+        private readonly IServiceRemindMoneyDal _serviceRemindMoneyDal;
 
-
-        IServiceRemindMoneyDal _serviceRemindMoneyDal;
-        
         public ServiceRemindMoneyManager(IServiceRemindMoneyDal serviceRemindMoneyDal)
         {
-            _serviceRemindMoneyDal = serviceRemindMoneyDal;  
+            _serviceRemindMoneyDal = serviceRemindMoneyDal;
         }
 
-        public void Add(ServiceRemindMoney serviceRemindMoney)
+        public async Task AddAsync(ServiceRemindMoney serviceRemindMoney)
         {
-            _serviceRemindMoneyDal.Add(serviceRemindMoney);
+            await _serviceRemindMoneyDal.Add(serviceRemindMoney);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _serviceRemindMoneyDal.DeleteById(id);
+            await _serviceRemindMoneyDal.DeleteById(id);
         }
 
-        public void Delete(ServiceRemindMoney serviceRemindMoney)
+        public async Task DeleteAsync(ServiceRemindMoney serviceRemindMoney)
         {
-            _serviceRemindMoneyDal.Delete(serviceRemindMoney);
-        }
-        public List<ServiceRemindMoney> GetAll()
-        {
-           return _serviceRemindMoneyDal.GetAll();
+            await _serviceRemindMoneyDal.Delete(serviceRemindMoney);
         }
 
-        public ServiceRemindMoney GetById(int id)
+        public async Task<List<ServiceRemindMoney>> GetAllAsync()
         {
-            return _serviceRemindMoneyDal.Get(d => d.Id == id);
+            return await _serviceRemindMoneyDal.GetAll();
         }
 
-        public void Update(ServiceRemindMoney serviceRemindMoney)
+        public async Task<ServiceRemindMoney> GetByIdAsync(int id)
         {
-            _serviceRemindMoneyDal.Update(serviceRemindMoney);
+            return await _serviceRemindMoneyDal.Get(d => d.Id == id);
+        }
+
+        public async Task UpdateAsync(ServiceRemindMoney serviceRemindMoney)
+        {
+            await _serviceRemindMoneyDal.Update(serviceRemindMoney);
         }
     }
 }

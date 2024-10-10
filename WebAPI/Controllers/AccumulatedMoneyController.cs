@@ -19,44 +19,44 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllAccumulatedMoney")]
-        public ActionResult GetAccumulatedMoney(int type)
+        public async Task<ActionResult> GetAccumulatedMoney(int type)
         {
-            var result = _accumulatedMoneyService.GetAllByType(type);
+            var result = await _accumulatedMoneyService.GetAllByTypeAsync(type);
             return Ok(result);
         }
 
         [HttpGet("GetAccumulatedMoneyByDateRange")]
-        public ActionResult GetAccumulatedMoneyByDateRange(DateTime startDate, DateTime endDate, int type)
+        public async Task<ActionResult> GetAccumulatedMoneyByDateRange(DateTime startDate, DateTime endDate, int type)
         {
-            var result = _accumulatedMoneyService.GetByDateRangeAndType(startDate, endDate, type);
+            var result = await _accumulatedMoneyService.GetByDateRangeAndTypeAsync(startDate, endDate, type);
             return Ok(result);
         }
 
         [HttpGet("GetAccumulatedMoneyByDate")]
-        public ActionResult GetAccumulatedMoneyByDate(DateTime date, int type)
+        public async Task<ActionResult> GetAccumulatedMoneyByDate(DateTime date, int type)
         {
-            var result = _accumulatedMoneyService.GetByDateAndType(date, type);
+            var result = await _accumulatedMoneyService.GetByDateAndTypeAsync(date, type);
             return Ok(result);
         }
 
         [HttpPost("AddAccumulatedMoney")]
-        public ActionResult AddAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
+        public async Task<ActionResult> AddAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
         {
-            _accumulatedMoneyService.Add(accumulatedMoneyAmount);
+            await _accumulatedMoneyService.AddAsync(accumulatedMoneyAmount);
             return Ok();
         }
 
         [HttpDelete("DeleteAccumulatedMoney")]
-        public ActionResult DeleteAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
+        public async Task<ActionResult>  DeleteAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
         {
-            _accumulatedMoneyService.Delete(accumulatedMoneyAmount);
+            await _accumulatedMoneyService.DeleteAsync(accumulatedMoneyAmount);
             return Ok();
         }
 
         [HttpPut("UpdateAccumulatedMoney")]
-        public ActionResult UpdateAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
+        public async Task<ActionResult> UpdateAccumulatedMoney(AccumulatedMoney accumulatedMoneyAmount)
         {
-            _accumulatedMoneyService.Update(accumulatedMoneyAmount);
+            await _accumulatedMoneyService.UpdateAsync(accumulatedMoneyAmount);
             return Ok();
         }
     }

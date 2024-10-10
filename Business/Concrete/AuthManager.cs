@@ -5,13 +5,14 @@ using Core.Utilities.Results;
 using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.JWT;
 using Entities.DTOs;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
-        private IUserService _userService;
-        private ITokenHelper _tokenHelper;
+        private readonly IUserService _userService;
+        private readonly ITokenHelper _tokenHelper;
 
         public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
@@ -19,10 +20,11 @@ namespace Business.Concrete
             _tokenHelper = tokenHelper;
         }
 
-        public IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password)
+        public async Task<IDataResult<User>> RegisterAsync(UserForRegisterDto userForRegisterDto, string password)
         {
             byte[] passwordHash, passwordSalt;
             HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
             var user = new User
             {
                 Email = userForRegisterDto.UserName,
@@ -31,16 +33,16 @@ namespace Business.Concrete
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Status = true,
-                OperationClaimId= userForRegisterDto.OperationClaimId
-
+                OperationClaimId = userForRegisterDto.OperationClaimId
             };
-            _userService.Add(user);
+
+            await _userService.AddAsync(user); // Ensure this method is async in IUserService
             return new SuccessDataResult<User>(user, Messages.UserRegistered);
         }
 
-        public IDataResult<User> Login(UserForLoginDto userForLoginDto)
+        public async Task<IDataResult<User>> LoginAsync(UserForLoginDto userForLoginDto)
         {
-            var userToCheck = _userService.GetByMail(userForLoginDto.UserName);
+            var userToCheck = await _userService.GetByMailAsync(userForLoginDto.UserName); // Ensure this method is async
             if (userToCheck == null || userToCheck.Status == false)
             {
                 return new ErrorDataResult<User>(Messages.UserNotFound);
@@ -54,18 +56,18 @@ namespace Business.Concrete
             return new SuccessDataResult<User>(userToCheck, Messages.SuccessfulLogin);
         }
 
-        public IResult UserExists(string email)
+        public async Task<IResult> UserExistsAsync(string email)
         {
-            if (_userService.GetByMail(email) != null)
+            if (await _userService.GetByMailAsync(email) != null) // Ensure this method is async
             {
                 return new ErrorResult(Messages.UserAlreadyExists);
             }
             return new SuccessResult();
         }
 
-        public IDataResult<AccessToken> CreateAccessToken(User user)
+        public async Task<IDataResult<AccessToken>> CreateAccessTokenAsync(User user)
         {
-            var claims = _userService.GetClaims(user);
+            var claims = await _userService.GetClaimsAsync(user); // Ensure this method is async
             var accessToken = _tokenHelper.CreateToken(user, claims);
             return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
         }

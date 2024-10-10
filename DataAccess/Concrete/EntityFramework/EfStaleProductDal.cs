@@ -8,28 +8,21 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfStaleProductDal : EfEntityRepositoryBase<StaleProduct, BakeryAppContext>, IStaleProductDal
     {
-
-        public void DeleteById(int id)
+        private readonly BakeryAppContext _context;
+        public EfStaleProductDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<StaleProduct>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
+            _context = context;
         }
 
         public List<StaleProductDto> GetByDateAndCategory(DateTime date, int categoryId)
         {
-            using (BakeryAppContext context = new())
-            {
-                var staleProductDtos = context.StaleProducts
+           
+                var staleProductDtos = _context.StaleProducts
                     .Where(s => s.Date.Date == date.Date)
                     .Select(stale => new
                     {
                         Stale = stale,
-                        Product = context.Products.FirstOrDefault(p => p.Id == stale.ProductId)
+                        Product = _context.Products.FirstOrDefault(p => p.Id == stale.ProductId)
                     })
                     .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
                     .Select(pair => new StaleProductDto
@@ -43,32 +36,30 @@ namespace DataAccess.Concrete.EntityFramework
                     .ToList();
 
                 return staleProductDtos;
-            }
+            
         }
 
         public List<ProductNotAddedDto> GetProductsNotAddedToStale(DateTime date, int categoryId)
         {
-            using (BakeryAppContext context = new())
-            {
-                var productsNotAddedToStale = context.Products
+         
+                var productsNotAddedToStale = _context.Products
                     .Where(p => p.CategoryId == categoryId)
-                     .Where(p => !context.StaleProducts.Any(sp => sp.Date.Date == date.Date && sp.ProductId == p.Id)).Where(p => p.Status == true).Select(p => new ProductNotAddedDto
+                     .Where(p => !_context.StaleProducts.Any(sp => sp.Date.Date == date.Date && sp.ProductId == p.Id)).Where(p => p.Status == true).Select(p => new ProductNotAddedDto
                      {
                          Id = p.Id,
                          Name = p.Name,
                      })
                     .ToList();
                 return productsNotAddedToStale;
-            }
+          
         }
 
         public Dictionary<int, int> GetStaleProductsByDateAndCategory(DateTime date, int categoryId)
         {
-            using (BakeryAppContext context = new BakeryAppContext())
-            {
-                var staleProductQuantities = context.StaleProducts
+         
+                var staleProductQuantities = _context.StaleProducts
                     .Where(s => s.Date.Date == date.Date)
-                    .Join(context.Products,
+                    .Join(_context.Products,
                           stale => stale.ProductId,
                           product => product.Id,
                           (stale, product) => new { Stale = stale, Product = product })
@@ -76,19 +67,17 @@ namespace DataAccess.Concrete.EntityFramework
                     .ToDictionary(pair => pair.Stale.ProductId, pair => pair.Stale.Quantity);
 
                 return staleProductQuantities;
-            }
+            
         }
 
         public bool IsExist(int productId, DateTime date)
         {
-            using (BakeryAppContext context = new BakeryAppContext())
-            {
-
-                bool exists = context.StaleProducts
+          
+                bool exists = _context.StaleProducts
                     .Any(sp => sp.Date.Date == date.Date && sp.ProductId == productId);
 
                 return exists;
-            }
+         
         }
     }
 }

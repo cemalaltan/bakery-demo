@@ -19,11 +19,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetServiceStaleProductListByDateAndServiceTypeId")]
-        public ActionResult GetServiceStaleProductListByDateAndServiceTypeId(DateTime date, int serviceTypeId)
+        public async Task<ActionResult> GetServiceStaleProductListByDateAndServiceTypeId(DateTime date, int serviceTypeId)
         {
             try
             {
-                var result = _serviceStaleProductService.GetAllByDate(date, serviceTypeId);
+                var result = await _serviceStaleProductService.GetAllByDateAsync(date, serviceTypeId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
         
 
         [HttpPost("AddServiceStaleProduct")]
-        public ActionResult AddServiceStaleProduct(ServiceStaleProduct serviceStaleProduct)
+        public async Task<ActionResult> AddServiceStaleProduct(ServiceStaleProduct serviceStaleProduct)
         {
 
             try
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-                _serviceStaleProductService.Add(serviceStaleProduct);
+               await _serviceStaleProductService.AddAsync(serviceStaleProduct);
                 return Ok();
             }
             catch (Exception e)
@@ -60,11 +60,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteServiceStaleProduct")]
-        public ActionResult DeleteServiceStaleProduct(int id)
+        public async Task<ActionResult> DeleteServiceStaleProduct(int id)
         {
             try
             {
-                _serviceStaleProductService.DeleteById(id);
+               await _serviceStaleProductService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -76,11 +76,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateServiceStaleProduct")]
-        public ActionResult UpdateServiceStaleProduct(ServiceStaleProduct serviceStaleProduct)
+        public async Task<ActionResult> UpdateServiceStaleProduct(ServiceStaleProduct serviceStaleProduct)
         {
             try
             {
-                _serviceStaleProductService.Update(serviceStaleProduct);
+               await _serviceStaleProductService.UpdateAsync(serviceStaleProduct);
                 return Ok();
             }
             catch (Exception e)

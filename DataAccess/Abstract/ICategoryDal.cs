@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface ICategoryDal : IEntityRepository<Category>
     {
-        void DeleteById(int id);
+    
     }
 }

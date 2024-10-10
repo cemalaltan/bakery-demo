@@ -1,55 +1,59 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class MarketManager : IMarketService
     {
+        private readonly IMarketDal _marketDal;
 
-
-        IMarketDal _marketDal;
-        
         public MarketManager(IMarketDal marketDal)
         {
-            _marketDal = marketDal;  
+            _marketDal = marketDal;
         }
 
-        public void Add(Market market)
+        public async Task AddAsync(Market market)
         {
-            _marketDal.Add(market);
+            await _marketDal.Add(market);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _marketDal.DeleteById(id);
+            await _marketDal.DeleteById(id);
         }
 
-        public void Delete(Market market)
+        public async Task DeleteAsync(Market market)
         {
-            _marketDal.Delete(market);
-        }
-        public List<Market> GetAllActive()
-        {
-           return _marketDal.GetAll(m => m.IsActive == true);
+            await _marketDal.Delete(market);
         }
 
-        public List<Market> GetAll()
+        public async Task<List<Market>> GetAllActiveAsync()
         {
-            return _marketDal.GetAll();
-        }
-        public Market GetById(int id)
-        {
-            return _marketDal.Get(d => d.Id == id);
-        }
-        public string GetNameById(int id)
-        {
-            return _marketDal.Get(d => d.Id == id).Name;
+            return await _marketDal.GetAll(m => m.IsActive);
         }
 
-        public void Update(Market market)
+        public async Task<List<Market>> GetAllAsync()
         {
-            _marketDal.Update(market);
+            return await _marketDal.GetAll();
+        }
+
+        public async Task<Market> GetByIdAsync(int id)
+        {
+            return await _marketDal.Get(d => d.Id == id);
+        }
+
+        public async Task<string> GetNameByIdAsync(int id)
+        {
+            return (await _marketDal.Get(d => d.Id == id)).Name;
+        }
+
+        public async Task UpdateAsync(Market market)
+        {
+            await _marketDal.Update(market);
         }
     }
 }

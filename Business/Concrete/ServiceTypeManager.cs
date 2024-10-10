@@ -1,47 +1,48 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceTypeManager : IServiceTypeService
     {
+        private readonly IServiceTypeDal _serviceTypeDal;
 
-
-        IServiceTypeDal _serviceTypeDal;
-        
         public ServiceTypeManager(IServiceTypeDal serviceTypeDal)
         {
-            _serviceTypeDal = serviceTypeDal;  
+            _serviceTypeDal = serviceTypeDal;
         }
 
-        public void Add(ServiceType serviceType)
+        public async Task AddAsync(ServiceType serviceType)
         {
-            _serviceTypeDal.Add(serviceType);
+            await _serviceTypeDal.Add(serviceType);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _serviceTypeDal.DeleteById(id);
+            await _serviceTypeDal.DeleteById(id);
         }
 
-        public void Delete(ServiceType serviceType)
+        public async Task DeleteAsync(ServiceType serviceType)
         {
-            _serviceTypeDal.Delete(serviceType);
-        }
-        public List<ServiceType> GetAll()
-        {
-           return _serviceTypeDal.GetAll();
+            await _serviceTypeDal.Delete(serviceType);
         }
 
-        public ServiceType GetById(int id)
+        public async Task<List<ServiceType>> GetAllAsync()
         {
-            return _serviceTypeDal.Get(d => d.Id == id);
+            return await _serviceTypeDal.GetAll();
         }
 
-        public void Update(ServiceType serviceType)
+        public async Task<ServiceType> GetByIdAsync(int id)
         {
-            _serviceTypeDal.Update(serviceType);
+            return await _serviceTypeDal.Get(d => d.Id == id);
+        }
+
+        public async Task UpdateAsync(ServiceType serviceType)
+        {
+            await _serviceTypeDal.Update(serviceType);
         }
     }
 }

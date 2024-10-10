@@ -16,16 +16,16 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllReceivedMoneyFromService")]
-        public ActionResult GetAllReceivedMoneyFromService()
+        public async Task<ActionResult> GetAllReceivedMoneyFromService()
         {
-            var result = _receivedMoneyFromServiceService.GetAll();
+            var result = await _receivedMoneyFromServiceService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("GetReceivedMoneyFromServiceByDateAndServiceType")]
-        public ActionResult GetAllReceivedMoneyFromServiceByDate(DateTime date,int serviceType)
+        public async Task<ActionResult> GetAllReceivedMoneyFromServiceByDate(DateTime date,int serviceType)
         {
-            var result = _receivedMoneyFromServiceService.GetByDate(date,serviceType);
+            var result = await _receivedMoneyFromServiceService.GetByDateAsync(date,serviceType);
             if (result != null)
             {
                 return Ok(result);
@@ -36,41 +36,41 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("AddReceivedMoneyFromService")]
-        public ActionResult AddReceivedMoneyFromService(ReceivedMoneyFromService receivedMoneyFromService)
+        public async Task<ActionResult> AddReceivedMoneyFromService(ReceivedMoneyFromService receivedMoneyFromService)
         {
             if (receivedMoneyFromService == null)
             {
                 return BadRequest("There is no data!");
             }
-            var isAdded = _receivedMoneyFromServiceService.GetByDate(receivedMoneyFromService.Date, receivedMoneyFromService.ServiceTypeId);
+            var isAdded = await _receivedMoneyFromServiceService.GetByDateAsync(receivedMoneyFromService.Date, receivedMoneyFromService.ServiceTypeId);
             if (isAdded != null)
             {
                 return BadRequest("Already Added!");
             }
 
-            _receivedMoneyFromServiceService.Add(receivedMoneyFromService);
+           await _receivedMoneyFromServiceService.AddAsync(receivedMoneyFromService);
             return Ok();
         }
 
         [HttpDelete("DeleteReceivedMoneyFromServiceById")]
-        public ActionResult DeleteReceivedMoneyFromService(int id)
+        public async Task<ActionResult> DeleteReceivedMoneyFromService(int id)
         {
             if (id == 0)
             {
                 return BadRequest("There is no data!");
             }
-            _receivedMoneyFromServiceService.DeleteById(id);
+           await _receivedMoneyFromServiceService.DeleteByIdAsync(id);
             return Ok();
         }
 
         [HttpPut("UpdateReceivedMoneyFromService")]
-        public ActionResult UpdateReceivedMoneyFromService(ReceivedMoneyFromService receivedMoneyFromService)
+        public async Task<ActionResult> UpdateReceivedMoneyFromService(ReceivedMoneyFromService receivedMoneyFromService)
         {
             if (receivedMoneyFromService == null)
             {
                 return BadRequest("There is no data!");
             }
-            _receivedMoneyFromServiceService.Update(receivedMoneyFromService);
+          await  _receivedMoneyFromServiceService.UpdateAsync(receivedMoneyFromService);
             return Ok();
         }
     }

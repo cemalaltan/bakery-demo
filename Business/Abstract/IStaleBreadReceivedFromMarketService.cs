@@ -4,17 +4,17 @@ namespace Business.Abstract
 {
     public interface IStaleBreadReceivedFromMarketService
     {
-        List<StaleBreadReceivedFromMarket> GetAll();
-        List<StaleBreadReceivedFromMarket> GetByDate(DateTime date);
-        StaleBreadReceivedFromMarket GetByMarketId(int id, DateTime date);
-        int  GetStaleBreadCountByMarketId(int MarketId, DateTime date);
-        void Add(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
-        void DeleteById(int id);
-        void DeleteByDateAndMarketId(DateTime date, int marketId);
-        void Delete(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
-        void Update(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
-        StaleBreadReceivedFromMarket GetById(int id);
+        Task<List<StaleBreadReceivedFromMarket>> GetAllAsync();
+        Task<List<StaleBreadReceivedFromMarket>> GetByDateAsync(DateTime date);
+        Task<StaleBreadReceivedFromMarket> GetByMarketIdAsync(int id, DateTime date);
+        Task<int> GetStaleBreadCountByMarketIdAsync(int marketId, DateTime date);
+        Task AddAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
+        Task DeleteByIdAsync(int id);
+        Task DeleteByDateAndMarketIdAsync(DateTime date, int marketId);
+        Task DeleteAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
+        Task UpdateAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket);
+        Task<StaleBreadReceivedFromMarket> GetByIdAsync(int id);
+        Task<bool> IsExistAsync(int marketId, DateTime date);
 
-        bool IsExist(int marketId, DateTime date);
     }
 }

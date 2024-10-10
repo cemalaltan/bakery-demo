@@ -17,45 +17,45 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllSalaryPayments")]
-        public ActionResult GetAll()
+        public async Task<ActionResult> GetAll()
         {
-            var salaryPayments = _salaryPaymentService.GetAll();
+            var salaryPayments = await _salaryPaymentService.GetAllAsync();
             return Ok(salaryPayments);
         }
 
         [HttpGet("GetMonthlyReport")]
-        public ActionResult GetById(int year, int month)
+        public async Task<ActionResult> GetById(int year, int month)
         {
-            var report = _salaryPaymentService.SalaryPaymentReportByDate(year, month);   
+            var report = await _salaryPaymentService.SalaryPaymentReportByDateAsync(year, month);   
             return Ok(report);
         }
 
         [HttpPost("AddSalaryPayment")]
-        public ActionResult Add(SalaryPayment salaryPayment)
+        public async Task<ActionResult> Add(SalaryPayment salaryPayment)
         {
             if (salaryPayment == null)
             {
                 return BadRequest("There is no data!");
             }
-            _salaryPaymentService.Add(salaryPayment);
+            await _salaryPaymentService.AddAsync(salaryPayment);
             return Ok();
         }
 
         [HttpPut("UpdateSalaryPayment")]
-        public ActionResult Update(SalaryPayment salaryPayment)
+        public async Task<ActionResult> Update(SalaryPayment salaryPayment)
         {
             if (salaryPayment == null)
             {
                 return BadRequest("There is no data!");
             }
-            _salaryPaymentService.Update(salaryPayment);
+           await _salaryPaymentService.UpdateAsync(salaryPayment);
             return Ok();
         }
 
         [HttpDelete("DeleteSalaryPayment")]
-        public ActionResult DeleteById(int id)
+        public async Task<ActionResult> DeleteById(int id)
         {
-            _salaryPaymentService.DeleteById(id);
+           await _salaryPaymentService.DeleteByIdAsync(id);
             return Ok();
         }
     }

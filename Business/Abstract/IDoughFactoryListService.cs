@@ -5,11 +5,12 @@ namespace Business.Abstract
 {
     public interface IDoughFactoryListService
     {
-        List<DoughFactoryList> GetAll();
-        int Add(DoughFactoryList doughFactoryList);
-        void Delete(DoughFactoryList doughFactoryList);
-        void Update(DoughFactoryList doughFactoryList);
-        DoughFactoryList GetById(int id);
-        List<DoughFactoryListDto> GetByDate(DateTime date);
+        Task<List<DoughFactoryList>> GetAllAsync();
+        Task<int> AddAsync(DoughFactoryList doughFactoryList);
+        Task DeleteAsync(DoughFactoryList doughFactoryList);
+        Task UpdateAsync(DoughFactoryList doughFactoryList);
+        Task<DoughFactoryList> GetByIdAsync(int id);
+        Task<List<DoughFactoryListDto>> GetByDateAsync(DateTime date);
+
     }
 }

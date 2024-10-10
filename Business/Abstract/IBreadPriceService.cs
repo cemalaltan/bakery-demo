@@ -4,14 +4,15 @@ namespace Business.Abstract
 {
     public interface IBreadPriceService
     {
-        List<BreadPrice> GetAll();
-        void Add(BreadPrice breadPrice);
-        void DeleteById(int id);
-        void Delete(BreadPrice breadPrice);
-        void Update(BreadPrice breadPrice);
-        BreadPrice GetById(int id);
-        Decimal BreadPriceByDate (DateTime date);
-        bool IsExistByDate(DateTime date);
+        Task<List<BreadPrice>> GetAllAsync();
+        Task AddAsync(BreadPrice breadPrice);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(BreadPrice breadPrice);
+        Task UpdateAsync(BreadPrice breadPrice);
+        Task<BreadPrice> GetByIdAsync(int id);
+        Task<decimal> BreadPriceByDateAsync(DateTime date);
+        Task<bool> IsExistByDateAsync(DateTime date);
+
     }
 
 }

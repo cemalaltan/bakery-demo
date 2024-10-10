@@ -8,13 +8,18 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfDoughFactoryListDal : EfEntityRepositoryBase<DoughFactoryList, BakeryAppContext>, IDoughFactoryListDal
     {
+        private readonly BakeryAppContext _context;
+        public EfDoughFactoryListDal(BakeryAppContext context) : base(context)
+        {
+            _context = context;
+        }
+
         public List<DoughFactoryListDto> GetAllLists(DateTime date)
         {
-            using (BakeryAppContext context = new())
-            {
+        
                 var doughListDto = (
-                    from dough in context.DoughFactoryLists
-                    join user in context.Users on dough.UserId equals user.Id
+                    from dough in _context.DoughFactoryLists
+                    join user in _context.Users on dough.UserId equals user.Id
                     where dough.Date.Date == date.Date
                     select new DoughFactoryListDto
                     {
@@ -26,7 +31,7 @@ namespace DataAccess.Concrete.EntityFramework
                 ).ToList();
 
                 return doughListDto;
-            }
+         
         }
     }
 }

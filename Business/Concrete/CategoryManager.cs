@@ -1,48 +1,49 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class CategoryManager : ICategoryService
     {
+        private readonly ICategoryDal _categoryDal;
 
-
-        ICategoryDal _categoryDal;
-        
         public CategoryManager(ICategoryDal categoryDal)
         {
-            _categoryDal = categoryDal;  
+            _categoryDal = categoryDal;
         }
 
-        public void Add(Category category)
+        public async Task AddAsync(Category category)
         {
-            _categoryDal.Add(category);
+            await _categoryDal.Add(category);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _categoryDal.DeleteById(id);
+            await _categoryDal.DeleteById(id);
         }
 
-        public void Delete(Category category)
+        public async Task DeleteAsync(Category category)
         {
-            _categoryDal.Delete(category);
-        }
-        public List<Category> GetAll()
-        {
-           return _categoryDal.GetAll();
+            await _categoryDal.Delete(category);
         }
 
-        public Category GetById(int id)
+        public async Task<List<Category>> GetAllAsync()
         {
-            return _categoryDal.Get(d => d.Id == id);
+            return await _categoryDal.GetAll();
         }
 
-        public void Update(Category category)
+        public async Task<Category> GetByIdAsync(int id)
         {
-            _categoryDal.Update(category);
+            return await _categoryDal.Get(d => d.Id == id);
+        }
+
+        public async Task UpdateAsync(Category category)
+        {
+            await _categoryDal.Update(category);
         }
     }
-
-    }
+}

@@ -21,44 +21,44 @@ namespace WebAPI.Controllers
         
 
         [HttpGet("GetAllMarketContract")]
-        public ActionResult GetMarketContract()
+        public async Task<ActionResult> GetMarketContract()
         {
-            var result = _marketContractService.GetAllContractWithMarketsName();
+            var result = await _marketContractService.GetAllContractWithMarketsNameAsync();
             return Ok(result);
         }
 
         [HttpGet("GetMarketsNotHaveContract")]
-        public ActionResult GetMarketsNotHaveContract()
+        public async Task<ActionResult> GetMarketsNotHaveContract()
         {
-            var result = _marketContractService.GetMarketsNotHaveContract();
+            var result = await _marketContractService.GetMarketsNotHaveContractAsync();
             return Ok(result);
         }
 
         [HttpGet("GetByIdMarketContract")]
-        public ActionResult GetByIdMarketContract(int id)
+        public async Task<ActionResult> GetByIdMarketContract(int id)
         {
-            var result = _marketContractService.GetById(id);
+            var result = await _marketContractService.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost("AddMarketContract")]
-        public ActionResult AddMarketContract(MarketContract marketContract)
+        public async Task<ActionResult> AddMarketContract(MarketContract marketContract)
         {
-            _marketContractService.Add(marketContract);
+            await _marketContractService.AddAsync(marketContract);
             return Ok();
         }
 
         [HttpDelete("DeleteMarketContractById")]
-        public ActionResult DeleteMarketContractById(int  id)
+        public async Task<ActionResult> DeleteMarketContractById(int  id)
         {
-            _marketContractService.DeleteById(id);
+           await _marketContractService.DeleteByIdAsync(id);
             return Ok();
         }
 
         [HttpPut("UpdateMarketContract")]
-        public ActionResult UpdateMarketContract(MarketContract marketContract)
+        public async Task<ActionResult> UpdateMarketContract(MarketContract marketContract)
         {
-            _marketContractService.Update(marketContract);
+           await _marketContractService.UpdateAsync(marketContract);
             return Ok();
         }
     }

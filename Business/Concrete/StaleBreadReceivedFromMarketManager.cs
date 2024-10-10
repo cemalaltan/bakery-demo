@@ -1,75 +1,75 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class StaleBreadReceivedFromMarketManager : IStaleBreadReceivedFromMarketService
     {
+        private readonly IStaleBreadReceivedFromMarketDal _staleBreadReceivedFromMarketDal;
 
-
-        IStaleBreadReceivedFromMarketDal _staleBreadReceivedFromMarketDal;
-        
         public StaleBreadReceivedFromMarketManager(IStaleBreadReceivedFromMarketDal staleBreadReceivedFromMarketDal)
         {
-            _staleBreadReceivedFromMarketDal = staleBreadReceivedFromMarketDal;  
+            _staleBreadReceivedFromMarketDal = staleBreadReceivedFromMarketDal;
         }
 
-        public void Add(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
+        public async Task AddAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
         {
-            _staleBreadReceivedFromMarketDal.Add(staleBreadReceivedFromMarket);
+            await _staleBreadReceivedFromMarketDal.Add(staleBreadReceivedFromMarket);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _staleBreadReceivedFromMarketDal.DeleteById(id);
+            await _staleBreadReceivedFromMarketDal.DeleteById(id);
         }
 
-        public void Delete(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
+        public async Task DeleteAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
         {
-            _staleBreadReceivedFromMarketDal.Delete(staleBreadReceivedFromMarket);
-        }
-        public List<StaleBreadReceivedFromMarket> GetAll()
-        {
-           return _staleBreadReceivedFromMarketDal.GetAll();
+            await _staleBreadReceivedFromMarketDal.Delete(staleBreadReceivedFromMarket);
         }
 
-        public StaleBreadReceivedFromMarket GetById(int id)
+        public async Task<List<StaleBreadReceivedFromMarket>> GetAllAsync()
         {
-            return _staleBreadReceivedFromMarketDal.Get(d => d.Id == id);
+            return await _staleBreadReceivedFromMarketDal.GetAll();
         }
 
-        public void Update(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
+        public async Task<StaleBreadReceivedFromMarket> GetByIdAsync(int id)
         {
-            _staleBreadReceivedFromMarketDal.Update(staleBreadReceivedFromMarket);
+            return await _staleBreadReceivedFromMarketDal.Get(d => d.Id == id);
         }
 
-        public StaleBreadReceivedFromMarket GetByMarketId(int id, DateTime date)
+        public async Task UpdateAsync(StaleBreadReceivedFromMarket staleBreadReceivedFromMarket)
         {
-            return _staleBreadReceivedFromMarketDal.Get(s=>s.MarketId == id && s.Date.Date == date.Date);
+            await _staleBreadReceivedFromMarketDal.Update(staleBreadReceivedFromMarket);
         }
 
-        public void DeleteByDateAndMarketId(DateTime date, int marketId)
+        public async Task<StaleBreadReceivedFromMarket> GetByMarketIdAsync(int id, DateTime date)
+        {
+            return await _staleBreadReceivedFromMarketDal.Get(s => s.MarketId == id && s.Date.Date == date.Date);
+        }
+
+        public async Task DeleteByDateAndMarketIdAsync(DateTime date, int marketId)
         {
              _staleBreadReceivedFromMarketDal.DeleteByDateAndMarketId(date, marketId);
         }
 
-        public int GetStaleBreadCountByMarketId(int MarketId, DateTime date)
+        public async Task<int> GetStaleBreadCountByMarketIdAsync(int marketId, DateTime date)
         {
-            StaleBreadReceivedFromMarket staleBreadReceivedFromMarket = _staleBreadReceivedFromMarketDal.Get(s => s.MarketId == MarketId && s.Date.Date == date.Date);
-
-
+            StaleBreadReceivedFromMarket staleBreadReceivedFromMarket = await _staleBreadReceivedFromMarketDal.Get(s => s.MarketId == marketId && s.Date.Date == date.Date);
             return staleBreadReceivedFromMarket == null ? 0 : staleBreadReceivedFromMarket.Quantity;
         }
 
-        public List<StaleBreadReceivedFromMarket> GetByDate(DateTime date)
+        public async Task<List<StaleBreadReceivedFromMarket>> GetByDateAsync(DateTime date)
         {
-            return _staleBreadReceivedFromMarketDal.GetAll(s=>s.Date.Date == date.Date);
+            return await _staleBreadReceivedFromMarketDal.GetAll(s => s.Date.Date == date.Date);
         }
 
-        public bool IsExist(int marketId, DateTime date)
+        public async Task<bool> IsExistAsync(int marketId, DateTime date)
         {
-            return _staleBreadReceivedFromMarketDal.IsExist(marketId, date);    
+            return  _staleBreadReceivedFromMarketDal.IsExist(marketId, date);
         }
     }
 }

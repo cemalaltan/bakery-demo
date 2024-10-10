@@ -2,25 +2,27 @@
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
-
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class SystemAvailabilityTimeManager : ISystemAvailabilityTimeService
     {
-        ISystemAvailabilityTimeDal _systemAvailabilityTimeDal;
-        public SystemAvailabilityTimeManager(ISystemAvailabilityTimeDal systemAvailabilityTime) {
+        private readonly ISystemAvailabilityTimeDal _systemAvailabilityTimeDal;
 
+        public SystemAvailabilityTimeManager(ISystemAvailabilityTimeDal systemAvailabilityTime)
+        {
             _systemAvailabilityTimeDal = systemAvailabilityTime;
         }
-        public SystemAvailabilityTime GetSystemAvailabilityTime()
+
+        public async Task<SystemAvailabilityTime> GetSystemAvailabilityTimeAsync()
         {
-          return  _systemAvailabilityTimeDal.Get(s => s.Id == 1);
+            return await _systemAvailabilityTimeDal.Get(s => s.Id == 1);
         }
 
-        public void UpdateSystemAvailabilityTime(SystemAvailabilityTime systemAvailabilityTime)
+        public async Task UpdateSystemAvailabilityTimeAsync(SystemAvailabilityTime systemAvailabilityTime)
         {
-         _systemAvailabilityTimeDal.Update(systemAvailabilityTime);
+            await _systemAvailabilityTimeDal.Update(systemAvailabilityTime);
         }
     }
 }

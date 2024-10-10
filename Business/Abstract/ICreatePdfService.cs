@@ -4,10 +4,11 @@ namespace Business.Abstract
 {
 	public interface ICreatePdfService
 	{
-		byte[] EndOfDayAccountCreatePdf(DateTime date, EndOfDayResult endOfDayResult, decimal ProductsSoldInTheBakery);
-		byte[] CreatePdf(DateTime date);
-		byte[] CreatePdfForHamurhane(DateTime date);
-		byte[] CreatePdfForMarketService(DateTime date);
+        Task<byte[]> EndOfDayAccountCreatePdfAsync(DateTime date, EndOfDayResult endOfDayResult, decimal productsSoldInTheBakery);
+        Task<byte[]> CreatePdfAsync(DateTime date);
+        Task<byte[]> CreatePdfForHamurhaneAsync(DateTime date);
+        Task<byte[]> CreatePdfForMarketServiceAsync(DateTime date);
 
-	}
+
+    }
 }

@@ -1,47 +1,48 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class AllServiceManager : IAllServiceService
     {
+        private readonly IAllServiceDal _allServiceDal;
 
-
-        IAllServiceDal _allServiceDal;
-        
         public AllServiceManager(IAllServiceDal allServiceDal)
         {
-            _allServiceDal = allServiceDal;  
+            _allServiceDal = allServiceDal;
         }
 
-        public void Add(AllService allService)
+        public async Task AddAsync(AllService allService)
         {
-            _allServiceDal.Add(allService);
+            await Task.Run(() => _allServiceDal.Add(allService));
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _allServiceDal.DeleteById(id);
+            await Task.Run(() => _allServiceDal.DeleteById(id));
         }
 
-        public void Delete(AllService allService)
+        public async Task DeleteAsync(AllService allService)
         {
-            _allServiceDal.Delete(allService);
-        }
-        public List<AllService> GetAll()
-        {
-           return _allServiceDal.GetAll();
+            await Task.Run(() => _allServiceDal.Delete(allService));
         }
 
-        public AllService GetById(int id)
+        public async Task<List<AllService>> GetAllAsync()
         {
-            return _allServiceDal.Get(d => d.Id == id);
+            return await Task.Run(() => _allServiceDal.GetAll());
         }
 
-        public void Update(AllService allService)
+        public async Task<AllService> GetByIdAsync(int id)
         {
-            _allServiceDal.Update(allService);
+            return await Task.Run(() => _allServiceDal.Get(d => d.Id == id));
+        }
+
+        public async Task UpdateAsync(AllService allService)
+        {
+            await Task.Run(() => _allServiceDal.Update(allService));
         }
     }
 }

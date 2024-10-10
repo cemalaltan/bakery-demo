@@ -2,73 +2,75 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class StaleProductManager : IStaleProductService
     {
-
-
-        IStaleProductDal _staleProductDal;
+        private readonly IStaleProductDal _staleProductDal;
 
         public StaleProductManager(IStaleProductDal staleProductDal)
         {
             _staleProductDal = staleProductDal;
         }
 
-        public void Add(StaleProduct staleProduct)
+        public async Task AddAsync(StaleProduct staleProduct)
         {
-            _staleProductDal.Add(staleProduct);
+            await _staleProductDal.Add(staleProduct);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _staleProductDal.DeleteById(id);
+            await _staleProductDal.DeleteById(id);
         }
 
-        public void Delete(StaleProduct staleProduct)
+        public async Task DeleteAsync(StaleProduct staleProduct)
         {
-            _staleProductDal.Delete(staleProduct);
-        }
-        public List<StaleProduct> GetAll()
-        {
-            return _staleProductDal.GetAll();
+            await _staleProductDal.Delete(staleProduct);
         }
 
-        public StaleProduct GetById(int id)
+        public async Task<List<StaleProduct>> GetAllAsync()
         {
-            return _staleProductDal.Get(d => d.Id == id);
+            return await _staleProductDal.GetAll();
         }
 
-        public void Update(StaleProduct staleProduct)
+        public async Task<StaleProduct> GetByIdAsync(int id)
         {
-            _staleProductDal.Update(staleProduct);
+            return await _staleProductDal.Get(d => d.Id == id);
         }
 
-        public List<StaleProductDto> GetByDateAndCategory(DateTime date, int categoryId)
+        public async Task UpdateAsync(StaleProduct staleProduct)
         {
-            return _staleProductDal.GetByDateAndCategory(date, categoryId);
+            await _staleProductDal.Update(staleProduct);
         }
 
-        public List<ProductNotAddedDto> GetProductsNotAddedToStale(DateTime date, int categoryId)
+        public async Task<List<StaleProductDto>> GetByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return _staleProductDal.GetProductsNotAddedToStale(date, categoryId);
+            return  _staleProductDal.GetByDateAndCategory(date, categoryId);
         }
 
-        public int GetQuantityStaleProductByDateAndProductId(DateTime date, int productId)
+        public async Task<List<ProductNotAddedDto>> GetProductsNotAddedToStaleAsync(DateTime date, int categoryId)
         {
-            StaleProduct staleProduct=  _staleProductDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date);
+            return  _staleProductDal.GetProductsNotAddedToStale(date, categoryId);
+        }
+
+        public async Task<int> GetQuantityStaleProductByDateAndProductIdAsync(DateTime date, int productId)
+        {
+            StaleProduct staleProduct = await _staleProductDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date);
             return staleProduct == null ? 0 : staleProduct.Quantity;
         }
 
-        public bool IsExist(int productId, DateTime date)
+        public async Task<bool> IsExistAsync(int productId, DateTime date)
         {
-           return _staleProductDal.IsExist(productId, date);
+            return  _staleProductDal.IsExist(productId, date);
         }
 
-        public Dictionary<int, int> GetStaleProductsByDateAndCategory(DateTime date, int categoryId)
+        public async Task<Dictionary<int, int>> GetStaleProductsByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return _staleProductDal.GetStaleProductsByDateAndCategory(date,categoryId);
+            return  _staleProductDal.GetStaleProductsByDateAndCategory(date, categoryId);
         }
     }
 }

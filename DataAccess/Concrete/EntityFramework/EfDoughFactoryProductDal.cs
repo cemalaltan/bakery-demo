@@ -11,5 +11,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfDoughFactoryProductDal : EfEntityRepositoryBase<DoughFactoryProduct, BakeryAppContext>, IDoughFactoryProductDal
     {
+        public EfDoughFactoryProductDal(BakeryAppContext context) : base(context)
+        {
+        }
     }
 }

@@ -7,17 +7,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfCashCountingDal : EfEntityRepositoryBase<CashCounting, BakeryAppContext>, ICashCountingDal
     {
-
-        public void DeleteById(int id)
+        public EfCashCountingDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<CashCounting>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
         }
-
     }
 }

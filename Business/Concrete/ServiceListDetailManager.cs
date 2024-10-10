@@ -1,73 +1,74 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceListDetailManager : IServiceListDetailService
     {
+        private readonly IServiceListDetailDal _serviceListDetailDal;
 
-
-        IServiceListDetailDal _serviceListDetailDal;
-        
         public ServiceListDetailManager(IServiceListDetailDal serviceListDetailDal)
         {
-            _serviceListDetailDal = serviceListDetailDal;  
+            _serviceListDetailDal = serviceListDetailDal;
         }
 
-        public void Add(ServiceListDetail serviceListDetail)
+        public async Task AddAsync(ServiceListDetail serviceListDetail)
         {
-            _serviceListDetailDal.Add(serviceListDetail);
+            await _serviceListDetailDal.Add(serviceListDetail);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _serviceListDetailDal.DeleteById(id);
+            await _serviceListDetailDal.DeleteById(id);
         }
 
-        public void Delete(ServiceListDetail serviceListDetail)
+        public async Task DeleteAsync(ServiceListDetail serviceListDetail)
         {
-            _serviceListDetailDal.Delete(serviceListDetail);
-        }
-        public List<ServiceListDetail> GetAll()
-        {
-           return _serviceListDetailDal.GetAll();
+            await _serviceListDetailDal.Delete(serviceListDetail);
         }
 
-        public ServiceListDetail GetById(int id)
+        public async Task<List<ServiceListDetail>> GetAllAsync()
         {
-            return _serviceListDetailDal.Get(d => d.Id == id);
+            return await _serviceListDetailDal.GetAll();
         }
 
-        public int GetIdByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
+        public async Task<ServiceListDetail> GetByIdAsync(int id)
         {
-            return _serviceListDetailDal.Get(d => d.ServiceListId == serviceListId && d.MarketContractId == marketContracId).Id;
+            return await _serviceListDetailDal.Get(d => d.Id == id);
         }
 
-        public void Update(ServiceListDetail serviceListDetail)
+        public async Task<int> GetIdByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContractId)
         {
-            _serviceListDetailDal.Update(serviceListDetail);
+            var serviceListDetail = await _serviceListDetailDal.Get(d => d.ServiceListId == serviceListId && d.MarketContractId == marketContractId);
+            return serviceListDetail?.Id ?? 0;
         }
 
-        public List<ServiceListDetail> GetByListId(int id)
+        public async Task UpdateAsync(ServiceListDetail serviceListDetail)
         {
-            return _serviceListDetailDal.GetAll(p=>p.ServiceListId ==id);
+            await _serviceListDetailDal.Update(serviceListDetail);
         }
 
-        public void DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
+        public async Task<List<ServiceListDetail>> GetByListIdAsync(int id)
         {
-            _serviceListDetailDal.DeleteByServiceListIdAndMarketContracId(serviceListId, marketContracId);
+            return await _serviceListDetailDal.GetAll(p => p.ServiceListId == id);
         }
 
-        public ServiceListDetail GetByServiceListIdAndMarketContractId(int serviceListId, int marketContracId)
+        public async Task DeleteByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContractId)
         {
-            return _serviceListDetailDal.Get(p => p.ServiceListId == serviceListId && p.MarketContractId == marketContracId);
+             _serviceListDetailDal.DeleteByServiceListIdAndMarketContracId(serviceListId, marketContractId);
         }
 
-        public bool IsExist(int serviceListId, int marketContractId)
+        public async Task<ServiceListDetail> GetByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContractId)
         {
-            return _serviceListDetailDal.IsExist(serviceListId,marketContractId);
+            return await _serviceListDetailDal.Get(p => p.ServiceListId == serviceListId && p.MarketContractId == marketContractId);
+        }
+
+        public async Task<bool> IsExistAsync(int serviceListId, int marketContractId)
+        {
+            return  _serviceListDetailDal.IsExist(serviceListId, marketContractId);
         }
     }
 }

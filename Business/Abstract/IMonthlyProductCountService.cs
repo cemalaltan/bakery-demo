@@ -4,13 +4,14 @@ namespace Business.Abstract
 {
     public interface IMonthlyProductCountService
     {
-        Dictionary<string, List<Product>> GetAllProducts();
-        Dictionary<string, List<MonthlyProductCount>> GetAddedProducts(int year, int month);
-        List<MonthlyProductCount> GetAll();
-        void Add(MonthlyProductCount monthlyProductCount);
-        void DeleteById(int id);
-        void Delete(MonthlyProductCount monthlyProductCount);
-        void Update(MonthlyProductCount monthlyProductCount);
-        MonthlyProductCount GetById(int id);
+        Task<Dictionary<string, List<Product>>> GetAllProductsAsync();
+        Task<Dictionary<string, List<MonthlyProductCount>>> GetAddedProductsAsync(int year, int month);
+        Task<List<MonthlyProductCount>> GetAllAsync();
+        Task AddAsync(MonthlyProductCount monthlyProductCount);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(MonthlyProductCount monthlyProductCount);
+        Task UpdateAsync(MonthlyProductCount monthlyProductCount);
+        Task<MonthlyProductCount> GetByIdAsync(int id);
+
     }
 }

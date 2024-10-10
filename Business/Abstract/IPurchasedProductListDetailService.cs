@@ -4,16 +4,17 @@ namespace Business.Abstract
 {
     public interface IPurchasedProductListDetailService
     {
-        List<PurchasedProductListDetail> GetAll();
-        List<PurchasedProductListDetail> GetPurchasedProductListDetailByDate(DateTime date);
-        void Add(PurchasedProductListDetail purchasedProductListDetail);
-        void AddList(List<PurchasedProductListDetail> purchasedProductListDetails);
-        void DeleteById(int id, int userId);
-        void Delete(PurchasedProductListDetail purchasedProductListDetail);
-        void Update(PurchasedProductListDetail purchasedProductListDetail);
-        void UpdateList(List<PurchasedProductListDetail> purchasedProductListDetails);
-        PurchasedProductListDetail GetById(int id);
-        PurchasedProductListDetail GetPurchasedProductListDetailByDateAndProductId(DateTime date, int productId);
-        bool IsExist(int productId, DateTime date);
+        Task<List<PurchasedProductListDetail>> GetAllAsync();
+        Task<List<PurchasedProductListDetail>> GetPurchasedProductListDetailByDateAsync(DateTime date);
+        Task AddAsync(PurchasedProductListDetail purchasedProductListDetail);
+        Task AddListAsync(List<PurchasedProductListDetail> purchasedProductListDetails);
+        Task DeleteByIdAsync(int id, int userId);
+        Task DeleteAsync(PurchasedProductListDetail purchasedProductListDetail);
+        Task UpdateAsync(PurchasedProductListDetail purchasedProductListDetail);
+        Task UpdateListAsync(List<PurchasedProductListDetail> purchasedProductListDetails);
+        Task<PurchasedProductListDetail> GetByIdAsync(int id);
+        Task<PurchasedProductListDetail> GetPurchasedProductListDetailByDateAndProductIdAsync(DateTime date, int productId);
+        Task<bool> IsExistAsync(int productId, DateTime date);
+
     }
 }

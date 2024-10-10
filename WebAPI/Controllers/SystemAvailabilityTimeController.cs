@@ -18,12 +18,12 @@ namespace WebAPI.Controllers
             _systemAvailabilityTimeService = systemAvailabilityTimeService;
         }
         [HttpGet("GetSystemAvailabilityTime")]
-        public ActionResult GetSystemAvailabilityTime()
+        public async Task<ActionResult> GetSystemAvailabilityTime()
         {
 
             try
             {
-                var result = _systemAvailabilityTimeService.GetSystemAvailabilityTime();
+                var result = await _systemAvailabilityTimeService.GetSystemAvailabilityTimeAsync();
                 return Ok(result);
             }
             catch (Exception e)
@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateSystemAvailabilityTime")]
-        public ActionResult UpdateMoneyReceivedFromMarket(SystemAvailabilityTime systemAvailabilityTime)
+        public async Task<ActionResult> UpdateMoneyReceivedFromMarket(SystemAvailabilityTime systemAvailabilityTime)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
          
 
 
-                _systemAvailabilityTimeService.UpdateSystemAvailabilityTime(systemAvailabilityTime);
+                await _systemAvailabilityTimeService.UpdateSystemAvailabilityTimeAsync(systemAvailabilityTime);
             }
             catch (Exception e)
             {

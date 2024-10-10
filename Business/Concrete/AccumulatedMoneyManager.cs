@@ -1,62 +1,75 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class AccumulatedMoneyManager : IAccumulatedMoneyService
     {
+        private readonly IAccumulatedMoneyDal _accumulatedCashDal;
 
-
-        IAccumulatedMoneyDal _accumulatedCashDal;
-        
         public AccumulatedMoneyManager(IAccumulatedMoneyDal accumulatedCashDal)
         {
-            _accumulatedCashDal = accumulatedCashDal;  
+            _accumulatedCashDal = accumulatedCashDal;
         }
 
-        public void Add(AccumulatedMoney accumulatedCashDal)
+        public async Task AddAsync(AccumulatedMoney accumulatedCash)
         {
-            _accumulatedCashDal.Add(accumulatedCashDal);
+            await Task.Run(() => _accumulatedCashDal.Add(accumulatedCash));
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _accumulatedCashDal.DeleteById(id);
+            await Task.Run(() => _accumulatedCashDal.DeleteById(id));
         }
 
-        public void Delete(AccumulatedMoney accumulatedCashDal)
+        public async Task DeleteAsync(AccumulatedMoney accumulatedCash)
         {
-            _accumulatedCashDal.Delete(accumulatedCashDal);
-        }
-        public List<AccumulatedMoney> GetAllByType(int type)
-        {
-           return _accumulatedCashDal.GetAll( a => a.Type == type);
+            await Task.Run(() => _accumulatedCashDal.Delete(accumulatedCash));
         }
 
-        public AccumulatedMoney GetById(int id)
+        public async Task<List<AccumulatedMoney>> GetAllByTypeAsync(int type)
         {
-            return _accumulatedCashDal.Get(d => d.Id == id);
+            return await Task.Run(() => _accumulatedCashDal.GetAll(a => a.Type == type));
         }
 
-        public void Update(AccumulatedMoney netEldenAmount)
+        public async Task<AccumulatedMoney> GetByIdAsync(int id)
         {
-            _accumulatedCashDal.Update(netEldenAmount);
+            return await Task.Run(() => _accumulatedCashDal.Get(d => d.Id == id));
         }
 
-        public List<AccumulatedMoney> GetByDateRangeAndType(DateTime startDate, DateTime endDate, int type)
+        public async Task UpdateAsync(AccumulatedMoney accumulatedCash)
         {
-            return _accumulatedCashDal.GetAll(a => a.CreatedAt.Date >= startDate.Date && a.CreatedAt.Date <= endDate.Date.Date && a.Type == type);
+            await Task.Run(() => _accumulatedCashDal.Update(accumulatedCash));
         }
 
-        public AccumulatedMoney GetByDateAndType(DateTime date, int type)
+        public async Task<List<AccumulatedMoney>> GetByDateRangeAndTypeAsync(DateTime startDate, DateTime endDate, int type)
         {
-            return _accumulatedCashDal.Get(a => a.CreatedAt.Date == date.Date && a.Type == type);
+            return await Task.Run(() =>
+                _accumulatedCashDal.GetAll(a =>
+                    a.CreatedAt.Date >= startDate.Date &&
+                    a.CreatedAt.Date <= endDate.Date &&
+                    a.Type == type));
         }
 
-        public decimal GetTotalAccumulatedMoneyByDateAndType(DateTime date, int type)
+        public async Task<AccumulatedMoney> GetByDateAndTypeAsync(DateTime date, int type)
         {
-            return _accumulatedCashDal.GetAll(a => a.CreatedAt > date && a.Type == type).Sum(a => a.Amount);
+            return await Task.Run(() =>
+                _accumulatedCashDal.Get(a =>
+                    a.CreatedAt.Date == date.Date &&
+                    a.Type == type));
+        }
+
+        public async Task<decimal> GetTotalAccumulatedMoneyByDateAndTypeAsync(DateTime date, int type)
+        {
+            return await Task.Run(() =>
+                _accumulatedCashDal.GetAll(a =>
+                    a.CreatedAt > date &&
+                    a.Type == type).Result.Sum(a => a.Amount));
         }
     }
 }

@@ -10,21 +10,8 @@ namespace DataAccess.Concrete.EntityFramework
     // Context : Db tabloları ile proje classlarını bağlamak.
     public class BakeryAppContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public BakeryAppContext(DbContextOptions<BakeryAppContext> options) : base(options)
         {
-
-
-            if (!optionsBuilder.IsConfigured)
-            {
-                IConfigurationRoot configuration = new ConfigurationBuilder()
-                   .SetBasePath(Directory.GetCurrentDirectory())
-                   .AddJsonFile("appsettings.json")
-                   .Build();
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-                Console.WriteLine("connectionString: " + connectionString);
-                optionsBuilder.UseMySQL(connectionString);
-            }
-
         }
 
         public DbSet<MonthlyProductCount> MonthlyProductCounts { get; set; }

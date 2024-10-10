@@ -17,17 +17,17 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult Login(string userName,string password )
+        public async Task<ActionResult> Login(string userName,string password )
         {
         
-            var userToLogin = _authService.Login(new UserForLoginDto { UserName= userName,Password= password });
+            var userToLogin = await _authService.LoginAsync(new UserForLoginDto { UserName= userName,Password= password });
             if (!userToLogin.Success)
             {
                 return BadRequest(userToLogin.Message);
             }
 
 
-            var result = _authService.CreateAccessToken(userToLogin.Data);
+            var result = await _authService.CreateAccessTokenAsync(userToLogin.Data);
             if (result.Success)
             {
                 LoginResponseDto loginResponseDto = new LoginResponseDto {
@@ -45,16 +45,16 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult Register(UserForRegisterDto userForRegisterDto)
+        public async Task<ActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            var userExists = _authService.UserExists(userForRegisterDto.UserName);
+            var userExists = await _authService.UserExistsAsync(userForRegisterDto.UserName);
             if (!userExists.Success)
             {
                 return BadRequest(userExists.Message);
             }
 
-            var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
-            var result = _authService.CreateAccessToken(registerResult.Data);
+            var registerResult = await _authService.RegisterAsync(userForRegisterDto, userForRegisterDto.Password);
+            var result = await _authService.CreateAccessTokenAsync(registerResult.Data);
             if (result.Success)
             {
                 return Ok(result.Data);

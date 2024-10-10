@@ -5,11 +5,10 @@ namespace Business.Abstract
     public interface IEndOfDayAccountService
     {
 
-        public EndOfDayResult GetEndOfDayAccountDetail(DateTime date);
+        Task<EndOfDayResult> GetEndOfDayAccountDetailAsync(DateTime date);
+        Task<decimal> GetProductsSoldInTheBakeryAsync(DateTime date);
+        Task<decimal> GetPastaneDailyRevenueAsync(DateTime date);
 
-        public decimal GetProductsSoldInTheBakery(DateTime date);
-
-        public decimal GetPastaneDailyRevenue(DateTime date);
 
     }
 

@@ -1,47 +1,49 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ReceivedMoneyFromServiceManager : IReceivedMoneyFromServiceService
     {
+        private readonly IReceivedMoneyFromServiceDal _receivedMoneyFromServiceDal;
 
-
-        IReceivedMoneyFromServiceDal _receivedMoneyFromServiceDal;
-        
         public ReceivedMoneyFromServiceManager(IReceivedMoneyFromServiceDal receivedMoneyFromServiceDal)
         {
-            _receivedMoneyFromServiceDal = receivedMoneyFromServiceDal;  
+            _receivedMoneyFromServiceDal = receivedMoneyFromServiceDal;
         }
 
-        public void Add(ReceivedMoneyFromService receivedMoneyFromService)
+        public async Task AddAsync(ReceivedMoneyFromService receivedMoneyFromService)
         {
-            _receivedMoneyFromServiceDal.Add(receivedMoneyFromService);
+            await _receivedMoneyFromServiceDal.Add(receivedMoneyFromService);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _receivedMoneyFromServiceDal.DeleteById(id);
+            await _receivedMoneyFromServiceDal.DeleteById(id);
         }
 
-        public void Delete(ReceivedMoneyFromService receivedMoneyFromService)
+        public async Task DeleteAsync(ReceivedMoneyFromService receivedMoneyFromService)
         {
-            _receivedMoneyFromServiceDal.Delete(receivedMoneyFromService);
-        }
-        public List<ReceivedMoneyFromService> GetAll()
-        {
-           return _receivedMoneyFromServiceDal.GetAll();
+            await _receivedMoneyFromServiceDal.Delete(receivedMoneyFromService);
         }
 
-        public ReceivedMoneyFromService GetByDate(DateTime date, int serviceType)
+        public async Task<List<ReceivedMoneyFromService>> GetAllAsync()
         {
-            return _receivedMoneyFromServiceDal.Get(d => d.Date.Date == date.Date && d.ServiceTypeId == serviceType);
+            return await _receivedMoneyFromServiceDal.GetAll();
         }
 
-        public void Update(ReceivedMoneyFromService receivedMoneyFromService)
+        public async Task<ReceivedMoneyFromService> GetByDateAsync(DateTime date, int serviceType)
         {
-            _receivedMoneyFromServiceDal.Update(receivedMoneyFromService);
+            return await _receivedMoneyFromServiceDal.Get(d => d.Date.Date == date.Date && d.ServiceTypeId == serviceType);
+        }
+
+        public async Task UpdateAsync(ReceivedMoneyFromService receivedMoneyFromService)
+        {
+            await _receivedMoneyFromServiceDal.Update(receivedMoneyFromService);
         }
     }
 }

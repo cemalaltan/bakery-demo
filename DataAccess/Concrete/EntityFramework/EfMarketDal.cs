@@ -7,17 +7,11 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfMarketDal : EfEntityRepositoryBase<Market, BakeryAppContext>, IMarketDal
     {
-
-        public void DeleteById(int id)
+        public EfMarketDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<Market>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
         }
+
+
 
     }
 }

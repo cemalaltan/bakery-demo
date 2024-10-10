@@ -7,30 +7,17 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfDoughFactoryListDetailDal : EfEntityRepositoryBase<DoughFactoryListDetail, BakeryAppContext>, IDoughFactoryListDetailDal
     {
-        public void DeleteById(int id)
+        private readonly BakeryAppContext _context;
+        public EfDoughFactoryListDetailDal(BakeryAppContext context) : base(context)
         {
-            using (var context = new BakeryAppContext())
-            {
-                var entity = context.DoughFactoryListDetails.Find(id);
-
-                if (entity != null)
-                {
-                    context.DoughFactoryListDetails.Remove(entity);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new InvalidOperationException("Belirtilen kimlik değerine sahip nesne bulunamadı.");
-                }
-            }
+            _context = context;
         }
 
         public bool IsExist(int id, int listId)
         {
-            using (var context = new BakeryAppContext())
-            {
-                return (context.DoughFactoryListDetails?.Any(p => p.DoughFactoryProductId == id && p.DoughFactoryListId == listId)).GetValueOrDefault();
-            }
+          
+                return (_context.DoughFactoryListDetails?.Any(p => p.DoughFactoryProductId == id && p.DoughFactoryListId == listId)).GetValueOrDefault();
+           
         }
     }
 }

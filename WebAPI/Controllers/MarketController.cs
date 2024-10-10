@@ -20,11 +20,11 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetAllMarket")]
-        public ActionResult GetMarket()
+        public async Task<ActionResult> GetMarket()
         {
             try
             {
-                var result = _marketService.GetAll();
+                var result = await _marketService.GetAllAsync();
                 return Ok(result);
             }
             catch (Exception e)
@@ -36,11 +36,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByIdMarket")]
-        public ActionResult GetByIdMarket(int id)
+        public async Task<ActionResult> GetByIdMarket(int id)
         {
             try
             {
-                var result = _marketService.GetById(id);
+                var result =await _marketService.GetByIdAsync(id);
                 return Ok(result);
             }
             catch (Exception e)
@@ -52,11 +52,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddMarket")]
-        public ActionResult AddMarket(Market market)
+        public async Task<ActionResult> AddMarket(Market market)
         {
             try
             {
-                _marketService.Add(market);
+               await _marketService.AddAsync(market);
                 return Ok();
             }
             catch (Exception e)
@@ -68,11 +68,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteMarketById")]
-        public ActionResult DeleteMarketById(int id)
+        public async Task<ActionResult> DeleteMarketById(int id)
         {
             try
             {
-                _marketService.DeleteById(id);
+               await _marketService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -84,11 +84,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateMarket")]
-        public ActionResult UpdateMarket(Market market)
+        public async Task<ActionResult> UpdateMarket(Market market)
         {
             try
             {
-                _marketService.Update(market);
+               await _marketService.UpdateAsync(market);
                 return Ok();
             }
             catch (Exception e)

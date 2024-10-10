@@ -7,25 +7,21 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfMoneyReceivedFromMarketDal : EfEntityRepositoryBase<MoneyReceivedFromMarket, BakeryAppContext>, IMoneyReceivedFromMarketDal
     {
+        private readonly BakeryAppContext _context;
 
-        public void DeleteById(int id)
+        public EfMoneyReceivedFromMarketDal(BakeryAppContext context) : base(context)
         {
-            using (BakeryAppContext context = new())
-            {
-                var deletedEntity = context.Entry(context.Set<MoneyReceivedFromMarket>().Find(id));
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-
-            }
+            _context = context;
         }
+
+
 
         public bool IsExist(int marketId, DateTime date)
         {
-            using (BakeryAppContext context = new())
-            {              
-                return context.Set<MoneyReceivedFromMarket>()
+                       
+                return _context.Set<MoneyReceivedFromMarket>()
                                     .Any(m => m.MarketId == marketId && m.Date.Date == date.Date);
-            }
+          
         }
 
     }

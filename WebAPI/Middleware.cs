@@ -32,7 +32,7 @@ namespace WebAPI
             }
 
             // Get system availability time
-            SystemAvailabilityTime systemAvailabilityTime = _systemAvailabilityTimeService.GetSystemAvailabilityTime();
+            SystemAvailabilityTime systemAvailabilityTime = await _systemAvailabilityTimeService.GetSystemAvailabilityTimeAsync();
             var currentTime = DateTime.Now.TimeOfDay;
 
             // Check if the system is available

@@ -4,13 +4,14 @@ namespace Business.Abstract
 {
     public interface IProductionListService
     {
-        List<ProductionList> GetAll();
-        int Add(ProductionList productionList);
-        void DeleteById(int id);
-        int GetByDateAndCategoryId(DateTime date, int categoryId);
-        List<int> GetByDate(DateTime date);
-        void Delete(ProductionList productionList);
-        void Update(ProductionList productionList);
-        ProductionList GetById(int id);
+        Task<List<ProductionList>> GetAllAsync();
+        Task<int> AddAsync(ProductionList productionList);
+        Task DeleteByIdAsync(int id);
+        Task<int> GetByDateAndCategoryIdAsync(DateTime date, int categoryId);
+        Task<List<int>> GetByDateAsync(DateTime date);
+        Task DeleteAsync(ProductionList productionList);
+        Task UpdateAsync(ProductionList productionList);
+        Task<ProductionList> GetByIdAsync(int id);
+
     }
 }

@@ -5,17 +5,18 @@ namespace Business.Abstract
 {
     public interface IProductsCountingService
     {
-        List<ProductsCounting> GetAll();
-        List<ProductsCounting> GetProductsCountingByDate(DateTime date);
-        Dictionary<int, int> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId);
-        List<ProductsCountingDto> GetProductsCountingByDateAndCategory(DateTime date, int categoryId);
-        void Add(ProductsCounting productsCounting);
-        void AddList(List<ProductsCounting> productsCounting);
-        void DeleteById(int id);
-        void Delete(ProductsCounting productsCounting);
-        void Update(ProductsCounting productsCounting);
-        ProductsCounting GetById(int id);
-        int GetQuantityProductsCountingByDateAndProductId(DateTime date, int productId);
-        bool IsExist(int productId, DateTime date);
+        Task<List<ProductsCounting>> GetAllAsync();
+        Task<List<ProductsCounting>> GetProductsCountingByDateAsync(DateTime date);
+        Task<Dictionary<int, int>> GetDictionaryProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId);
+        Task<List<ProductsCountingDto>> GetProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId);
+        Task AddAsync(ProductsCounting productsCounting);
+        Task AddListAsync(List<ProductsCounting> productsCounting);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(ProductsCounting productsCounting);
+        Task UpdateAsync(ProductsCounting productsCounting);
+        Task<ProductsCounting> GetByIdAsync(int id);
+        Task<int> GetQuantityProductsCountingByDateAndProductIdAsync(DateTime date, int productId);
+        Task<bool> IsExistAsync(int productId, DateTime date);
+
     }
 }

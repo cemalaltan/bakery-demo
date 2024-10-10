@@ -19,11 +19,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetStaleProductsByDateAndCategory")]
-        public ActionResult GetStaleProductsByDateAndCategory(DateTime date, int categoryId)
+        public async Task<ActionResult> GetStaleProductsByDateAndCategory(DateTime date, int categoryId)
         {
             try
             {
-                var result = _staleProductService.GetStaleProductsByDateAndCategory(date, categoryId);
+                var result = await _staleProductService.GetStaleProductsByDateAndCategoryAsync(date, categoryId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -35,11 +35,11 @@ namespace WebAPI.Controllers
         }
         
         [HttpGet("GetByDateAndCategory")]
-        public ActionResult GetByDateAndCategory(DateTime date, int categoryId)
+        public async Task<ActionResult> GetByDateAndCategory(DateTime date, int categoryId)
         {
             try
             {
-                var result = _staleProductService.GetByDateAndCategory(date, categoryId);
+                var result = await _staleProductService.GetByDateAndCategoryAsync(date, categoryId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -51,11 +51,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetProductsNotAddedToStale")]
-        public ActionResult GetProductsNotAddedToStale(DateTime date, int categoryId)
+        public async Task<ActionResult> GetProductsNotAddedToStale(DateTime date, int categoryId)
         {
             try
             {
-                var result = _staleProductService.GetProductsNotAddedToStale(date, categoryId);
+                var result = await _staleProductService.GetProductsNotAddedToStaleAsync(date, categoryId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -67,11 +67,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddStaleProduct")]
-        public ActionResult AddStaleProduct(StaleProduct staleProduct)
+        public async Task<ActionResult> AddStaleProduct(StaleProduct staleProduct)
         {
             try
             {
-                if (_staleProductService.IsExist(staleProduct.ProductId, staleProduct.Date))
+                if (await _staleProductService.IsExistAsync(staleProduct.ProductId, staleProduct.Date))
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-                _staleProductService.Add(staleProduct);
+               await _staleProductService.AddAsync(staleProduct);
                 return Ok();
             }
             catch (Exception e)
@@ -92,11 +92,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteStaleProduct")]
-        public ActionResult DeleteStaleProduct(int id)
+        public async Task<ActionResult> DeleteStaleProduct(int id)
         {
             try
             {
-                _staleProductService.DeleteById(id);
+               await _staleProductService.DeleteByIdAsync(id);
                 return Ok();
             }
             catch (Exception e)
@@ -108,11 +108,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateStaleProduct")]
-        public ActionResult UpdateStaleProduct(StaleProduct staleProduct)
+        public async Task<ActionResult> UpdateStaleProduct(StaleProduct staleProduct)
         {
             try
             {
-                _staleProductService.Update(staleProduct);
+               await _staleProductService.UpdateAsync(staleProduct);
                 return Ok();
             }
             catch (Exception e)

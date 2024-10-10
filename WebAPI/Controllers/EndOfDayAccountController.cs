@@ -83,11 +83,11 @@ namespace WebAPI.Controllers
         //}
 
         [HttpGet("GetEndOfDayAccountDetail")]
-        public ActionResult GetEndOfDayAccountDetail(DateTime date)
+        public async Task<ActionResult> GetEndOfDayAccountDetail(DateTime date)
         {
             try
             {             
-                var result = _endOfDayAccountService.GetEndOfDayAccountDetail(date);
+                var result =await _endOfDayAccountService.GetEndOfDayAccountDetailAsync(date);
 
                 return Ok(result);
 
@@ -100,14 +100,14 @@ namespace WebAPI.Controllers
         }
         
         [HttpGet("GetEndOfDayAccountDetailPdf")]
-        public ActionResult GetEndOfDayAccountDetailPdf(DateTime date)
+        public async Task<ActionResult> GetEndOfDayAccountDetailPdf(DateTime date)
         {
             try
             {             
-                var endOfDayResult = _endOfDayAccountService.GetEndOfDayAccountDetail(date);
-                var ProductsSoldInTheBakery = _endOfDayAccountService.GetProductsSoldInTheBakery(date);
+                var endOfDayResult = await _endOfDayAccountService.GetEndOfDayAccountDetailAsync(date);
+                var ProductsSoldInTheBakery = await _endOfDayAccountService.GetProductsSoldInTheBakeryAsync(date);
 
-                byte[] pdfContent = _createPdfService.EndOfDayAccountCreatePdf(date, endOfDayResult, ProductsSoldInTheBakery);
+                byte[] pdfContent = await _createPdfService.EndOfDayAccountCreatePdfAsync(date, endOfDayResult, ProductsSoldInTheBakery);
 
 
                 string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
@@ -153,11 +153,11 @@ namespace WebAPI.Controllers
         //}
 
         [HttpGet("GetProductsSoldInTheBakery")]
-        public ActionResult GetProductsSoldInTheBakery(DateTime date)
+        public async Task<ActionResult> GetProductsSoldInTheBakery(DateTime date)
         {
             try
             {            
-                var TotalRevenue = _endOfDayAccountService.GetProductsSoldInTheBakery(date);
+                var TotalRevenue = await _endOfDayAccountService.GetProductsSoldInTheBakeryAsync(date);
                 return Ok(TotalRevenue);               
             }
             catch (Exception e)

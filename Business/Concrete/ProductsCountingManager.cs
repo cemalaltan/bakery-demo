@@ -1,80 +1,82 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ProductsCountingManager : IProductsCountingService
     {
+        private readonly IProductsCountingDal _productsCountingDal;
 
-
-        IProductsCountingDal _productsCountingDal;
-        
         public ProductsCountingManager(IProductsCountingDal productsCountingDal)
         {
-            _productsCountingDal = productsCountingDal;  
+            _productsCountingDal = productsCountingDal;
         }
 
-        public void Add(ProductsCounting productsCounting)
+        public async Task AddAsync(ProductsCounting productsCounting)
         {
-            _productsCountingDal.Add(productsCounting);
+            await _productsCountingDal.Add(productsCounting);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _productsCountingDal.DeleteById(id);
+            await _productsCountingDal.DeleteById(id);
         }
 
-        public void Delete(ProductsCounting productsCounting)
+        public async Task DeleteAsync(ProductsCounting productsCounting)
         {
-            _productsCountingDal.Delete(productsCounting);
-        }
-        public List<ProductsCounting> GetAll()
-        {
-           return _productsCountingDal.GetAll();
+            await _productsCountingDal.Delete(productsCounting);
         }
 
-        public ProductsCounting GetById(int id)
+        public async Task<List<ProductsCounting>> GetAllAsync()
         {
-            return _productsCountingDal.Get(d => d.Id == id);
+            return await _productsCountingDal.GetAll();
         }
 
-        public void Update(ProductsCounting productsCounting)
+        public async Task<ProductsCounting> GetByIdAsync(int id)
         {
-            _productsCountingDal.Update(productsCounting);
+            return await _productsCountingDal.Get(d => d.Id == id);
         }
 
-        public List<ProductsCounting> GetProductsCountingByDate(DateTime date)
+        public async Task UpdateAsync(ProductsCounting productsCounting)
         {
-            return _productsCountingDal.GetAll(p=>p.Date.Date == date.Date);
+            await _productsCountingDal.Update(productsCounting);
         }
 
-        public bool IsExist(int productId, DateTime date)
+        public async Task<List<ProductsCounting>> GetProductsCountingByDateAsync(DateTime date)
         {
-            return _productsCountingDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date) == null ? false : true;
+            return await _productsCountingDal.GetAll(p => p.Date.Date == date.Date);
         }
 
-        public int GetQuantityProductsCountingByDateAndProductId(DateTime date, int productId)
+        public async Task<bool> IsExistAsync(int productId, DateTime date)
         {
-            ProductsCounting productsCounting = _productsCountingDal.Get(p => p.Date.Date == date.Date && p.ProductId == productId);
-            return productsCounting == null ? 0 : productsCounting.Quantity;
+            return await _productsCountingDal.Get(d => d.ProductId == productId && d.Date.Date == date.Date) != null;
         }
 
-        public void AddList(List<ProductsCounting> productsCountings)
+        public async Task<int> GetQuantityProductsCountingByDateAndProductIdAsync(DateTime date, int productId)
         {
-            _productsCountingDal.AddList(productsCountings);
+            var productsCounting = await _productsCountingDal.Get(p => p.Date.Date == date.Date && p.ProductId == productId);
+            return productsCounting?.Quantity ?? 0;
         }
 
-        public Dictionary<int, int> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public async Task AddListAsync(List<ProductsCounting> productsCountings)
         {
-           return _productsCountingDal.GetDictionaryProductsCountingByDateAndCategory(date,categoryId);
+             _productsCountingDal.AddList(productsCountings);
         }
 
-        public List<ProductsCountingDto> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public async Task<Dictionary<int, int>> GetDictionaryProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId)
         {
-            return _productsCountingDal.GetProductsCountingByDateAndCategory(date, categoryId);
+            return  _productsCountingDal.GetDictionaryProductsCountingByDateAndCategory(date, categoryId);
+        }
+
+        public async Task<List<ProductsCountingDto>> GetProductsCountingByDateAndCategoryAsync(DateTime date, int categoryId)
+        {
+            return  _productsCountingDal.GetProductsCountingByDateAndCategory(date, categoryId);
         }
     }
 }

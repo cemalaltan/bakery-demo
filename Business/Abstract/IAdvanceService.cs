@@ -4,14 +4,15 @@ namespace Business.Abstract
 {
     public interface IAdvanceService
     {
-        List<Advance> GetAll();
-        List<Advance> GetEmployeeAdvancesByDate(int id, int year, int month);
-        List<Advance> GetAllAdvancesByDate(int year, int month);
-        decimal GetTotalAdvancesAmountByDate(int id, int year, int month);
-        void Add(Advance Advance);
-        void DeleteById(int id);
-        void Delete(Advance Advance);
-        void Update(Advance Advance);
-        Advance GetById(int id);
+        Task<List<Advance>> GetAllAsync();
+        Task<List<Advance>> GetEmployeeAdvancesByDateAsync(int id, int year, int month);
+        Task<List<Advance>> GetAllAdvancesByDateAsync(int year, int month);
+        Task<decimal> GetTotalAdvancesAmountByDateAsync(int id, int year, int month);
+        Task AddAsync(Advance advance);
+        Task DeleteByIdAsync(int id);
+        Task DeleteAsync(Advance advance);
+        Task UpdateAsync(Advance advance);
+        Task<Advance> GetByIdAsync(int id);
+
     }
 }

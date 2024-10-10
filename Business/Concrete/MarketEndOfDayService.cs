@@ -1,7 +1,9 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
-using static Business.Concrete.MarketEndOfDayService;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -10,32 +12,29 @@ namespace Business.Concrete
         private readonly IMoneyReceivedFromMarketService _moneyReceivedFromMarketService;
         private readonly IMarketService _marketService;
         private readonly IStaleBreadReceivedFromMarketService _staleBreadReceivedFromMarketService;
-
         private readonly IServiceListDetailService _serviceListDetailService;
         private readonly IServiceListService _serviceListService;
         private readonly IMarketContractService _marketContractService;
-
 
         public MarketEndOfDayService(
             IMarketContractService marketContractService,
             IMoneyReceivedFromMarketService moneyReceivedFromMarketService,
             IMarketService marketService,
             IStaleBreadReceivedFromMarketService staleBreadReceivedFromMarketService,
-            IServiceListService serviceListService, IServiceListDetailService serviceListDetailService)
+            IServiceListService serviceListService,
+            IServiceListDetailService serviceListDetailService)
         {
-            _serviceListDetailService = serviceListDetailService;
-            _serviceListService = serviceListService;
-
             _marketContractService = marketContractService;
             _moneyReceivedFromMarketService = moneyReceivedFromMarketService;
             _marketService = marketService;
             _staleBreadReceivedFromMarketService = staleBreadReceivedFromMarketService;
+            _serviceListService = serviceListService;
+            _serviceListDetailService = serviceListDetailService;
         }
 
-        public List<PaymentMarket> CalculateMarketEndOfDay(DateTime date)
+        public async Task<List<PaymentMarket>> CalculateMarketEndOfDayAsync(DateTime date)
         {
-
-            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = _moneyReceivedFromMarketService.GetByDate(date);
+            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = await _moneyReceivedFromMarketService.GetByDateAsync(date);
             List<PaymentMarket> paymentMarkets = new();
 
             for (int i = 0; i < moneyReceivedFromMarkets.Count; i++)
@@ -44,24 +43,22 @@ namespace Business.Concrete
                 paymentMarket.MarketId = moneyReceivedFromMarkets[i].MarketId;
                 paymentMarket.id = moneyReceivedFromMarkets[i].Id;
                 paymentMarket.Amount = moneyReceivedFromMarkets[i].Amount;
-                paymentMarket.MarketName = _marketService.GetNameById(moneyReceivedFromMarkets[i].MarketId);
+                paymentMarket.MarketName = await _marketService.GetNameByIdAsync(moneyReceivedFromMarkets[i].MarketId);
 
-                var result = CalculateTotalAmountAndBread(date, moneyReceivedFromMarkets[i].MarketId);
+                var result = await CalculateTotalAmountAndBreadAsync(date, moneyReceivedFromMarkets[i].MarketId);
 
                 paymentMarket.TotalAmount = result.TotalAmount;
                 paymentMarket.GivenBread = result.TotalBread;
-                paymentMarket.StaleBread = _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketId(paymentMarket.MarketId, date);
+                paymentMarket.StaleBread = await _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketIdAsync(paymentMarket.MarketId, date);
                 paymentMarkets.Add(paymentMarket);
             }
 
             return paymentMarkets;
         }
 
-        public List<MarketBreadDetails> MarketsEndOfDayCalculationWithDetail(DateTime date)
+        public async Task<List<MarketBreadDetails>> MarketsEndOfDayCalculationWithDetailAsync(DateTime date)
         {
-
-            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = _moneyReceivedFromMarketService.GetByDate(date);
-
+            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = await _moneyReceivedFromMarketService.GetByDateAsync(date);
             List<MarketBreadDetails> marketsBreadDetails = new();
 
             for (int i = 0; i < moneyReceivedFromMarkets.Count; i++)
@@ -70,72 +67,66 @@ namespace Business.Concrete
                 marketBreadDetails.MarketId = moneyReceivedFromMarkets[i].MarketId;
                 marketBreadDetails.id = moneyReceivedFromMarkets[i].Id;
                 marketBreadDetails.Amount = moneyReceivedFromMarkets[i].Amount;
-                marketBreadDetails.MarketName = _marketService.GetNameById(moneyReceivedFromMarkets[i].MarketId);
+                marketBreadDetails.MarketName = await _marketService.GetNameByIdAsync(moneyReceivedFromMarkets[i].MarketId);
 
-                var result = CalculateTotalAmountAndBread(date, moneyReceivedFromMarkets[i].MarketId);
+                var result = await CalculateTotalAmountAndBreadAsync(date, moneyReceivedFromMarkets[i].MarketId);
 
                 marketBreadDetails.TotalAmount = result.TotalAmount;
                 marketBreadDetails.GivenBread = result.TotalBread;
-                marketBreadDetails.StaleBread = _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketId(marketBreadDetails.MarketId, date);
-
-                marketBreadDetails.BreadGivenByEachService = BreadGivenByEachService(date, moneyReceivedFromMarkets[i].MarketId);
+                marketBreadDetails.StaleBread = await _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketIdAsync(marketBreadDetails.MarketId, date);
+                marketBreadDetails.BreadGivenByEachService = await BreadGivenByEachServiceAsync(date, moneyReceivedFromMarkets[i].MarketId);
                 marketsBreadDetails.Add(marketBreadDetails);
             }
 
             return marketsBreadDetails;
         }
 
-        public decimal TotalAmountFromMarkets(DateTime date)
+        public async Task<decimal> TotalAmountFromMarketsAsync(DateTime date)
         {
-            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = _moneyReceivedFromMarketService.GetByDate(date);
-            decimal TotalAmount = 0;
+            List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = await _moneyReceivedFromMarketService.GetByDateAsync(date);
+            decimal totalAmount = 0;
 
             for (int i = 0; i < moneyReceivedFromMarkets.Count; i++)
-            {               
-                var result = CalculateTotalAmountAndBread(date, moneyReceivedFromMarkets[i].MarketId);
-                TotalAmount += result.TotalAmount;              
+            {
+                var result = await CalculateTotalAmountAndBreadAsync(date, moneyReceivedFromMarkets[i].MarketId);
+                totalAmount += result.TotalAmount;
             }
-            return TotalAmount;
+            return totalAmount;
         }
 
-        private Dictionary<string, int> BreadGivenByEachService(DateTime date, int marketId)
+        private async Task<Dictionary<string, int>> BreadGivenByEachServiceAsync(DateTime date, int marketId)
         {
             Dictionary<string, int> breadGivenByEachService = new();
-            List<ServiceList> serviceLists = _serviceListService.GetByDate(date);
+            List<ServiceList> serviceLists = await _serviceListService.GetByDateAsync(date);
             for (int i = 0; i < serviceLists.Count; i++)
             {
-                ServiceListDetail serviceListDetail = _serviceListDetailService.GetByServiceListIdAndMarketContractId(serviceLists[i].Id, _marketContractService.GetIdByMarketId(marketId));
-                string KeyName = $"{i + 1}. Servis";
-                breadGivenByEachService[KeyName] = serviceListDetail != null ? serviceListDetail.Quantity : 0;
+                ServiceListDetail serviceListDetail = await _serviceListDetailService.GetByServiceListIdAndMarketContractIdAsync(serviceLists[i].Id, await _marketContractService.GetIdByMarketIdAsync(marketId));
+                string keyName = $"{i + 1}. Servis";
+                breadGivenByEachService[keyName] = serviceListDetail != null ? serviceListDetail.Quantity : 0;
             }
             return breadGivenByEachService;
         }
-        private (decimal TotalAmount, int TotalBread) CalculateTotalAmountAndBread(DateTime date, int marketId)
+
+        private async Task<(decimal TotalAmount, int TotalBread)> CalculateTotalAmountAndBreadAsync(DateTime date, int marketId)
         {
+            List<ServiceList> serviceLists = await _serviceListService.GetByDateAsync(date);
+            int totalBread = 0;
+            decimal price = 0;
 
-            List<ServiceList> serviceLists = _serviceListService.GetByDate(date);
-
-            int TotalBread = 0;
-            decimal Price = 0;
             for (int i = 0; i < serviceLists.Count; i++)
             {
-
-                ServiceListDetail serviceListDetail = _serviceListDetailService.GetByServiceListIdAndMarketContractId(serviceLists[i].Id, _marketContractService.GetIdByMarketId(marketId));
+                ServiceListDetail serviceListDetail = await _serviceListDetailService.GetByServiceListIdAndMarketContractIdAsync(serviceLists[i].Id, await _marketContractService.GetIdByMarketIdAsync(marketId));
                 if (serviceListDetail != null)
                 {
-                    TotalBread += serviceListDetail.Quantity;
-                    Price = serviceListDetail.Price;
+                    totalBread += serviceListDetail.Quantity;
+                    price = serviceListDetail.Price;
                 }
             }
 
-            int StaleBreadCount = _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketId(marketId, date);
+            int staleBreadCount = await _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketIdAsync(marketId, date);
+            decimal totalAmount = (totalBread - staleBreadCount) * price;
 
-            decimal TotalAmount = (TotalBread - StaleBreadCount) * Price;
-
-
-            return (TotalAmount, TotalBread);
+            return (totalAmount, totalBread);
         }
-
-        
     }
 }

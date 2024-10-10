@@ -1,16 +1,18 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class MonthlyProductCountManager : IMonthlyProductCountService
     {
-
-
-        IMonthlyProductCountDal _monthlyProductCountDal;
-        ICategoryService _categoryService;
-        IProductService _productService;
+        private readonly IMonthlyProductCountDal _monthlyProductCountDal;
+        private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
 
         public MonthlyProductCountManager(IMonthlyProductCountDal monthlyProductCountDal, ICategoryService categoryService, IProductService productService)
         {
@@ -19,7 +21,7 @@ namespace Business.Concrete
             _productService = productService;
         }
 
-        public void Add(MonthlyProductCount monthlyProductCount)
+        public async Task AddAsync(MonthlyProductCount monthlyProductCount)
         {
             // Step 1: Check if the record already exists
             bool exists = IsMonthlyProductCountExists(
@@ -34,39 +36,39 @@ namespace Business.Concrete
                 throw new InvalidOperationException("This product count has already been added for the specified month and year.");
             }
 
-   
-            _monthlyProductCountDal.Add(monthlyProductCount);
+            await _monthlyProductCountDal.Add(monthlyProductCount);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _monthlyProductCountDal.DeleteById(id);
+            await _monthlyProductCountDal.DeleteById(id);
         }
 
-        public void Delete(MonthlyProductCount MonthlyProductCount)
+        public async Task DeleteAsync(MonthlyProductCount monthlyProductCount)
         {
-            _monthlyProductCountDal.Delete(MonthlyProductCount);
-        }
-        public List<MonthlyProductCount> GetAll()
-        {
-           return _monthlyProductCountDal.GetAll();
+            await _monthlyProductCountDal.Delete(monthlyProductCount);
         }
 
-        public MonthlyProductCount GetById(int id)
+        public async Task<List<MonthlyProductCount>> GetAllAsync()
         {
-            return _monthlyProductCountDal.Get(d => d.Id == id);
+            return await _monthlyProductCountDal.GetAll();
         }
 
-        public void Update(MonthlyProductCount MonthlyProductCount)
+        public async Task<MonthlyProductCount> GetByIdAsync(int id)
         {
-            _monthlyProductCountDal.Update(MonthlyProductCount);
+            return await _monthlyProductCountDal.Get(d => d.Id == id);
         }
 
-        public Dictionary<string, List<Product>> GetAllProducts()
+        public async Task UpdateAsync(MonthlyProductCount monthlyProductCount)
         {
-            var activeCategories = _categoryService.GetAll()
-       .Where(c => c.IsActive && c.Store)  
-       .ToList();
+            await _monthlyProductCountDal.Update(monthlyProductCount);
+        }
+
+        public async Task<Dictionary<string, List<Product>>> GetAllProductsAsync()
+        {
+            var activeCategories =  _categoryService.GetAllAsync().Result
+                .Where(c => c.IsActive && c.Store)
+                .ToList();
 
             // Step 2: Create a dictionary to hold the products grouped by category name
             var productMap = new Dictionary<string, List<Product>>();
@@ -74,7 +76,7 @@ namespace Business.Concrete
             foreach (var category in activeCategories)
             {
                 // Step 3: Get products for each category
-                var products = _productService.GetAll()
+                var products =  _productService.GetAllAsync().Result
                     .Where(p => p.CategoryId == category.Id && p.Status) // Assuming Status means active product
                     .ToList();
 
@@ -88,11 +90,11 @@ namespace Business.Concrete
             return productMap;
         }
 
-        public Dictionary<string, List<MonthlyProductCount>> GetAddedProducts(int year, int month)
+        public async Task<Dictionary<string, List<MonthlyProductCount>>> GetAddedProductsAsync(int year, int month)
         {
-            var monthlyProductCounts = _monthlyProductCountDal.GetAll()
-       .Where(mpc => mpc.Year == year && mpc.Month == month)
-       .ToList();
+            var monthlyProductCounts =  _monthlyProductCountDal.GetAll().Result
+                .Where(mpc => mpc.Year == year && mpc.Month == month)
+                .ToList();
 
             // Step 2: Create a dictionary to hold the product counts grouped by category name
             var productCountMap = new Dictionary<string, List<MonthlyProductCount>>();
@@ -113,14 +115,11 @@ namespace Business.Concrete
 
         public bool IsMonthlyProductCountExists(string category, string productName, int year, int month)
         {
-            return _monthlyProductCountDal.GetAll()
+            return _monthlyProductCountDal.GetAll().Result
                 .Any(mpc => mpc.Category == category
                             && mpc.Name == productName
                             && mpc.Year == year
                             && mpc.Month == month);
         }
     }
-
-
-
 }

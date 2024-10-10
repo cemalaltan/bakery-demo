@@ -19,12 +19,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetDoughFactoryProducts")]
-        public ActionResult GetAllDoughfactoryProducts()
+        public async Task<ActionResult> GetAllDoughfactoryProducts()
         {
 
             try
             {
-                var result = _doughFactoryProductService.GetAllProducts();
+                var result =await _doughFactoryProductService.GetAllProductsAsync();
                 return Ok(result);
             }
             catch (Exception e)
@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByDoughFactoryProductId")]
-        public ActionResult GetByDoughFactoryProductId(int doughFactoryProductId)
+        public async Task<ActionResult> GetByDoughFactoryProductId(int doughFactoryProductId)
         {
             if (doughFactoryProductId <= 0)
             {
@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                var result = _doughFactoryProductService.GetById(doughFactoryProductId);
+                var result = await _doughFactoryProductService.GetByIdAsync(doughFactoryProductId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -54,24 +54,24 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddDoughFactoryProduct")]
-        public ActionResult AddProduct(DoughFactoryProduct product)
+        public async Task<ActionResult> AddProduct(DoughFactoryProduct product)
         {
             if (product == null)
             {
                 return BadRequest("There is no data!");
             }
-            _doughFactoryProductService.Add(product);
+          await  _doughFactoryProductService.AddAsync(product);
             return Ok();
         }
 
         [HttpPut("UpdateDoughFactoryProduct")]
-        public ActionResult UpdateProduct(DoughFactoryProduct product)
+        public async Task<ActionResult> UpdateProduct(DoughFactoryProduct product)
         {
             if (product == null)
             {
                 return BadRequest("There is no data!");
             }
-            _doughFactoryProductService.Update(product);
+           await _doughFactoryProductService.UpdateAsync(product);
             return Ok();
         }
 

@@ -5,6 +5,5 @@ namespace DataAccess.Abstract
 {
     public interface IServiceRemindMoneyDal : IEntityRepository<ServiceRemindMoney>
     {
-        void DeleteById(int id);
     }
 }

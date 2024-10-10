@@ -1,53 +1,55 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class BreadPriceManager : IBreadPriceService
     {
-
-
-        IBreadPriceDal _breadPriceDal;
+        private readonly IBreadPriceDal _breadPriceDal;
 
         public BreadPriceManager(IBreadPriceDal breadPriceDal)
         {
             _breadPriceDal = breadPriceDal;
         }
 
-        public void Add(BreadPrice breadPrice)
+        public async Task AddAsync(BreadPrice breadPrice)
         {
-            _breadPriceDal.Add(breadPrice);
+            await _breadPriceDal.Add(breadPrice);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            _breadPriceDal.DeleteById(id);
+            await _breadPriceDal.DeleteById(id);
         }
 
-        public void Delete(BreadPrice breadPrice)
+        public async Task DeleteAsync(BreadPrice breadPrice)
         {
-            _breadPriceDal.Delete(breadPrice);
-        }
-        public List<BreadPrice> GetAll()
-        {
-            return _breadPriceDal.GetAll().OrderByDescending(p => p.Date.Date).ToList();
+            await _breadPriceDal.Delete(breadPrice);
         }
 
-        public BreadPrice GetById(int id)
+        public async Task<List<BreadPrice>> GetAllAsync()
         {
-            return _breadPriceDal.Get(d => d.Id == id);
+            return (await _breadPriceDal.GetAll()).OrderByDescending(p => p.Date.Date).ToList();
         }
 
-        public void Update(BreadPrice breadPrice)
+        public async Task<BreadPrice> GetByIdAsync(int id)
         {
-            _breadPriceDal.Update(breadPrice);
+            return await _breadPriceDal.Get(d => d.Id == id);
         }
 
-        public decimal BreadPriceByDate(DateTime date)
+        public async Task UpdateAsync(BreadPrice breadPrice)
         {
+            await _breadPriceDal.Update(breadPrice);
+        }
 
-            BreadPrice searchedPrice = _breadPriceDal.Get(p => p.Date.Date == date.Date);
+        public async Task<decimal> BreadPriceByDateAsync(DateTime date)
+        {
+            BreadPrice searchedPrice = await _breadPriceDal.Get(p => p.Date.Date == date.Date);
 
             if (searchedPrice != null)
             {
@@ -55,8 +57,8 @@ namespace Business.Concrete
             }
             else
             {
-                BreadPrice? previousPrice = _breadPriceDal
-                                    .GetAll(p => p.Date.Date < date.Date)
+                BreadPrice? previousPrice = (await _breadPriceDal
+                                    .GetAll(p => p.Date.Date < date.Date))
                                     .OrderByDescending(p => p.Date.Date)
                                     .FirstOrDefault();
 
@@ -71,10 +73,10 @@ namespace Business.Concrete
             }
         }
 
-        public bool IsExistByDate(DateTime date)
+        public async Task<bool> IsExistByDateAsync(DateTime date)
         {
-            BreadPrice searchedPrice = _breadPriceDal.Get(p => p.Date.Date == date.Date);
-            return searchedPrice != null ? true : false;
+            BreadPrice searchedPrice = await _breadPriceDal.Get(p => p.Date.Date == date.Date);
+            return searchedPrice != null;
         }
     }
 }
