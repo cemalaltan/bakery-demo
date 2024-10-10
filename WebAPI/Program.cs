@@ -1,8 +1,14 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Business.DependencyResolvers.Autofac;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
+using Microsoft.IdentityModel.Tokens;
 using Core.Utilities.IoC;
 using WebAPI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DataAccess.Concrete.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
