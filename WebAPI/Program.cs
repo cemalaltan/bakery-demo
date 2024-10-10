@@ -1,34 +1,37 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
+
 using Business.DependencyResolvers.Autofac;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
-using Microsoft.IdentityModel.Tokens;
 using Core.Utilities.IoC;
 using WebAPI;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DataAccess.Concrete.EntityFramework;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Autofac kullanmak i�in burda 
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
-    .ConfigureContainer<ContainerBuilder>(builder =>
+// Configure Kestrel to listen on a specific port
+builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    builder.RegisterModule(new AutofacBusinessModule());
+    serverOptions.Listen(System.Net.IPAddress.Any, 5000); // Listen on port 5000
 });
 
+// Autofac configuration
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        builder.RegisterModule(new AutofacBusinessModule());
+    });
 
-// Add services to the container.
+// Add services to the container
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 
-builder.Services.AddCors();
+builder.Services.AddHttpContextAccessor();
 
-
-///**********
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-var tokenOptions = builder.Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -43,40 +46,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
             ClockSkew = TimeSpan.Zero
-
         };
     });
 
 ServiceTool.Create(builder.Services);
 
 builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
-app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
 
-
-
 app.MapControllers();
-app.UseDeveloperExceptionPage();
 
 app.UseMiddleware<SystemAvailabilityMiddleware>();
-
 
 app.Run();
