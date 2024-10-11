@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   webapi:
     build:
@@ -10,6 +12,7 @@ services:
       - ConnectionStrings__sqlConnection=Server=sqlserver;Database=bakery;User=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
     depends_on:
      - sqlserver
+    restart: always
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -21,8 +24,27 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3308:1433"
+    restart: always
 
-
+  backup:
+    image: mcr.microsoft.com/mssql-tools
+    volumes:
+      - ./backups:/backups
+    environment:
+      - MSSQL_SERVER=sqlserver
+      - MSSQL_DATABASE=bakery
+      - MSSQL_USER=sa
+      - MSSQL_PASSWORD=YourStrong!Passw0rd
+    depends_on:
+      - sqlserver
+    command: >
+      /bin/bash -c '
+      while true; do
+        /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_SERVER -U $$MSSQL_USER -P $$MSSQL_PASSWORD -Q "BACKUP DATABASE [$$MSSQL_DATABASE] TO DISK = N'\''/backups/$$MSSQL_DATABASE-$$(date +%Y%m%d-%H%M%S).bak'\'' WITH NOFORMAT, NOINIT, NAME = '\''$$MSSQL_DATABASE-full'\'', SKIP, NOREWIND, NOUNLOAD, STATS = 10"
+        echo "Backup completed at $$(date)"
+        sleep 86400
+      done
+      '
 
 volumes:
   sqlserver_data:
