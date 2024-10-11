@@ -9,10 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfSystemAvailabilityTimeDal : EfEntityRepositoryBase<SystemAvailabilityTime, BakeryAppContext>, ISystemAvailabilityTimeDal
+    public class EfSystemAvailabilityTimeDal: EfEntityRepositoryBase<SystemAvailabilityTime, BakeryAppContext>, ISystemAvailabilityTimeDal
     {
-        public EfSystemAvailabilityTimeDal(BakeryAppContext context) : base(context)
-        {
-        }
     }
 }

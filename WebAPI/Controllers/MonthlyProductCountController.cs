@@ -18,11 +18,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllProducts")]
-        public async Task<ActionResult> GetAllProducts()
+        public ActionResult GetAllProducts()
         {
             try
             {
-                var result = await _monthlyProductCount.GetAllProductsAsync();
+                var result = _monthlyProductCount.GetAllProducts();
                 return Ok(result);
             }
             catch (Exception e)
@@ -32,11 +32,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAddedProducts")]
-        public async Task<ActionResult> GetAddedProducts(int year, int month)
+        public ActionResult GetAddedProducts(int year, int month)
         {
             try
             {
-                var result = await _monthlyProductCount.GetAddedProductsAsync(year, month);
+                var result = _monthlyProductCount.GetAddedProducts(year, month);
                 return Ok(result);
             }
             catch (Exception e)
@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddMonthlyProductCounting")]
-        public async Task<ActionResult> AddMonthlyProductCounting(MonthlyProductCount monthlyProductCount)
+        public ActionResult AddMonthlyProductCounting(MonthlyProductCount monthlyProductCount)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-               await _monthlyProductCount.AddAsync(monthlyProductCount);
+                _monthlyProductCount.Add(monthlyProductCount);
                 return Ok();
             }
             catch (Exception e)
@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteMonthlyProductCounting")]
-        public async Task<ActionResult> DeleteMonthlyProductCounting(int id)
+        public ActionResult DeleteMonthlyProductCounting(int id)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("Invalid id!");
                 }
-               await _monthlyProductCount.DeleteByIdAsync(id);
+                _monthlyProductCount.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -86,7 +86,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateMonthlyProductCounting")]
-        public async Task<ActionResult> UpdateMonthlyProductCounting(MonthlyProductCount monthlyProductCount)
+        public ActionResult UpdateMonthlyProductCounting(MonthlyProductCount monthlyProductCount)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-                await _monthlyProductCount.UpdateAsync(monthlyProductCount);
+                _monthlyProductCount.Update(monthlyProductCount);
                 return Ok();
             }
             catch (Exception e)

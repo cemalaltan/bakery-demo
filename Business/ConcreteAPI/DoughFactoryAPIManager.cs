@@ -25,7 +25,7 @@ namespace Business.ConcreteAPI
 
         public List<DoughFactoryListDto> GetByDateDoughFactoryList(DateTime date)
         {
-            var result = _doughFactoryListService.GetByDateAsync(date.Date).Result;
+            var result = _doughFactoryListService.GetByDate(date.Date);
             return result;
         }
 
@@ -38,7 +38,7 @@ namespace Business.ConcreteAPI
 
             if (isNewList)
             {
-                doughFactoryListId = _doughFactoryListService.AddAsync(new DoughFactoryList { UserId = userId, Date = DateTime.Now }).Result;
+                doughFactoryListId = _doughFactoryListService.Add(new DoughFactoryList { UserId = userId, Date = DateTime.Now });
             }
 
             foreach (var detail in doughFactoryListDetail)
@@ -46,18 +46,18 @@ namespace Business.ConcreteAPI
                 if (isNewList)
                 {
                     detail.DoughFactoryListId = doughFactoryListId;
-                    _doughFactoryListDetailService.AddAsync(detail);
+                    _doughFactoryListDetailService.Add(detail);
                 }
                 else
                 {
-                    if (_doughFactoryListDetailService.IsExistAsync(detail.DoughFactoryProductId, doughFactoryListId).Result)
+                    if (_doughFactoryListDetailService.IsExist(detail.DoughFactoryProductId, doughFactoryListId))
                     {
                         // return Conflict(Messages.Conflict);
                         throw new Exception(Messages.Conflict);
                     }
                     else
                     {
-                        _doughFactoryListDetailService.AddAsync(detail);
+                        _doughFactoryListDetailService.Add(detail);
                     }
                 }
             }
@@ -71,7 +71,7 @@ namespace Business.ConcreteAPI
         {
 
 
-            List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryListAsync(doughFactoryListId).Result;
+            List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryList(doughFactoryListId);
 
             List<GetAddedDoughFactoryListDetailDto> List = new();
 
@@ -81,7 +81,7 @@ namespace Business.ConcreteAPI
                 addedDoughFactoryListDetailDto.Id = doughFactoryListDetails[i].Id;
 
                 addedDoughFactoryListDetailDto.DoughFactoryProductId = doughFactoryListDetails[i].DoughFactoryProductId;
-                addedDoughFactoryListDetailDto.DoughFactoryProductName = _doughFactoryProductService.GetByIdAsync(doughFactoryListDetails[i].DoughFactoryProductId).Result.Name;
+                addedDoughFactoryListDetailDto.DoughFactoryProductName = _doughFactoryProductService.GetById(doughFactoryListDetails[i].DoughFactoryProductId).Name;
 
                 addedDoughFactoryListDetailDto.Quantity = doughFactoryListDetails[i].Quantity;
                 addedDoughFactoryListDetailDto.DoughFactoryListId = doughFactoryListDetails[i].DoughFactoryListId;
@@ -98,7 +98,7 @@ namespace Business.ConcreteAPI
         public List<ProductNotAddedDto> GetMarketByServiceListId(int doughFactoryListId)
         {
 
-            List<DoughFactoryProduct> allDoughFactoryProduct = _doughFactoryProductService.GetAllAsync().Result;
+            List<DoughFactoryProduct> allDoughFactoryProduct = _doughFactoryProductService.GetAll();
 
             List<ProductNotAddedDto> getNotAddedDoughFactoryListDetailDto = new();
 
@@ -118,7 +118,7 @@ namespace Business.ConcreteAPI
             {
 
 
-                List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryListAsync(doughFactoryListId).Result;
+                List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryList(doughFactoryListId);
 
                 List<int> addedDoughFactoryProductIds = new List<int>();
 
@@ -149,13 +149,13 @@ namespace Business.ConcreteAPI
 
         public void DeleteDoughFactoryListDetail(int detailId)
         {
-            _doughFactoryListDetailService.DeleteByIdAsync(detailId);
+            _doughFactoryListDetailService.DeleteById(detailId);
         }
 
 
         public void UpdateDoughFactoryListDetail(DoughFactoryListDetail doughFactoryListDetail)
         {
-            _doughFactoryListDetailService.UpdateAsync(doughFactoryListDetail);
+            _doughFactoryListDetailService.Update(doughFactoryListDetail);
         }
 
 

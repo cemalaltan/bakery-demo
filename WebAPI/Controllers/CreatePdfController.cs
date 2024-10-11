@@ -16,13 +16,13 @@ namespace WebAPI.Controllers
 		}
 
 		[HttpGet("CreatePdf")]
-		public async Task<ActionResult> CreatePdf(DateTime date)
+		public IActionResult CreatePdf(DateTime date)
 		{
 
 			try
 			{
 
-				byte[] pdfContent = await _createPdfService.CreatePdfAsync(date);
+				byte[] pdfContent = _createPdfService.CreatePdf(date);
 				string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
 
 				string fileName = $"Pastane_{formattedDate}.pdf";
@@ -45,13 +45,13 @@ namespace WebAPI.Controllers
 		}
 
 		[HttpGet("CreatePdfForHamurhane")]
-		public async Task<ActionResult> CreatePdfForHamurhane(DateTime date)
+		public IActionResult CreatePdfForHamurhane(DateTime date)
 		{
 
 			try
 			{
 
-				byte[] pdfContent = await _createPdfService.CreatePdfForHamurhaneAsync(date);
+				byte[] pdfContent = _createPdfService.CreatePdfForHamurhane(date);
 				string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
 
 				string fileName = $"Hamurhane_{formattedDate}.pdf";
@@ -74,13 +74,13 @@ namespace WebAPI.Controllers
 		}
 
 		[HttpGet("CreatePdfForMarketService")]
-		public async Task<ActionResult> CreatePdfForMarketService(DateTime date)
+		public IActionResult CreatePdfForMarketService(DateTime date)
 		{
 
 			try
 			{
 
-				byte[] pdfContent = await _createPdfService.CreatePdfForMarketServiceAsync(date);
+				byte[] pdfContent = _createPdfService.CreatePdfForMarketService(date);
 				string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
 
 				string fileName = $"MarketServis_{formattedDate}.pdf";

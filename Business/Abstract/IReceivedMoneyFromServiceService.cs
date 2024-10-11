@@ -4,12 +4,11 @@ namespace Business.Abstract
 {
     public interface IReceivedMoneyFromServiceService
     {
-        Task<List<ReceivedMoneyFromService>> GetAllAsync();
-        Task AddAsync(ReceivedMoneyFromService allService);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(ReceivedMoneyFromService allService);
-        Task UpdateAsync(ReceivedMoneyFromService allService);
-        Task<ReceivedMoneyFromService> GetByDateAsync(DateTime date, int serviceType);
-
+        List<ReceivedMoneyFromService> GetAll();
+        void Add(ReceivedMoneyFromService allService);
+        void DeleteById(int id);
+        void Delete(ReceivedMoneyFromService allService);
+        void Update(ReceivedMoneyFromService allService);
+        ReceivedMoneyFromService GetByDate(DateTime date, int serviceType);
     }
 }

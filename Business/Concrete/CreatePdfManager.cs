@@ -55,7 +55,7 @@ namespace Business.Concrete
 			{ 2, "Börek" },
 			{ 3, "Dışarıda Alınan Ürünler" },
 		};
-		public async Task<byte[]> EndOfDayAccountCreatePdfAsync(DateTime date, EndOfDayResult endOfDayResult, decimal ProductsSoldInTheBakery)
+		public byte[] EndOfDayAccountCreatePdf(DateTime date, EndOfDayResult endOfDayResult, decimal ProductsSoldInTheBakery)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -97,7 +97,7 @@ namespace Business.Concrete
 
 						document.Add(title);
 
-                        var expenses = await RegularDataForExpenses(date);
+                        var expenses = RegularDataForExpenses(date);
 
                         (Table table1, Table table2, double TotalBread) = CreateTable1(endOfDayResult.EndOfDayAccount);
 						decimal breadRevenue = (decimal)TotalBread * endOfDayResult.EndOfDayAccount.Price;
@@ -163,7 +163,7 @@ namespace Business.Concrete
 				return stream.ToArray();
 			}
 		}
-		public async Task<byte[]> CreatePdfAsync(DateTime date)
+		public byte[] CreatePdf(DateTime date)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -206,7 +206,7 @@ namespace Business.Concrete
 
 							document.Add(title);
 
-							List<ProductionListDetailDto> detail = await RegularData(date, CategoryId);
+							List<ProductionListDetailDto> detail = RegularData(date, CategoryId);
 
 							if (detail.Count > 0)
 							{
@@ -255,7 +255,7 @@ namespace Business.Concrete
 			}
 
 		}
-		public async Task<byte[]> CreatePdfForHamurhaneAsync(DateTime date)
+		public byte[] CreatePdfForHamurhane(DateTime date)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -292,7 +292,7 @@ namespace Business.Concrete
 
 						document.Add(title);
 
-						var data = await RegularDataForHamurhane(date);
+						var data = RegularDataForHamurhane(date);
 
 						if (data.Item1.Count > 0)
 						{
@@ -326,7 +326,7 @@ namespace Business.Concrete
 				return stream.ToArray();
 			}
 		}
-		public async Task<byte[]> CreatePdfForMarketServiceAsync(DateTime date)
+		public byte[] CreatePdfForMarketService(DateTime date)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -363,7 +363,7 @@ namespace Business.Concrete
 
 						document.Add(title);
 
-						var data = await RegularDataForMarketService(date);
+						var data = RegularDataForMarketService(date);
 
 						if (data.Item1.Count > 0)
 						{
@@ -408,20 +408,20 @@ namespace Business.Concrete
 		}
 
 		// -------------------------   Data Func  ------------------------------
-		public async Task<List<ProductionListDetailDto>> RegularData(DateTime date, int categoryId)
+		public List<ProductionListDetailDto> RegularData(DateTime date, int categoryId)
 		{
 
-			var listId = await _productionListService.GetByDateAndCategoryIdAsync(date, categoryId);
-			List<GetAddedProductsDto> productionListDetail = await _productionListDetailService.GetProductsByListIdAsync(listId);
+			var listId = _productionListService.GetByDateAndCategoryId(date, categoryId);
+			List<GetAddedProductsDto> productionListDetail = _productionListDetailService.GetProductsByListId(listId);
 
 
-			Dictionary<int, int> productsCountingToday = await _productsCountingService.GetDictionaryProductsCountingByDateAndCategoryAsync(date, categoryId);
+			Dictionary<int, int> productsCountingToday = _productsCountingService.GetDictionaryProductsCountingByDateAndCategory(date, categoryId);
 
 
-			Dictionary<int, int> productsCountingYesterday = await _productsCountingService.GetDictionaryProductsCountingByDateAndCategoryAsync(date.AddDays(-1), categoryId);
+			Dictionary<int, int> productsCountingYesterday = _productsCountingService.GetDictionaryProductsCountingByDateAndCategory(date.AddDays(-1), categoryId);
 
 
-			Dictionary<int, int> staleProducts = await _staleProductService.GetStaleProductsByDateAndCategoryAsync(date, categoryId);
+			Dictionary<int, int> staleProducts = _staleProductService.GetStaleProductsByDateAndCategory(date, categoryId);
 
 
 
@@ -448,10 +448,10 @@ namespace Business.Concrete
 
 			return productionListDetailDto;
 		}
-		public async Task<(List<DoughFactoryListAndDetailDto>, decimal)> RegularDataForHamurhane(DateTime date)
+		public (List<DoughFactoryListAndDetailDto>, decimal) RegularDataForHamurhane(DateTime date)
 		{
 
-			decimal breadPrice = await _breadPriceService.BreadPriceByDateAsync(date);
+			decimal breadPrice = _breadPriceService.BreadPriceByDate(date);
 
 
 			List<DoughFactoryListDto> doughFactoryListDto = _doughFactoryAPIService.GetByDateDoughFactoryList(date);
@@ -492,7 +492,7 @@ namespace Business.Concrete
 				}
 
 
-				DoughFactoryProduct doughFactoryProduct = await _doughFactoryProductService.GetByIdAsync(u);
+				DoughFactoryProduct doughFactoryProduct = _doughFactoryProductService.GetById(u);
 
 
 				d.Name = doughFactoryProduct.Name;
@@ -506,10 +506,10 @@ namespace Business.Concrete
 
 			return (doughFactoryListAndDetailDto, TotalRevenue);
 		}
-		public async Task<(List<MarketBreadDetails>, decimal, decimal)> RegularDataForMarketService(DateTime date)
+		public (List<MarketBreadDetails>, decimal, decimal) RegularDataForMarketService(DateTime date)
 		{
 
-			var marketBreadDetails = await _marketEndOfDayService.MarketsEndOfDayCalculationWithDetailAsync(date);
+			var marketBreadDetails = _marketEndOfDayService.MarketsEndOfDayCalculationWithDetail(date);
 
 			decimal TotalAmount = 0;
 			decimal TotalReceivedMoney = 0;
@@ -524,9 +524,9 @@ namespace Business.Concrete
 			return (marketBreadDetails, TotalAmount, TotalReceivedMoney);
 		}
 
-        public async Task<(List<Expense>, decimal)> RegularDataForExpenses(DateTime date)
+        public (List<Expense>, decimal) RegularDataForExpenses(DateTime date)
         {
-            var expensesList = await _expenseService.GetExpensesByDateAsync(date);
+            var expensesList = _expenseService.GetExpensesByDate(date);
             decimal totalExpense = 0;
 
             // Calculate total expense

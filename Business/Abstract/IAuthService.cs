@@ -7,10 +7,9 @@ namespace Business.Abstract
 {
     public interface IAuthService
     {
-        Task<IDataResult<User>> RegisterAsync(UserForRegisterDto userForRegisterDto, string password);
-        Task<IDataResult<User>> LoginAsync(UserForLoginDto userForLoginDto);
-        Task<IResult> UserExistsAsync(string email);
-        Task<IDataResult<AccessToken>> CreateAccessTokenAsync(User user);
-
+        IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password);
+        IDataResult<User> Login(UserForLoginDto userForLoginDto);
+        IResult UserExists(string email);
+        IDataResult<AccessToken> CreateAccessToken(User user);
     }
 }

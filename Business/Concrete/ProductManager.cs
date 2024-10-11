@@ -1,70 +1,69 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ProductManager : IProductService
     {
-        private readonly IProductDal _productDal;
 
+
+        IProductDal _productDal;
+        
         public ProductManager(IProductDal productDal)
         {
-            _productDal = productDal;
+            _productDal = productDal;  
         }
 
-        public async Task AddAsync(Product product)
+        public void Add(Product product)
         {
-            await _productDal.Add(product);
+            _productDal.Add(product);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _productDal.DeleteById(id);
+            _productDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(Product product)
+        public void Delete(Product product)
         {
-            await _productDal.Delete(product);
+            _productDal.Delete(product);
+        }
+        public List<Product> GetAll()
+        {
+           return _productDal.GetAll();
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public Product GetById(int id)
         {
-            return await _productDal.GetAll();
+            return _productDal.Get(d => d.Id == id);
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public void Update(Product product)
         {
-            return await _productDal.Get(d => d.Id == id);
+            _productDal.Update(product);
         }
 
-        public async Task UpdateAsync(Product product)
+      
+
+        public List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
         {
-            await _productDal.Update(product);
+            return _productDal.GetNotAddedProductsByListAndCategoryId(listId,categoryId);
         }
 
-        public async Task<List<Product>> GetNotAddedProductsByListAndCategoryIdAsync(int listId, int categoryId)
+        public decimal GetPriceById(int id)
         {
-            return  await _productDal.GetNotAddedProductsByListAndCategoryId(listId, categoryId);
+            return _productDal.Get(p => p.Id == id).Price;
         }
 
-        public async Task<decimal> GetPriceByIdAsync(int id)
+        public List<Product> GetAllByCategoryId(int categoryId)
         {
-            return (await _productDal.Get(p => p.Id == id)).Price;
+            return _productDal.GetAll(p => p.CategoryId == categoryId && p.Status == true);
         }
 
-        public async Task<List<Product>> GetAllByCategoryIdAsync(int categoryId)
+        public List<Product> GetAllProductsByCategoryId(int categoryId)
         {
-            return await _productDal.GetAll(p => p.CategoryId == categoryId && p.Status == true);
-        }
-
-        public async Task<List<Product>> GetAllProductsByCategoryIdAsync(int categoryId)
-        {
-            return await _productDal.GetAll(p => p.CategoryId == categoryId);
+            return _productDal.GetAll(p => p.CategoryId == categoryId);
         }
     }
 }

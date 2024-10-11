@@ -1,73 +1,70 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class SalaryPaymentManager : ISalaryPaymentService
     {
-        private readonly ISalaryPaymentDal _salaryPaymentDal;
-        private readonly IAdvanceService _advanceService;
-        private readonly IEmployeeService _employeeService;
 
-        public SalaryPaymentManager(ISalaryPaymentDal salaryPaymentDal, IAdvanceService advanceService, IEmployeeService employeeService)
+
+        ISalaryPaymentDal _salaryPaymentDal;
+        IAdvanceService _advanceService;
+        IEmployeeService _employeeService;
+
+        public SalaryPaymentManager(ISalaryPaymentDal SalaryPaymentDal, IAdvanceService advanceService, IEmployeeService employeeService)
         {
-            _salaryPaymentDal = salaryPaymentDal;
+            _salaryPaymentDal = SalaryPaymentDal;
             _advanceService = advanceService;
             _employeeService = employeeService;
         }
 
-        public async Task AddAsync(SalaryPayment salaryPayment)
+        public void Add(SalaryPayment SalaryPayment)
         {
-            await _salaryPaymentDal.Add(salaryPayment);
+            _salaryPaymentDal.Add(SalaryPayment);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _salaryPaymentDal.DeleteById(id);
+            _salaryPaymentDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(SalaryPayment salaryPayment)
+        public void Delete(SalaryPayment SalaryPayment)
         {
-            await _salaryPaymentDal.Delete(salaryPayment);
+            _salaryPaymentDal.Delete(SalaryPayment);
+        }
+        public List<SalaryPayment> GetAll()
+        {
+            return _salaryPaymentDal.GetAll();
         }
 
-        public async Task<List<SalaryPayment>> GetAllAsync()
+        public List<SalaryPayment> GetAllByDate(int year, int month)
         {
-            return await _salaryPaymentDal.GetAll();
+            return _salaryPaymentDal.GetAll(sp => sp.Year == year && sp.Month == month);
+        }
+        public SalaryPayment GetById(int id)
+        {
+            return _salaryPaymentDal.Get(d => d.Id == id);
         }
 
-        public async Task<List<SalaryPayment>> GetAllByDateAsync(int year, int month)
+        public void Update(SalaryPayment SalaryPayment)
         {
-            return await _salaryPaymentDal.GetAll(sp => sp.Year == year && sp.Month == month);
+            _salaryPaymentDal.Update(SalaryPayment);
         }
 
-        public async Task<SalaryPayment> GetByIdAsync(int id)
-        {
-            return await _salaryPaymentDal.Get(d => d.Id == id);
-        }
-
-        public async Task UpdateAsync(SalaryPayment salaryPayment)
-        {
-            await _salaryPaymentDal.Update(salaryPayment);
-        }
-
-        public async Task<List<SalaryPaymentReport>> SalaryPaymentReportByDateAsync(int year, int month)
+        public List<SalaryPaymentReport> SalaryPaymentReportByDate(int year, int month)
         {
             var dateNow = DateTime.Now;
             List<Employee> employees;
 
             // Get all advances and salary payments for the given year and month
-            var advances = await _advanceService.GetAllAdvancesByDateAsync(year, month);
-            var salaryPayments = await GetAllByDateAsync(year, month);
+            var advances = _advanceService.GetAllAdvancesByDate(year, month);
+            var salaryPayments = GetAllByDate(year, month);
 
             if (dateNow.Month == month && dateNow.Year == year)
             {
-                employees = await _employeeService.GetAllActiveAsync();
+                employees = _employeeService.GetAllActive();
             }
             else
             {
@@ -77,7 +74,7 @@ namespace Business.Concrete
                     .Distinct()
                     .ToList();
 
-                employees = (await _employeeService.GetAllAsync())
+                employees = _employeeService.GetAll()
                     .Where(e => employeeIdsWithTransactions.Contains(e.Id))
                     .ToList();
             }
@@ -109,5 +106,7 @@ namespace Business.Concrete
 
             return salaryPaymentReports;
         }
+
     }
+
 }

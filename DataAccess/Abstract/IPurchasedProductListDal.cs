@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface IPurchasedProductListDal : IEntityRepository<PurchasedProductList>
     {
-
+        void DeleteById(int id);
     }
 }

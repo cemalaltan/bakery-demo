@@ -19,12 +19,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetCategories")]
-        public async Task<ActionResult> GetCategory()
+        public ActionResult GetCategory()
         {
             try
             {
                
-                var result = await _categoryService.GetAllAsync();
+                var result = _categoryService.GetAll();
                 return Ok(result);
             }
             catch (Exception e)
@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddCategory")]
-        public async Task<ActionResult> AddCategory(Category Category)
+        public ActionResult AddCategory(Category Category)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-               await _categoryService.AddAsync(Category);
+                _categoryService.Add(Category);
                 return Ok();
             }
             catch (Exception e)
@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteCategory")]
-        public async Task<ActionResult> DeleteCategory(int  id)
+        public ActionResult DeleteCategory(int  id)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(Messages.WrongInput);
                 }
-               await _categoryService.DeleteByIdAsync(id);
+                _categoryService.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateCategory")]
-        public async Task<ActionResult> UpdateCategory(Category Category)
+        public ActionResult UpdateCategory(Category Category)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-               await _categoryService.UpdateAsync(Category);
+                _categoryService.Update(Category);
                 return Ok();
             }
             catch (Exception e)

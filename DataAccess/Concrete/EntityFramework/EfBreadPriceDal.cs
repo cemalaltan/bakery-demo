@@ -7,8 +7,17 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfBreadPriceDal : EfEntityRepositoryBase<BreadPrice, BakeryAppContext>, IBreadPriceDal
     {
-        public EfBreadPriceDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<BreadPrice>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
+
     }
 }

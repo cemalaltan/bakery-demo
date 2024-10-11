@@ -2,50 +2,49 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class DoughFactoryListManager : IDoughFactoryListService
     {
-        private readonly IDoughFactoryListDal _doughFactoryListDal;
+        IDoughFactoryListDal _doughFactoryListDal;
 
         public DoughFactoryListManager(IDoughFactoryListDal doughFactoryListDal)
         {
             _doughFactoryListDal = doughFactoryListDal;
+
         }
 
-        public async Task<int> AddAsync(DoughFactoryList doughFactoryList)
+        public int Add(DoughFactoryList doughFactoryList)
         {
-            await _doughFactoryListDal.Add(doughFactoryList);
+            _doughFactoryListDal.Add(doughFactoryList);
             return doughFactoryList.Id;
         }
 
-        public async Task DeleteAsync(DoughFactoryList doughFactoryList)
+        public void Delete(DoughFactoryList doughFactoryList)
         {
-            await _doughFactoryListDal.Delete(doughFactoryList);
+            _doughFactoryListDal.Delete(doughFactoryList);
         }
 
-        public async Task<List<DoughFactoryList>> GetAllAsync()
+        public List<DoughFactoryList> GetAll()
         {
-            return await _doughFactoryListDal.GetAll();
+            return _doughFactoryListDal.GetAll();
         }
 
-        public async Task<List<DoughFactoryListDto>> GetByDateAsync(DateTime date)
+        public List<DoughFactoryListDto> GetByDate(DateTime date)
         {
-            return  await _doughFactoryListDal.GetAllLists(date);
+            return _doughFactoryListDal.GetAllLists(date);
         }
 
-        public async Task<DoughFactoryList> GetByIdAsync(int id)
+        public DoughFactoryList GetById(int id)
         {
-            return await _doughFactoryListDal.Get(d => d.Id == id);
+            return _doughFactoryListDal.Get(d => d.Id == id);
         }
 
-        public async Task UpdateAsync(DoughFactoryList doughFactoryList)
+        public void Update(DoughFactoryList doughFactoryList)
         {
-            await _doughFactoryListDal.Update(doughFactoryList);
+            _doughFactoryListDal.Update(doughFactoryList);
         }
     }
+
 }

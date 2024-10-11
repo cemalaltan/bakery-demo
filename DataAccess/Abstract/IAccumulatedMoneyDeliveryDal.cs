@@ -5,8 +5,8 @@ namespace DataAccess.Abstract
 {
     public interface IAccumulatedMoneyDeliveryDal : IEntityRepository<AccumulatedMoneyDelivery>
     {
-      
+        void DeleteById(int id);
 
-        Task<AccumulatedMoneyDelivery?> GetLatestDelivery(int type);
+        AccumulatedMoneyDelivery? GetLatestDelivery(int type);
     }
 }

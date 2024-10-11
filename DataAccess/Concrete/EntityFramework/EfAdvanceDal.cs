@@ -7,8 +7,16 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfAdvanceDal : EfEntityRepositoryBase<Advance, BakeryAppContext>, IAdvanceDal
     {
-        public EfAdvanceDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<Advance>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
     }

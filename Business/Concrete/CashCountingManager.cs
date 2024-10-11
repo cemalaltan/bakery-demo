@@ -1,60 +1,57 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class CashCountingManager : ICashCountingService
     {
-        private readonly ICashCountingDal _cashCountingDal;
 
+
+        ICashCountingDal _cashCountingDal;
+        
         public CashCountingManager(ICashCountingDal cashCountingDal)
         {
-            _cashCountingDal = cashCountingDal;
+            _cashCountingDal = cashCountingDal;  
         }
 
-        public async Task AddAsync(CashCounting cashCounting)
+        public void Add(CashCounting cashCounting)
         {
-            await _cashCountingDal.Add(cashCounting);
+            _cashCountingDal.Add(cashCounting);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _cashCountingDal.DeleteById(id);
+            _cashCountingDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(CashCounting cashCounting)
+        public void Delete(CashCounting cashCounting)
         {
-            await _cashCountingDal.Delete(cashCounting);
+            _cashCountingDal.Delete(cashCounting);
+        }
+        public List<CashCounting> GetAll()
+        {
+           return _cashCountingDal.GetAll();
         }
 
-        public async Task<List<CashCounting>> GetAllAsync()
+        public CashCounting GetById(int id)
         {
-            return await _cashCountingDal.GetAll();
+            return _cashCountingDal.Get(d => d.Id == id);
         }
 
-        public async Task<CashCounting> GetByIdAsync(int id)
+        public void Update(CashCounting cashCounting)
         {
-            return await _cashCountingDal.Get(d => d.Id == id);
+            _cashCountingDal.Update(cashCounting);
         }
 
-        public async Task UpdateAsync(CashCounting cashCounting)
+        public List<CashCounting> GetCashCountingByDate(DateTime date)
         {
-            await _cashCountingDal.Update(cashCounting);
+            return _cashCountingDal.GetAll(c=>c.Date.Date == date.Date);
         }
 
-        public async Task<List<CashCounting>> GetCashCountingByDateAsync(DateTime date)
+        public CashCounting GetOneCashCountingByDate(DateTime date)
         {
-            return await _cashCountingDal.GetAll(c => c.Date.Date == date.Date);
-        }
-
-        public async Task<CashCounting> GetOneCashCountingByDateAsync(DateTime date)
-        {
-            return await _cashCountingDal.Get(c => c.Date.Date == date.Date);
+            return _cashCountingDal.Get(c => c.Date.Date == date.Date);
         }
     }
 }

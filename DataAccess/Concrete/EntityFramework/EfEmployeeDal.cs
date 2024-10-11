@@ -7,11 +7,17 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfEmployeeDal : EfEntityRepositoryBase<Employee, BakeryAppContext>, IEmployeeDal
     {
-        public EfEmployeeDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<Employee>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
-
-
 
     }
 }

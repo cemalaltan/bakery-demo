@@ -1,75 +1,74 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class MarketContractManager : IMarketContractService
     {
-        private readonly IMarketContractDal _marketContractDal;
 
+
+        IMarketContractDal _marketContractDal;
+        
         public MarketContractManager(IMarketContractDal marketContractDal)
         {
-            _marketContractDal = marketContractDal;
+            _marketContractDal = marketContractDal;  
         }
 
-        public async Task AddAsync(MarketContract marketContract)
+        public void Add(MarketContract marketContract)
         {
-            await _marketContractDal.Add(marketContract);
+            _marketContractDal.Add(marketContract);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _marketContractDal.DeleteById(id);
+            _marketContractDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(MarketContract marketContract)
+        public void Delete(MarketContract marketContract)
         {
-            await _marketContractDal.Delete(marketContract);
+            _marketContractDal.Delete(marketContract);
+        }
+        public List<MarketContract> GetAll()
+        {
+           return _marketContractDal.GetAll();
         }
 
-        public async Task<List<MarketContract>> GetAllAsync()
+        public MarketContract GetById(int id)
         {
-            return await _marketContractDal.GetAll();
+            return _marketContractDal.Get(d => d.Id == id);
         }
 
-        public async Task<MarketContract> GetByIdAsync(int id)
+        public void Update(MarketContract marketContract)
         {
-            return await _marketContractDal.Get(d => d.Id == id);
+            _marketContractDal.Update(marketContract);
         }
 
-        public async Task UpdateAsync(MarketContract marketContract)
-        {
-            await _marketContractDal.Update(marketContract);
+        public decimal GetPriceById(int id)
+        {                            
+            return _marketContractDal.Get(p => p.Id == id).Price;           
         }
 
-        public async Task<decimal> GetPriceByIdAsync(int id)
+        public int GetIdByMarketId(int id)
         {
-            return (await _marketContractDal.Get(p => p.Id == id)).Price;
+            return _marketContractDal.Get(p => p.MarketId == id).Id;
         }
 
-        public async Task<int> GetIdByMarketIdAsync(int id)
+        public int GetMarketIdById(int id)
         {
-            return (await _marketContractDal.Get(p => p.MarketId == id)).Id;
+            return _marketContractDal.Get(p => p.Id == id).MarketId;
         }
 
-        public async Task<int> GetMarketIdByIdAsync(int id)
+        public List<Market> GetMarketsNotHaveContract()
         {
-            return (await _marketContractDal.Get(p => p.Id == id)).MarketId;
+            return _marketContractDal.GetMarketsNotHaveContract();
         }
 
-        public async Task<List<Market>> GetMarketsNotHaveContractAsync()
+        public List<MarketContractDto> GetAllContractWithMarketsName()
         {
-            return await  _marketContractDal.GetMarketsNotHaveContract();
-        }
-
-        public async Task<List<MarketContractDto>> GetAllContractWithMarketsNameAsync()
-        {
-            return  await _marketContractDal.GetAllContractWithMarketsName();
+           return _marketContractDal.GetAllContractWithMarketsName();
         }
     }
 }

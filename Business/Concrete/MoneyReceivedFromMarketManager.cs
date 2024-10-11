@@ -1,69 +1,68 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class MoneyReceivedFromMarketManager : IMoneyReceivedFromMarketService
     {
-        private readonly IMoneyReceivedFromMarketDal _moneyReceivedFromMarketDal;
 
+
+        IMoneyReceivedFromMarketDal _moneyReceivedFromMarketDal;
+        
         public MoneyReceivedFromMarketManager(IMoneyReceivedFromMarketDal moneyReceivedFromMarketDal)
         {
-            _moneyReceivedFromMarketDal = moneyReceivedFromMarketDal;
+            _moneyReceivedFromMarketDal = moneyReceivedFromMarketDal;  
         }
 
-        public async Task AddAsync(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public void Add(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
-            await _moneyReceivedFromMarketDal.Add(moneyReceivedFromMarket);
+            _moneyReceivedFromMarketDal.Add(moneyReceivedFromMarket);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _moneyReceivedFromMarketDal.DeleteById(id);
+            _moneyReceivedFromMarketDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public void Delete(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
-            await _moneyReceivedFromMarketDal.Delete(moneyReceivedFromMarket);
+            _moneyReceivedFromMarketDal.Delete(moneyReceivedFromMarket);
+        }
+        public List<MoneyReceivedFromMarket> GetAll()
+        {
+           return _moneyReceivedFromMarketDal.GetAll();
         }
 
-        public async Task<List<MoneyReceivedFromMarket>> GetAllAsync()
+        public MoneyReceivedFromMarket GetById(int id)
         {
-            return await _moneyReceivedFromMarketDal.GetAll();
+            return _moneyReceivedFromMarketDal.Get(d => d.Id == id);
         }
 
-        public async Task<MoneyReceivedFromMarket> GetByIdAsync(int id)
+        public void Update(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
-            return await _moneyReceivedFromMarketDal.Get(d => d.Id == id);
+            _moneyReceivedFromMarketDal.Update(moneyReceivedFromMarket);
         }
 
-        public async Task UpdateAsync(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public List<MoneyReceivedFromMarket> GetByMarketId(int id)
         {
-            await _moneyReceivedFromMarketDal.Update(moneyReceivedFromMarket);
+            return _moneyReceivedFromMarketDal.GetAll(s => s.MarketId == id);
         }
 
-        public async Task<List<MoneyReceivedFromMarket>> GetByMarketIdAsync(int id)
+        public List<MoneyReceivedFromMarket> GetByDate(DateTime date)
         {
-            return await _moneyReceivedFromMarketDal.GetAll(s => s.MarketId == id);
+            return _moneyReceivedFromMarketDal.GetAll(d => d.Date.Date == date.Date);
         }
 
-        public async Task<List<MoneyReceivedFromMarket>> GetByDateAsync(DateTime date)
+        public MoneyReceivedFromMarket GetByMarketIdAndDate(int id, DateTime date)
         {
-            return await _moneyReceivedFromMarketDal.GetAll(d => d.Date.Date == date.Date);
+            return _moneyReceivedFromMarketDal.Get(s => s.MarketId == id &&s.Date.Date == date.Date);
         }
 
-        public async Task<MoneyReceivedFromMarket> GetByMarketIdAndDateAsync(int id, DateTime date)
+        public bool IsExist(int marketId, DateTime date)
         {
-            return await _moneyReceivedFromMarketDal.Get(s => s.MarketId == id && s.Date.Date == date.Date);
-        }
-
-        public async Task<bool> IsExistAsync(int marketId, DateTime date)
-        {
-            return  await _moneyReceivedFromMarketDal.IsExist(marketId, date);
+            return _moneyReceivedFromMarketDal.IsExist(marketId, date); 
         }
     }
 }

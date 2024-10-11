@@ -1,48 +1,47 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ReceivedMoneyManager : IReceivedMoneyService
     {
-        private readonly IReceivedMoneyDal _receivedMoneyDal;
 
+
+        IReceivedMoneyDal _receivedMoneyDal;
+        
         public ReceivedMoneyManager(IReceivedMoneyDal receivedMoneyDal)
         {
-            _receivedMoneyDal = receivedMoneyDal;
+            _receivedMoneyDal = receivedMoneyDal;  
         }
 
-        public async Task AddAsync(ReceivedMoney receivedMoney)
+        public void Add(ReceivedMoney receivedMoney)
         {
-            await _receivedMoneyDal.Add(receivedMoney);
+            _receivedMoneyDal.Add(receivedMoney);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _receivedMoneyDal.DeleteById(id);
+            _receivedMoneyDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(ReceivedMoney receivedMoney)
+        public void Delete(ReceivedMoney receivedMoney)
         {
-            await _receivedMoneyDal.Delete(receivedMoney);
+            _receivedMoneyDal.Delete(receivedMoney);
+        }
+        public List<ReceivedMoney> GetAll()
+        {
+           return _receivedMoneyDal.GetAll();
         }
 
-        public async Task<List<ReceivedMoney>> GetAllAsync()
+        public ReceivedMoney GetById(int id)
         {
-            return await _receivedMoneyDal.GetAll();
+            return _receivedMoneyDal.Get(d => d.Id == id);
         }
 
-        public async Task<ReceivedMoney> GetByIdAsync(int id)
+        public void Update(ReceivedMoney receivedMoney)
         {
-            return await _receivedMoneyDal.Get(d => d.Id == id);
-        }
-
-        public async Task UpdateAsync(ReceivedMoney receivedMoney)
-        {
-            await _receivedMoneyDal.Update(receivedMoney);
+            _receivedMoneyDal.Update(receivedMoney);
         }
     }
 }

@@ -8,29 +8,42 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfMarketContractDal : EfEntityRepositoryBase<MarketContract, BakeryAppContext>, IMarketContractDal
     {
-        private readonly BakeryAppContext _context;
-        public EfMarketContractDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<MarketContract>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-
-
-        public async Task<List<Market>> GetMarketsNotHaveContract()
+        public List<MarketContractDto> GetAllContractWithMarketsName()
         {
-            return await (from market in _context.Markets
-                          where market.IsActive
-                          join contract in _context.MarketContracts
-                          on market.Id equals contract.MarketId into gj
-                          from subContract in gj.DefaultIfEmpty()
-                          where subContract == null
-                          select market)
-                         .ToListAsync();
+            using (BakeryAppContext context = new())
+            {
+                var list = context.MarketContractView.ToList();
+                return list;
+            }
         }
 
-        public async Task<List<MarketContractDto>> GetAllContractWithMarketsName()
+        public List<Market> GetMarketsNotHaveContract()
         {
-            return await _context.MarketContractView.ToListAsync();
+            using (BakeryAppContext context = new())
+            {
+                var marketList = (from market in context.Markets
+                                  where market.IsActive
+                                  join contract in context.MarketContracts
+                                  on market.Id equals contract.MarketId into gj
+                                  from subContract in gj.DefaultIfEmpty()
+                                  where subContract == null
+                                  select market).ToList();
+
+                return marketList;
+            }
+            
         }
     }
 }

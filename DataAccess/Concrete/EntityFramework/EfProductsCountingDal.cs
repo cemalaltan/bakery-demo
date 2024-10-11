@@ -8,52 +8,66 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductsCountingDal : EfEntityRepositoryBase<ProductsCounting, BakeryAppContext>, IProductsCountingDal
     {
-        private readonly BakeryAppContext _context;
-        public EfProductsCountingDal(BakeryAppContext context) : base(context)
+        public void AddList(List<ProductsCounting> productsCountings)
         {
-            _context = context;
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+                context.ProductsCountings.AddRange(productsCountings);
+                context.SaveChanges();
+            }
         }
 
-        public async Task AddList(List<ProductsCounting> productsCountings)
+        public void DeleteById(int id)
         {
-            await _context.ProductsCountings.AddRangeAsync(productsCountings);
-            await _context.SaveChangesAsync();
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<ProductsCounting>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-        public async Task<Dictionary<int, int>> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public Dictionary<int, int> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
-            var productsCountingQuantities = await _context.ProductsCountings
-                .Where(pc => pc.Date.Date == date.Date)
-                .Join(_context.Products,
-                      counting => counting.ProductId,
-                      product => product.Id,
-                      (counting, product) => new { Counting = counting, Product = product })
-                .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
-                .ToDictionaryAsync(pair => pair.Counting.ProductId, pair => pair.Counting.Quantity);
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+                var productsCountingQuantities = context.ProductsCountings
+                    .Where(pc => pc.Date.Date == date.Date)
+                    .Join(context.Products,
+                          counting => counting.ProductId,
+                          product => product.Id,
+                          (counting, product) => new { Counting = counting, Product = product })
+                    .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
+                    .ToDictionary(pair => pair.Counting.ProductId, pair => pair.Counting.Quantity);
 
-            return productsCountingQuantities;
+                return productsCountingQuantities;
+            }
         }
 
-        public async Task<List<ProductsCountingDto>> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public List<ProductsCountingDto> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
-            var productsCountingList = await _context.ProductsCountings
-                .Where(pc => pc.Date.Date == date.Date)
-                .Join(_context.Products,
-                      counting => counting.ProductId,
-                      product => product.Id,
-                      (counting, product) => new { Counting = counting, Product = product })
-                .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
-                .Select(pair => new ProductsCountingDto
-                {
-                    Id = pair.Counting.Id,
-                    ProductId = pair.Counting.ProductId,
-                    Quantity = pair.Counting.Quantity,
-                    ProductName = pair.Product.Name,
-                    Date = pair.Counting.Date,
-                })
-                .ToListAsync();
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+                var productsCountingList = context.ProductsCountings
+                    .Where(pc => pc.Date.Date == date.Date)
+                    .Join(context.Products,
+                          counting => counting.ProductId,
+                          product => product.Id,
+                          (counting, product) => new { Counting = counting, Product = product })
+                    .Where(pair => pair.Product != null && pair.Product.CategoryId == categoryId)
+                    .Select(pair => new ProductsCountingDto
+                    {
+                        Id = pair.Counting.Id,
+                        ProductId = pair.Counting.ProductId,
+                        Quantity = pair.Counting.Quantity,
+                        ProductName = pair.Product.Name,
+                        Date = pair.Counting.Date,
+                    })
+                    .ToList();
 
-            return productsCountingList;
+                return productsCountingList;
+            }
         }
     }
 }

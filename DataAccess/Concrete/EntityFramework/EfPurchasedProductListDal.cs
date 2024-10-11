@@ -7,8 +7,17 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfPurchasedProductListDal : EfEntityRepositoryBase<PurchasedProductList, BakeryAppContext>, IPurchasedProductListDal
     {
-        public EfPurchasedProductListDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<PurchasedProductList>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
+
     }
 }

@@ -16,9 +16,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetEmployeeAdvancesByDate")]
-        public async Task<ActionResult> GetById(int id, int year, int month)
+        public ActionResult GetById(int id, int year, int month)
         {
-            var advance = await _advanceService.GetEmployeeAdvancesByDateAsync(id, year, month);
+            var advance = _advanceService.GetEmployeeAdvancesByDate(id, year, month);
             if (advance == null)
             {
                 return NotFound();
@@ -27,14 +27,14 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddAdvance")]
-        public async Task<ActionResult> Add(Advance advance)
+        public ActionResult Add(Advance advance)
         {
             try {
                 if (advance == null)
                 {
                     return BadRequest("There is no data!");
                 }
-               await _advanceService.AddAsync(advance);
+                _advanceService.Add(advance);
                 return Ok();
             }
             catch(Exception e)
@@ -45,20 +45,20 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateAdvance")]
-        public async Task<ActionResult> Update(Advance advance)
+        public ActionResult Update(Advance advance)
         {
             if (advance == null)
             {   
                 return BadRequest("There is no data!");
             }
-           await _advanceService.UpdateAsync(advance);
+            _advanceService.Update(advance);
             return Ok();
         }
 
         [HttpDelete("DeleteAdvance")]
-        public async Task<ActionResult> DeleteById(int id)
+        public ActionResult DeleteById(int id)
         {
-           await _advanceService.DeleteByIdAsync(id);
+            _advanceService.DeleteById(id);
             return Ok();
         }
     }

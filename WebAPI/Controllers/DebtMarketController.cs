@@ -22,19 +22,19 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetDebtsOfMarkets")]
-        public async Task<ActionResult> GetDebtsOfMarkets()
+        public ActionResult GetDebtsOfMarkets()
         {
             try
             {
                 List<DebtsOfMarkets> debtsOfMarkets = new();
 
-                Dictionary<int, decimal> totalDebtsForMarkets = await _debtMarketService.GetTotalDebtsForMarketsAsync();
+                Dictionary<int, decimal> totalDebtsForMarkets = _debtMarketService.GetTotalDebtsForMarkets();
                 foreach (var totalDebtForMarket in totalDebtsForMarkets)
                 {
                     DebtsOfMarkets debtsOfMarket = new();
                     debtsOfMarket.MarketId = totalDebtForMarket.Key;
                     debtsOfMarket.Amount = totalDebtForMarket.Value;
-                    debtsOfMarket.MarketName = await _marketService.GetNameByIdAsync(debtsOfMarket.MarketId);
+                    debtsOfMarket.MarketName = _marketService.GetNameById(debtsOfMarket.MarketId);
 
                     debtsOfMarkets.Add(debtsOfMarket);
                 }
@@ -49,13 +49,13 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetDebtByMarketId")]
-        public async Task<ActionResult> GetDebtByMarketId(int marketId)
+        public ActionResult GetDebtByMarketId(int marketId)
         {
 
             try
             {
 
-                var result = await _debtMarketService.GetDebtByMarketIdAsync(marketId);
+                var result = _debtMarketService.GetDebtByMarketId(marketId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetById")]
-        public async Task<ActionResult> GetById(int id)
+        public ActionResult GetById(int id)
         {
 
             try
@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
 
                     return BadRequest(Messages.WrongInput);
                 }
-                var result = await _debtMarketService.GetByIdAsync(id);
+                var result = _debtMarketService.GetById(id);
                 return Ok(result);
             }
             catch (Exception e)
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddNewDebt")]
-        public async Task<ActionResult> AddNewDebt(DebtMarket debtMarket)
+        public ActionResult AddNewDebt(DebtMarket debtMarket)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(Messages.WrongInput);
                 }
-                await _debtMarketService.AddAsync(debtMarket);
+                _debtMarketService.Add(debtMarket);
                 return Ok();
             }
             catch (Exception e)
@@ -111,7 +111,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("PayDebt")]
-        public async Task<ActionResult> PayDebt(DebtMarket debtMarket)
+        public ActionResult PayDebt(DebtMarket debtMarket)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
                 debtMarket.Amount *= -1;
-               await _debtMarketService.AddAsync(debtMarket);
+                _debtMarketService.Add(debtMarket);
                 return Ok();
             }
             catch (Exception e)
@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteDebtMarket")]
-        public async Task<ActionResult> DeleteDebtMarket(int id)
+        public ActionResult DeleteDebtMarket(int id)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(Messages.WrongInput);
                 }
-               await _debtMarketService.DeleteByIdAsync(id);
+                _debtMarketService.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -151,7 +151,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateDebtMarket")]
-        public async Task<ActionResult> UpdateDebtMarket(DebtMarket debtMarket)
+        public ActionResult UpdateDebtMarket(DebtMarket debtMarket)
         {
             try
             {
@@ -159,12 +159,11 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(Messages.WrongInput);
                 }
-                var debtMarketFromDb = await _debtMarketService.GetByIdAsync(debtMarket.Id);
-                if (debtMarketFromDb != null && debtMarketFromDb.Amount < 0)
+                if (_debtMarketService.GetById(debtMarket.Id).Amount < 0)
                 {
                     debtMarket.Amount *= -1;
                 }
-               await  _debtMarketService.UpdateAsync(debtMarket);
+                _debtMarketService.Update(debtMarket);
                 return Ok();
             }
             catch (Exception e)

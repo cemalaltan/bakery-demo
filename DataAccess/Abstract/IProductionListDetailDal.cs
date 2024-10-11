@@ -6,10 +6,11 @@ namespace DataAccess.Abstract
 {
     public interface IProductionListDetailDal : IEntityRepository<ProductionListDetail>
     {
+        void DeleteById(int id);
 
-        Task<List<GetAddedProductsDto>> GetAddedProducts(int id);
+        List<GetAddedProductsDto> GetAddedProducts(int id);
 
-        Task<bool> IsExist(int id, int listId);
-        Task AddList(List<ProductionListDetail> productionListDetail);
+        bool IsExist(int id, int listId);
+        void AddList(List<ProductionListDetail> productionListDetail);
     }
 }

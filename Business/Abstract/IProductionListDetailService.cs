@@ -5,16 +5,15 @@ namespace Business.Abstract
 {
     public interface IProductionListDetailService
     {
-        Task<List<ProductionListDetail>> GetAllAsync();
-        Task<List<GetAddedProductsDto>> GetProductsByListIdAsync(int id);
-        Task<bool> IsExistAsync(int id, int listId);
-        Task AddAsync(ProductionListDetail productionListDetail);
-        Task AddListAsync(List<ProductionListDetail> productionListDetail);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(ProductionListDetail productionListDetail);
-        Task UpdateAsync(ProductionListDetail productionListDetail);
-        Task<ProductionListDetail> GetByIdAsync(int id);
-        Task<ProductionListDetail> GetProductionListDetailByDateAndProductIdAsync(DateTime date, Product product);
-
+        List<ProductionListDetail> GetAll();
+        List<GetAddedProductsDto > GetProductsByListId(int id);
+        bool IsExist(int id, int listId);
+        void Add(ProductionListDetail productionListDetail);
+        void AddList(List<ProductionListDetail> productionListDetail);
+        void DeleteById(int id);
+        void Delete(ProductionListDetail productionListDetail);
+        void Update(ProductionListDetail productionListDetail);
+        ProductionListDetail GetById(int id);
+        ProductionListDetail GetProductionListDetailByDateAndProductId(DateTime date, Product product);
     }
 }

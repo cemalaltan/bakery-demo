@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface IServiceTypeDal : IEntityRepository<ServiceType>
     {
-
+        void DeleteById(int id);
     }
 }

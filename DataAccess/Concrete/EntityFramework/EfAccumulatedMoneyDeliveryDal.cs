@@ -7,19 +7,27 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfAccumulatedMoneyDeliveryDal : EfEntityRepositoryBase<AccumulatedMoneyDelivery, BakeryAppContext>, IAccumulatedMoneyDeliveryDal
     {
-        private readonly BakeryAppContext _context;
-        public EfAccumulatedMoneyDeliveryDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<AccumulatedMoneyDelivery>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-
-        public async Task<AccumulatedMoneyDelivery?> GetLatestDelivery(int type)
+        public AccumulatedMoneyDelivery? GetLatestDelivery(int type)
         {
-            return await _context.Set<AccumulatedMoneyDelivery>()
-                .Where(d => d.Type == type)
-                .OrderByDescending(d => d.CreatedAt)
-                .FirstOrDefaultAsync();
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+                return context.Set<AccumulatedMoneyDelivery>()
+                    .Where(d => d.Type == type)
+                    .OrderByDescending(d => d.CreatedAt)
+                    .FirstOrDefault();
+            }
         }
 
 

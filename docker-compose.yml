@@ -5,20 +5,24 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:8080"
-    depends_on:
-     - mysql
-
-  mysql:
-    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: bakery
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__sqlConnection=Server=sqlserver;Database=bakery;User=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+    depends_on:
+     - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - sqlserver_data:/var/lib/mssql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3308:3306"
+      - "1455:1433"
+
 
 
 volumes:
-  mysql-data:
+  sqlserver_data:

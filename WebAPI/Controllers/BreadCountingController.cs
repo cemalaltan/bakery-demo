@@ -24,11 +24,11 @@ namespace WebAPI.Controllers
         //[Authorize]
         //[Authorize(Roles = "admin")]
         [HttpGet("GetBreadCountingByDate")]
-        public async Task<ActionResult> GetBreadCountingByDate(DateTime date)
+        public ActionResult GetBreadCountingByDate(DateTime date)
         {
             try
             {
-                var result =await _breadCountingService.GetBreadCountingByDateAsync(date);
+                var result = _breadCountingService.GetBreadCountingByDate(date);
                 if (result != null)
                 {
                     return Ok(result);
@@ -46,12 +46,12 @@ namespace WebAPI.Controllers
         // needs some changes
 
         [HttpPost("AddBreadCounting")]
-        public async Task<ActionResult> AddBreadCounting(BreadCounting breadCounting)
+        public ActionResult AddBreadCounting(BreadCounting breadCounting)
         {
 
             try
             {
-                if ( await _breadCountingService.GetBreadCountingByDateAsync(breadCounting.Date) != null)
+                if (_breadCountingService.GetBreadCountingByDate(breadCounting.Date) != null)
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-               await _breadCountingService.AddAsync(breadCounting);
+                _breadCountingService.Add(breadCounting);
                 return Ok();
             }
             catch (Exception e)
@@ -73,7 +73,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteBreadCountingById")]
-        public async Task<ActionResult> DeleteBreadCountingById(int id)
+        public ActionResult DeleteBreadCountingById(int id)
         {
             if (id <= 0)
             {
@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-               await _breadCountingService.DeleteByIdAsync(id);
+                _breadCountingService.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateBreadCounting")]
-        public async Task<ActionResult> UpdateBreadCounting(BreadCounting breadCounting)
+        public ActionResult UpdateBreadCounting(BreadCounting breadCounting)
         {
             if (breadCounting == null || breadCounting.Quantity < 0)
             {
@@ -104,11 +104,11 @@ namespace WebAPI.Controllers
             {
                 if (breadCounting.Quantity == 0)
                 {
-                 await   _breadCountingService.DeleteByIdAsync(breadCounting.Id);
+                    _breadCountingService.DeleteById(breadCounting.Id);
                 }
                 else
                 {
-                    _breadCountingService.UpdateAsync(breadCounting);
+                    _breadCountingService.Update(breadCounting);
 
                 }
 

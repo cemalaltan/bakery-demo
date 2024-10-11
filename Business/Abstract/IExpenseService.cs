@@ -4,13 +4,12 @@ namespace Business.Abstract
 {
     public interface IExpenseService
     {
-        Task<List<Expense>> GetAllAsync();
-        Task AddAsync(Expense expense);
-        Task<List<Expense>> GetExpensesByDateAsync(DateTime date);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(Expense expense);
-        Task UpdateAsync(Expense expense);
-        Task<Expense> GetByIdAsync(int id);
-
+        List<Expense> GetAll();
+        void Add(Expense expense);
+        List<Expense> GetExpensesByDate(DateTime date);
+        void DeleteById(int id);
+        void Delete(Expense expense);
+        void Update(Expense expense);
+        Expense GetById(int id);
     }
 }

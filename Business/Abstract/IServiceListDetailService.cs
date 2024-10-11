@@ -4,17 +4,17 @@ namespace Business.Abstract
 {
     public interface IServiceListDetailService
     {
-        Task<List<ServiceListDetail>> GetAllAsync();
-        Task<List<ServiceListDetail>> GetByListIdAsync(int id);
-        Task<ServiceListDetail> GetByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContracId);
-        Task<int> GetIdByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContracId);
-        Task AddAsync(ServiceListDetail serviceListDetail);
-        Task DeleteByIdAsync(int id);
-        Task DeleteByServiceListIdAndMarketContractIdAsync(int serviceListId, int marketContracId);
-        Task DeleteAsync(ServiceListDetail serviceListDetail);
-        Task UpdateAsync(ServiceListDetail serviceListDetail);
-        Task<ServiceListDetail> GetByIdAsync(int id);
-        Task<bool> IsExistAsync(int serviceListId, int marketContractId);
-
+        List<ServiceListDetail> GetAll();
+        List<ServiceListDetail> GetByListId(int id);
+        ServiceListDetail GetByServiceListIdAndMarketContractId(int serviceListId, int marketContracId);
+        int GetIdByServiceListIdAndMarketContracId(int serviceListId, int marketContracId);
+        void Add(ServiceListDetail serviceListDetail);
+        void DeleteById(int id);
+        void DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId);
+        void Delete(ServiceListDetail serviceListDetail);
+        void Update(ServiceListDetail serviceListDetail);
+        ServiceListDetail GetById(int id);
+        //List<int> GetMarketContractById(int id);
+        bool IsExist(int serviceListId,int marketContractId);
     }
 }

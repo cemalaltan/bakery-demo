@@ -5,7 +5,7 @@ namespace DataAccess.Abstract
 {
     public interface IMoneyReceivedFromMarketDal : IEntityRepository<MoneyReceivedFromMarket>
     {
-      
-        Task<bool> IsExist(int marketId, DateTime date);
+        void DeleteById(int id);
+        bool IsExist(int marketId, DateTime date);
     }
 }

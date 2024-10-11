@@ -10,12 +10,11 @@ namespace Business.Abstract
 {
     public interface IDoughFactoryProductService
     {
-        Task<List<DoughFactoryProduct>> GetAllAsync();
-        Task AddAsync(DoughFactoryProduct doughFactoryProduct);
-        Task DeleteAsync(DoughFactoryProduct doughFactoryProduct);
-        Task UpdateAsync(DoughFactoryProduct doughFactoryProduct);
-        Task<DoughFactoryProduct> GetByIdAsync(int id);
-        Task<List<DoughFactoryProduct>> GetAllProductsAsync();
-
+        List<DoughFactoryProduct> GetAll();
+        void Add(DoughFactoryProduct doughFactoryProduct);
+        void Delete(DoughFactoryProduct doughFactoryProduct);
+        void Update(DoughFactoryProduct doughFactoryProduct);
+        DoughFactoryProduct GetById(int id);
+        List<DoughFactoryProduct> GetAllProducts();
     }
 }

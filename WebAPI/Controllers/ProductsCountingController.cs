@@ -25,11 +25,11 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetDictionaryProductsCountingByDateAndCategory")]
-        public async Task<ActionResult> GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public ActionResult GetDictionaryProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
             try
             {               
-                var result = await _productsCountingService.GetDictionaryProductsCountingByDateAndCategoryAsync(date,categoryId);
+                var result = _productsCountingService.GetDictionaryProductsCountingByDateAndCategory(date,categoryId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -39,11 +39,11 @@ namespace WebAPI.Controllers
         }
         
         [HttpGet("GetProductsCountingByDateAndCategory")]
-        public async Task<ActionResult> GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
+        public ActionResult GetProductsCountingByDateAndCategory(DateTime date, int categoryId)
         {
             try
             {               
-                var result =await _productsCountingService.GetProductsCountingByDateAndCategoryAsync(date,categoryId);
+                var result = _productsCountingService.GetProductsCountingByDateAndCategory(date,categoryId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -53,17 +53,17 @@ namespace WebAPI.Controllers
         }
         
         [HttpGet("GetAddedProductsCountingByDate")]
-        public async Task<ActionResult> GetAddedProductsCountingByDate(DateTime date)
+        public ActionResult GetAddedProductsCountingByDate(DateTime date)
         {
             try
             {
-                List<ProductsCounting> productsCountings = await _productsCountingService.GetProductsCountingByDateAsync(date);
+                List<ProductsCounting> productsCountings = _productsCountingService.GetProductsCountingByDate(date);
                 List<ProductsCountingDto> getAddedProducts = new();
 
                 for (int i = 0; i < productsCountings.Count; i++)
                 {
                     ProductsCountingDto getAddedProduct = new();
-                    getAddedProduct.ProductName =  _productService.GetByIdAsync(productsCountings[i].ProductId).Result.Name;
+                    getAddedProduct.ProductName = _productService.GetById(productsCountings[i].ProductId).Name;
                     getAddedProduct.ProductId = productsCountings[i].ProductId;
                     getAddedProduct.Quantity = productsCountings[i].Quantity;
                     getAddedProduct.Id = productsCountings[i].Id;
@@ -83,11 +83,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetNotAddedProductsCountingByDate")]
-        public async Task<ActionResult> GetNotAddedProductsCountingByDate(DateTime date, int categoryId)
+        public ActionResult GetNotAddedProductsCountingByDate(DateTime date, int categoryId)
         {
             try
             {
-                List<ProductsCountingDto> productsCountings = await _productsCountingService.GetProductsCountingByDateAndCategoryAsync(date, categoryId);
+                List<ProductsCountingDto> productsCountings = _productsCountingService.GetProductsCountingByDateAndCategory(date, categoryId);
                 List<int> AddedProductsIds = new();
 
                 for (int i = 0; i < productsCountings.Count; i++)
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                List<Product> products = await _productService.GetAllByCategoryIdAsync(categoryId);
+                List<Product> products = _productService.GetAllByCategoryId(categoryId);
 
                 List<ProductNotAddedDto> getNotAddedProducts = new();
 
@@ -125,7 +125,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddProductsCounting")]
-        public async Task<ActionResult> AddProductsCounting(ProductsCounting productsCounting)
+        public ActionResult AddProductsCounting(ProductsCounting productsCounting)
         {
             if (productsCounting == null || productsCounting.Quantity < 0)
             {
@@ -133,12 +133,12 @@ namespace WebAPI.Controllers
             }
             try
             {
-                if (await _productsCountingService.IsExistAsync(productsCounting.ProductId ,productsCounting.Date))
+                if (_productsCountingService.IsExist(productsCounting.ProductId ,productsCounting.Date))
                 {
                     return BadRequest(Messages.OncePerDay);
                 }
 
-               await _productsCountingService.AddAsync(productsCounting);
+                _productsCountingService.Add(productsCounting);
                 return Ok();
             }
             catch (Exception e)
@@ -150,7 +150,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteProductsCountingById")]
-        public async Task<ActionResult> DeleteProductsCountingById(int id)
+        public ActionResult DeleteProductsCountingById(int id)
         {
             if (id <= 0)
             {
@@ -158,7 +158,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-               await _productsCountingService.DeleteByIdAsync(id);
+                _productsCountingService.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -170,7 +170,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateProductsCounting")]
-        public async Task<ActionResult> UpdateProductsCounting(ProductsCounting productsCounting)
+        public ActionResult UpdateProductsCounting(ProductsCounting productsCounting)
         {
             if (productsCounting == null || productsCounting.Quantity < 0)
             {
@@ -181,11 +181,11 @@ namespace WebAPI.Controllers
             {
                 if (productsCounting.Quantity == 0)
                 {
-                   await _productsCountingService.DeleteByIdAsync(productsCounting.Id);
+                    _productsCountingService.DeleteById(productsCounting.Id);
                 }
                 else
                 {
-                   await _productsCountingService.UpdateAsync(productsCounting);
+                    _productsCountingService.Update(productsCounting);
                 }
                 return Ok();
             }

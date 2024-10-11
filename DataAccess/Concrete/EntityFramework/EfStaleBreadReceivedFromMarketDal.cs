@@ -7,28 +7,38 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfStaleBreadReceivedFromMarketDal : EfEntityRepositoryBase<StaleBreadReceivedFromMarket, BakeryAppContext>, IStaleBreadReceivedFromMarketDal
     {
-        private readonly BakeryAppContext _context;
-        public EfStaleBreadReceivedFromMarketDal(BakeryAppContext context) : base(context)
-        {
-            _context = context;
-        }
 
-        public async Task DeleteByDateAndMarketId(DateTime date, int marketId)
+        public void DeleteById(int id)
         {
-            var entity = await _context.Set<StaleBreadReceivedFromMarket>()
-                .FirstOrDefaultAsync(s => s.Date.Date == date.Date && s.MarketId == marketId);
-
-            if (entity != null)
+            using (BakeryAppContext context = new())
             {
-                _context.Set<StaleBreadReceivedFromMarket>().Remove(entity);
-                await _context.SaveChangesAsync();
+                var deletedEntity = context.Entry(context.Set<StaleBreadReceivedFromMarket>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
             }
         }
 
-        public async Task<bool> IsExist(int marketId, DateTime date)
+        public void DeleteByDateAndMarketId(DateTime date, int marketId)
         {
-            return await _context.Set<StaleBreadReceivedFromMarket>()
-                .AnyAsync(s => s.MarketId == marketId && s.Date.Date == date.Date);
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<StaleBreadReceivedFromMarket>().FirstOrDefault(s => s.Date.Date == date.Date && s.MarketId == marketId));
+                if (deletedEntity != null)
+                {
+                    deletedEntity.State = EntityState.Deleted;
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public bool IsExist(int marketId, DateTime date)
+        {
+            using (BakeryAppContext context = new())
+            {
+                return context.Set<StaleBreadReceivedFromMarket>()
+                    .Any(s => s.MarketId == marketId && s.Date.Date == date.Date);
+            }
         }
     }
 }

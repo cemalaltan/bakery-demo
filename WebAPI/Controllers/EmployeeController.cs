@@ -18,17 +18,17 @@ namespace WebAPI.Controllers
 
      
         [HttpGet("GetAllEmployees")]
-        public async Task<ActionResult> GetAll()
+        public ActionResult GetAll()
         {
-            var employees = await _employeeService.GetAllAsync();
+            var employees = _employeeService.GetAll();
             return Ok(employees);
         }
 
        
         [HttpGet("GetAllEmployeeById")]
-        public async Task<ActionResult> GetById(int id)
+        public ActionResult GetById(int id)
         {
-            var employee = await _employeeService.GetByIdAsync(id);
+            var employee = _employeeService.GetById(id);
             if (employee == null)
             {
                 return NotFound();
@@ -37,24 +37,24 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(Employee employee)
+        public ActionResult Add(Employee employee)
         {
             if (employee == null)
             {
                 return BadRequest("There is no data!");
             }
-           await _employeeService.AddAsync(employee);
+            _employeeService.Add(employee);
             return Ok();
         }
 
         [HttpPut("UpdateEmployee")]
-        public async Task<ActionResult> Update(Employee employee)
+        public ActionResult Update(Employee employee)
         {
             if (employee == null)
             {
                 return BadRequest("There is no data!");
             }
-           await _employeeService.UpdateAsync(employee);
+            _employeeService.Update(employee);
             return Ok();
         }
     }

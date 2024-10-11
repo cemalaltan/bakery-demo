@@ -4,12 +4,11 @@ namespace Business.Abstract
 {
     public interface IServiceProductService
     {
-        Task<List<ServiceProduct>> GetAllAsync();
-        Task AddAsync(ServiceProduct serviceProduct);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(ServiceProduct serviceProduct);
-        Task UpdateAsync(ServiceProduct serviceProduct);
-        Task<ServiceProduct> GetByIdAsync(int id);
-
+        List<ServiceProduct> GetAll();
+        void Add(ServiceProduct serviceProduct);
+        void DeleteById(int id);
+        void Delete(ServiceProduct serviceProduct);
+        void Update(ServiceProduct serviceProduct);
+        ServiceProduct GetById(int id);
     }
 }

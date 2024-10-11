@@ -1,48 +1,47 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceProductManager : IServiceProductService
     {
-        private readonly IServiceProductDal _serviceProductDal;
 
+
+        IServiceProductDal _serviceProductDal;
+        
         public ServiceProductManager(IServiceProductDal serviceProductDal)
         {
-            _serviceProductDal = serviceProductDal;
+            _serviceProductDal = serviceProductDal;  
         }
 
-        public async Task AddAsync(ServiceProduct serviceProduct)
+        public void Add(ServiceProduct serviceProduct)
         {
-            await _serviceProductDal.Add(serviceProduct);
+            _serviceProductDal.Add(serviceProduct);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _serviceProductDal.DeleteById(id);
+            _serviceProductDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(ServiceProduct serviceProduct)
+        public void Delete(ServiceProduct serviceProduct)
         {
-            await _serviceProductDal.Delete(serviceProduct);
+            _serviceProductDal.Delete(serviceProduct);
+        }
+        public List<ServiceProduct> GetAll()
+        {
+           return _serviceProductDal.GetAll();
         }
 
-        public async Task<List<ServiceProduct>> GetAllAsync()
+        public ServiceProduct GetById(int id)
         {
-            return await _serviceProductDal.GetAll();
+            return _serviceProductDal.Get(d => d.Id == id);
         }
 
-        public async Task<ServiceProduct> GetByIdAsync(int id)
+        public void Update(ServiceProduct serviceProduct)
         {
-            return await _serviceProductDal.Get(d => d.Id == id);
-        }
-
-        public async Task UpdateAsync(ServiceProduct serviceProduct)
-        {
-            await _serviceProductDal.Update(serviceProduct);
+            _serviceProductDal.Update(serviceProduct);
         }
     }
 }

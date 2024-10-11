@@ -5,8 +5,8 @@ namespace DataAccess.Abstract
 {
     public interface IDebtMarketDal : IEntityRepository<DebtMarket>
     {
-
-        Task<bool> IsExist(int id);
-        Task<Dictionary<int, decimal>> GetTotalDebtsForMarkets();
+        void DeleteById(int id);
+        bool IsExist(int id);
+        Dictionary<int, decimal> GetTotalDebtsForMarkets();
     }
 }

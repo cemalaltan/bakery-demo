@@ -5,6 +5,6 @@ namespace DataAccess.Abstract
 {
     public interface ISalaryPaymentDal : IEntityRepository<SalaryPayment>
     {
-  
+        void DeleteById(int id);
     }
 }

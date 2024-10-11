@@ -4,14 +4,13 @@ namespace Business.Abstract
 {
     public interface ICashCountingService
     {
-        Task<List<CashCounting>> GetAllAsync();
-        Task<List<CashCounting>> GetCashCountingByDateAsync(DateTime date);
-        Task<CashCounting> GetOneCashCountingByDateAsync(DateTime date);
-        Task AddAsync(CashCounting cashCounting);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(CashCounting cashCounting);
-        Task UpdateAsync(CashCounting cashCounting);
-        Task<CashCounting> GetByIdAsync(int id);
-
+        List<CashCounting> GetAll();
+        List<CashCounting> GetCashCountingByDate(DateTime date);
+        CashCounting GetOneCashCountingByDate(DateTime date);
+        void Add(CashCounting cashCounting);
+        void DeleteById(int id);
+        void Delete(CashCounting cashCounting);
+        void Update(CashCounting cashCounting);
+        CashCounting GetById(int id);
     }
 }

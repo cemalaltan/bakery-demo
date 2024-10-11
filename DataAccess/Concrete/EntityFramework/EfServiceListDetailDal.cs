@@ -7,27 +7,36 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfServiceListDetailDal : EfEntityRepositoryBase<ServiceListDetail, BakeryAppContext>, IServiceListDetailDal
     {
-        private readonly BakeryAppContext _context;
-        public EfServiceListDetailDal(BakeryAppContext context) : base(context)
-        {
-            _context = context;
-        }
 
-        public async Task<bool> IsExist(int serviceListId, int marketContractId)
+        public void DeleteById(int id)
         {
-            return await _context.Set<ServiceListDetail>()
-                .AnyAsync(s => s.MarketContractId == marketContractId && s.ServiceListId == serviceListId);
-        }
-
-        public async Task DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
-        {
-            var entity = await _context.Set<ServiceListDetail>()
-                .FirstOrDefaultAsync(s => s.ServiceListId == serviceListId && s.MarketContractId == marketContracId);
-
-            if (entity != null)
+            using (BakeryAppContext context = new())
             {
-                _context.Set<ServiceListDetail>().Remove(entity);
-                await _context.SaveChangesAsync();
+                var deletedEntity = context.Entry(context.Set<ServiceListDetail>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
+        }
+
+        public void DeleteByServiceListIdAndMarketContracId(int serviceListId, int marketContracId)
+        {
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<ServiceListDetail>().FirstOrDefault(s=>s.ServiceListId ==serviceListId && s.MarketContractId == marketContracId));
+                if (deletedEntity != null)
+                {
+                    deletedEntity.State = EntityState.Deleted;
+                    context.SaveChanges();
+                }                
+            }
+        }
+
+        public bool IsExist(int serviceListId, int marketContractId)
+        {
+            using (BakeryAppContext context = new())
+            {               
+                return context.Set<ServiceListDetail>().Any(s => s.MarketContractId == marketContractId && s.ServiceListId == serviceListId);
             }
         }
 

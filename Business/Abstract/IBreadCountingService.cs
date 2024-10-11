@@ -4,14 +4,13 @@ namespace Business.Abstract
 {
     public interface IBreadCountingService
     {
-        Task<List<BreadCounting>> GetAllAsync();
-        Task<BreadCounting> GetBreadCountingByDateAsync(DateTime date);
-        Task AddAsync(BreadCounting breadCounting);
-        Task AddListAsync(List<BreadCounting> breadCounting);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(BreadCounting breadCounting);
-        Task UpdateAsync(BreadCounting breadCounting);
-        Task<BreadCounting> GetByIdAsync(int id);
-
+        List<BreadCounting> GetAll();
+        BreadCounting GetBreadCountingByDate(DateTime date);
+        void Add(BreadCounting breadCounting);
+        void AddList(List<BreadCounting> breadCounting);
+        void DeleteById(int id);
+        void Delete(BreadCounting breadCounting);
+        void Update(BreadCounting breadCounting);
+        BreadCounting GetById(int id);
     }
 }

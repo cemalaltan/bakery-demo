@@ -1,0 +1,80 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = BakeryAppUI
+build_property.RootNamespace = BakeryAppUI
+build_property.ProjectDir = /Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/alone/development/bakery/bakery-app-backend/BakeryAppUI
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Borek/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9yZWsvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Delivery/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGVsaXZlcnkvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/DisaridanAlinanUrunler/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGlzYXJpZGFuQWxpbmFuVXJ1bmxlci9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/EndOfDayAccount/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW5kT2ZEYXlBY2NvdW50L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Hamurhane/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSGFtdXJoYW5lL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Login/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/MarketService/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFya2V0U2VydmljZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Pastane/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGFzdGFuZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Pastane/_GuncelleModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGFzdGFuZS9fR3VuY2VsbGVNb2RhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/PdfDenem/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGRmRGVuZW0vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/alone/development/bakery/bakery-app-backend/BakeryAppUI/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-26mixmkknt

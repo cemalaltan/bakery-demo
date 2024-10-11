@@ -5,7 +5,8 @@ namespace DataAccess.Abstract
 {
     public interface IStaleBreadReceivedFromMarketDal : IEntityRepository<StaleBreadReceivedFromMarket>
     {
-        Task DeleteByDateAndMarketId(DateTime date, int marketId);
-        Task<bool> IsExist(int marketId, DateTime date);
+        void DeleteById(int id);
+        void DeleteByDateAndMarketId(DateTime date, int marketId);
+        bool IsExist(int marketId, DateTime date);
     }
 }

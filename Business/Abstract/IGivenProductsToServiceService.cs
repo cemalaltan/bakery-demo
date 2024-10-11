@@ -5,14 +5,13 @@ namespace Business.Abstract
 {
     public interface IGivenProductsToServiceService
     {
-        Task<List<GivenProductsToService>> GetAllAsync();
-        Task<List<GivenProductsToService>> GetAllByDateAndServisTypeIdAsync(DateTime date, int servisTypeId);
-        Task<List<GivenProductsToServiceTotalResultDto>> GetTotalQuantityByDateAsync(DateTime date);
-        Task AddAsync(GivenProductsToService delivery);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(GivenProductsToService delivery);
-        Task UpdateAsync(GivenProductsToService delivery);
-        Task<GivenProductsToService> GetByIdAsync(int id);
-
+        List<GivenProductsToService> GetAll();
+        List<GivenProductsToService> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId);
+        List<GivenProductsToServiceTotalResultDto> GetTotalQuantityByDate(DateTime date);
+        void Add(GivenProductsToService delivery);
+        void DeleteById(int id);
+        void Delete(GivenProductsToService delivery);
+        void Update(GivenProductsToService delivery);
+        GivenProductsToService GetById(int id);
     }
 }

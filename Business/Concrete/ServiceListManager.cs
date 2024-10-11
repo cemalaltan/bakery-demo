@@ -1,54 +1,54 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceListManager : IServiceListService
     {
-        private readonly IServiceListDal _serviceListDal;
 
+
+        IServiceListDal _serviceListDal;
+        
         public ServiceListManager(IServiceListDal serviceListDal)
         {
-            _serviceListDal = serviceListDal;
+            _serviceListDal = serviceListDal;  
         }
 
-        public async Task<int> AddAsync(ServiceList serviceList)
+        public int Add(ServiceList serviceList)
         {
-            await _serviceListDal.Add(serviceList);
+            _serviceListDal.Add(serviceList);
             return serviceList.Id;
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _serviceListDal.DeleteById(id);
+            _serviceListDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(ServiceList serviceList)
+        public void Delete(ServiceList serviceList)
         {
-            await _serviceListDal.Delete(serviceList);
+            _serviceListDal.Delete(serviceList);
+        }
+        public List<ServiceList> GetAll()
+        {
+           return _serviceListDal.GetAll();
         }
 
-        public async Task<List<ServiceList>> GetAllAsync()
+        public ServiceList GetById(int id)
         {
-            return await _serviceListDal.GetAll();
+            return _serviceListDal.Get(d => d.Id == id);
         }
 
-        public async Task<ServiceList> GetByIdAsync(int id)
+        public void Update(ServiceList serviceList)
         {
-            return await _serviceListDal.Get(d => d.Id == id);
+            _serviceListDal.Update(serviceList);
         }
 
-        public async Task UpdateAsync(ServiceList serviceList)
+        public List<ServiceList> GetByDate(DateTime date)
         {
-            await _serviceListDal.Update(serviceList);
-        }
-
-        public async Task<List<ServiceList>> GetByDateAsync(DateTime date)
-        {
-            return await _serviceListDal.GetAll(d => d.Date.Date == date.Date);
+            return _serviceListDal.GetAll(d => d.Date.Date == date.Date);
         }
     }
 }

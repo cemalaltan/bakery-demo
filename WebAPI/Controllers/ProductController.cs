@@ -20,33 +20,33 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllProductsBycategoryId")]
-        public async Task<ActionResult> GetAllProductsBycategoryId(int categoryId)
+        public ActionResult GetAllProductsBycategoryId(int categoryId)
         {
-            var result = await _productService.GetAllByCategoryIdAsync(categoryId);
+            var result = _productService.GetAllByCategoryId(categoryId);
             return Ok(result);
         }
         
        
         [HttpPost("AddProduct")]
-        public async Task<ActionResult> AddProduct(Product product)
+        public ActionResult AddProduct(Product product)
         {
             if (product == null)
             {
                 return BadRequest("There is no data!");
             }
-           await _productService.AddAsync(product);
+            _productService.Add(product);
             return Ok();
         }
 
 
         [HttpPut("UpdateProduct")]
-        public async Task<ActionResult> UpdateProduct(Product product)
+        public ActionResult UpdateProduct(Product product)
         {
             if (product == null)
             {
                 return BadRequest("There is no data!");
             }
-          await  _productService.UpdateAsync(product);
+            _productService.Update(product);
             return Ok();
         }
     }

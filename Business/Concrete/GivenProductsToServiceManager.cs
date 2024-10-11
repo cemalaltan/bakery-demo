@@ -2,59 +2,58 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class GivenProductsToServiceManager : IGivenProductsToServiceService
     {
-        private readonly IGivenProductsToServiceDal _givenProductsToServiceDal;
 
+
+        IGivenProductsToServiceDal _givenProductsToServiceDal;
+        
         public GivenProductsToServiceManager(IGivenProductsToServiceDal givenProductsToServiceDal)
         {
-            _givenProductsToServiceDal = givenProductsToServiceDal;
+            _givenProductsToServiceDal = givenProductsToServiceDal;  
         }
 
-        public async Task AddAsync(GivenProductsToService givenProductsToService)
+        public void Add(GivenProductsToService givenProductsToService)
         {
-            await _givenProductsToServiceDal.Add(givenProductsToService);
+            _givenProductsToServiceDal.Add(givenProductsToService);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _givenProductsToServiceDal.DeleteById(id);
+            _givenProductsToServiceDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(GivenProductsToService givenProductsToService)
+        public void Delete(GivenProductsToService givenProductsToService)
         {
-            await _givenProductsToServiceDal.Delete(givenProductsToService);
+            _givenProductsToServiceDal.Delete(givenProductsToService);
+        }
+        public List<GivenProductsToService> GetAll()
+        {
+           return _givenProductsToServiceDal.GetAll();
         }
 
-        public async Task<List<GivenProductsToService>> GetAllAsync()
+        public GivenProductsToService GetById(int id)
         {
-            return await _givenProductsToServiceDal.GetAll();
+            return _givenProductsToServiceDal.Get(d => d.Id == id);
         }
 
-        public async Task<GivenProductsToService> GetByIdAsync(int id)
+        public void Update(GivenProductsToService givenProductsToService)
         {
-            return await _givenProductsToServiceDal.Get(d => d.Id == id);
+            _givenProductsToServiceDal.Update(givenProductsToService);
         }
 
-        public async Task UpdateAsync(GivenProductsToService givenProductsToService)
+       
+        public List<GivenProductsToServiceTotalResultDto> GetTotalQuantityByDate(DateTime date)
         {
-            await _givenProductsToServiceDal.Update(givenProductsToService);
+            return _givenProductsToServiceDal.GetTotalQuantityResultByDate(date);
         }
 
-        public async Task<List<GivenProductsToServiceTotalResultDto>> GetTotalQuantityByDateAsync(DateTime date)
+        public List<GivenProductsToService> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId)
         {
-            return await  _givenProductsToServiceDal.GetTotalQuantityResultByDate(date);
-        }
-
-        public async Task<List<GivenProductsToService>> GetAllByDateAndServisTypeIdAsync(DateTime date, int servisTypeId)
-        {
-            return  await _givenProductsToServiceDal.GetAllByDateAndServisTypeId(date, servisTypeId);
+            return _givenProductsToServiceDal.GetAllByDateAndServisTypeId(date,servisTypeId);     
         }
     }
 }

@@ -1,54 +1,52 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class ServiceStaleProductManager : IServiceStaleProductService
     {
-        private readonly IServiceStaleProductDal _serviceStaleProductDal;
 
+
+        IServiceStaleProductDal _serviceStaleProductDal;
+        
         public ServiceStaleProductManager(IServiceStaleProductDal serviceStaleProductDal)
         {
-            _serviceStaleProductDal = serviceStaleProductDal;
+            _serviceStaleProductDal = serviceStaleProductDal;  
         }
 
-        public async Task AddAsync(ServiceStaleProduct serviceStaleProduct)
+        public void Add(ServiceStaleProduct serviceStaleProduct)
         {
-            await _serviceStaleProductDal.Add(serviceStaleProduct);
+            _serviceStaleProductDal.Add(serviceStaleProduct);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _serviceStaleProductDal.DeleteById(id);
+            _serviceStaleProductDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(ServiceStaleProduct serviceStaleProduct)
+        public void Delete(ServiceStaleProduct serviceStaleProduct)
         {
-            await _serviceStaleProductDal.Delete(serviceStaleProduct);
+            _serviceStaleProductDal.Delete(serviceStaleProduct);
+        }
+        public List<ServiceStaleProduct> GetAll()
+        {
+           return _serviceStaleProductDal.GetAll();
         }
 
-        public async Task<List<ServiceStaleProduct>> GetAllAsync()
+        public ServiceStaleProduct GetById(int id)
         {
-            return await _serviceStaleProductDal.GetAll();
+            return _serviceStaleProductDal.Get(d => d.Id == id);
         }
 
-        public async Task<ServiceStaleProduct> GetByIdAsync(int id)
+        public void Update(ServiceStaleProduct serviceStaleProduct)
         {
-            return await _serviceStaleProductDal.Get(d => d.Id == id);
+            _serviceStaleProductDal.Update(serviceStaleProduct);
         }
 
-        public async Task UpdateAsync(ServiceStaleProduct serviceStaleProduct)
+        public List<ServiceStaleProduct> GetAllByDate(DateTime date, int serviceTypeId)
         {
-            await _serviceStaleProductDal.Update(serviceStaleProduct);
-        }
-
-        public async Task<List<ServiceStaleProduct>> GetAllByDateAsync(DateTime date, int serviceTypeId)
-        {
-            return await _serviceStaleProductDal.GetAll(s => s.Date.Date == date.Date && s.ServiceTypeId == serviceTypeId);
+            return _serviceStaleProductDal.GetAll(s => s.Date.Date == date.Date && s.ServiceTypeId == serviceTypeId);
         }
     }
 }
-

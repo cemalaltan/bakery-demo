@@ -4,12 +4,11 @@ namespace Business.Abstract
 {
     public interface ICategoryService
     {
-        Task<List<Category>> GetAllAsync();
-        Task AddAsync(Category category);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(Category category);
-        Task UpdateAsync(Category category);
-        Task<Category> GetByIdAsync(int id);
-
+        List<Category> GetAll();
+        void Add(Category category);
+        void DeleteById(int id);
+        void Delete(Category category);
+        void Update(Category category);
+        Category GetById(int id);
     }
 }

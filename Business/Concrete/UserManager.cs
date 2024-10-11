@@ -1,43 +1,46 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
 using DataAccess.Abstract;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
-        private readonly IUserDal _userDal;
+        IUserDal _userDal;
 
         public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
         }
 
-        public async Task<List<OperationClaim>> GetClaimsAsync(User user)
+        public List<OperationClaim> GetClaims(User user)
         {
-            return  await _userDal.GetClaims(user);
+            return _userDal.GetClaims(user);
         }
 
-        public async Task AddAsync(User user)
+        public void Add(User user)
         {
-            await _userDal.Add(user);
+            _userDal.Add(user);
         }
 
-        public async Task<User> GetByMailAsync(string email)
+        public User GetByMail(string email)
         {
-            return await _userDal.Get(u => u.Email == email);
+            return _userDal.Get(u => u.Email == email);
         }
 
-        public async Task<List<User>> GetUsersAsync()
+        public List<User> GetUsers()
         {
-            return await _userDal.GetAll();
+            return _userDal.GetAll();
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _userDal.DeleteById(id);
+            _userDal.DeleteById(id);
         }
     }
 }

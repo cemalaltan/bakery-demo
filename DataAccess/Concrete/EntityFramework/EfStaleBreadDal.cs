@@ -10,23 +10,37 @@ namespace DataAccess.Concrete.EntityFramework
 
     public class EfStaleBreadDal : EfEntityRepositoryBase<StaleBread, BakeryAppContext>, IStaleBreadDal
     {
-        private readonly BakeryAppContext _context;
-        public EfStaleBreadDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<StaleBread>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-        public async Task<bool> IsExist(int doughFactoryProductId, DateTime date)
+        public bool IsExist(int doughFactoryProductId, DateTime date)
         {
-            return await _context.StaleBread
-                .AnyAsync(sp => sp.Date.Date == date.Date && sp.DoughFactoryProductId == doughFactoryProductId);
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+
+                bool exists = context.StaleBread
+                    .Any(sp => sp.Date.Date == date.Date && sp.DoughFactoryProductId == doughFactoryProductId);
+
+                return exists;
+            }
         }
 
-        public async Task<List<StaleBreadDto>> GetAllByDate(DateTime date)
+        public List<StaleBreadDto> GetAllByDate(DateTime date)
         {
-            return await _context.StaleBread
-                .Where(x => x.Date.Date == date.Date)
-                .Join(_context.DoughFactoryProducts,
+            using (BakeryAppContext context = new())
+            {
+                var doughFactoryProducts = context.StaleBread
+                    .Where(x => x.Date.Date == date.Date)
+                    .Join(context.DoughFactoryProducts,
                     x => x.DoughFactoryProductId,
                     df => df.Id,
                     (x, df) => new StaleBreadDto
@@ -36,30 +50,44 @@ namespace DataAccess.Concrete.EntityFramework
                         Date = x.Date,
                         DoughFactoryProductId = x.DoughFactoryProductId,
                         DoughFactoryProductName = df.Name
-                    })
-                .ToListAsync();
+                    }
+                    )
+                    .ToList();
+
+                return doughFactoryProducts;
+            }
         }
 
-        public async Task<List<DoughFactoryProduct>> GetDoughFactoryProductsByDate(DateTime date)
+        public List<DoughFactoryProduct> GetDoughFactoryProductsByDate(DateTime date)
         {
-            return await _context.DoughFactoryProducts
-                .Where(df => !_context.StaleBread.Any(sb => sb.DoughFactoryProductId == df.Id && sb.Date.Date == date.Date) && df.Status == true)
-                .ToListAsync();
+            using (BakeryAppContext context = new())
+            {
+                var doughFactoryProducts = context.DoughFactoryProducts
+                   .Where(df => !context.StaleBread.Any(sb => sb.DoughFactoryProductId == df.Id && sb.Date.Date == date.Date) && df.Status == true)
+                    .ToList();
+
+                return doughFactoryProducts;
+            }
         }
 
-        public async Task<double> GetReport(DateTime date)
+        public double GetReport(DateTime date)
         {
-            return await _context.StaleBread
-                .Where(sb => sb.Date.Date == date.Date)
-                .Join(_context.DoughFactoryProducts,
-                    sb => sb.DoughFactoryProductId,
-                    dfp => dfp.Id,
-                    (sb, dfp) => new
-                    {
-                        BreadEquivalent = dfp.BreadEquivalent,
-                        Quantity = sb.Quantity
-                    })
-                .SumAsync(item => item.BreadEquivalent * item.Quantity);
+            using (BakeryAppContext context = new())
+            {
+                var result = context.StaleBread
+                    .Where(sb => sb.Date.Date == date.Date)
+                    .Join(context.DoughFactoryProducts,
+                        sb => sb.DoughFactoryProductId,
+                        dfp => dfp.Id,
+                        (sb, dfp) => new
+                        {
+                            BreadEquivalent = dfp.BreadEquivalent,
+                            Quantity = sb.Quantity
+                        })
+                    .Sum(item => item.BreadEquivalent * item.Quantity);
+
+                return result;
+            }
         }
     }
 }

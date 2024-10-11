@@ -7,20 +7,25 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfMoneyReceivedFromMarketDal : EfEntityRepositoryBase<MoneyReceivedFromMarket, BakeryAppContext>, IMoneyReceivedFromMarketDal
     {
-        private readonly BakeryAppContext _context;
 
-        public EfMoneyReceivedFromMarketDal(BakeryAppContext context) : base(context)
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<MoneyReceivedFromMarket>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-
-
-        public async Task<bool> IsExist(int marketId, DateTime date)
+        public bool IsExist(int marketId, DateTime date)
         {
-
-            return await _context.MoneyReceivedFromMarkets.AnyAsync(m => m.MarketId == marketId && m.Date.Date == date.Date);
-          
+            using (BakeryAppContext context = new())
+            {              
+                return context.Set<MoneyReceivedFromMarket>()
+                                    .Any(m => m.MarketId == marketId && m.Date.Date == date.Date);
+            }
         }
 
     }

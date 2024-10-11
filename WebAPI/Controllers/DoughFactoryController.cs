@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetByDateDoughFactoryList")]
-        public async Task<ActionResult> GetByDateDoughFactoryList(DateTime date)
+        public ActionResult GetByDateDoughFactoryList(DateTime date)
         {
             if (date.Date > DateTime.Now.Date)
             {
@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                var result = await _doughFactoryListService.GetByDateAsync(date.Date);
+                var result = _doughFactoryListService.GetByDate(date.Date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddDoughFactoryListAndListDetail")]
-        public async Task<ActionResult> AddDoughFactory(List<DoughFactoryListDetail> doughFactoryListDetail, int userId, DateTime date)
+        public ActionResult AddDoughFactory(List<DoughFactoryListDetail> doughFactoryListDetail, int userId, DateTime date)
         {
             if (userId <= 0)
             {
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
 
                 if (isNewList)
                 {
-                    doughFactoryListId = await _doughFactoryListService.AddAsync(new DoughFactoryList { UserId = userId, Date = date });
+                    doughFactoryListId = _doughFactoryListService.Add(new DoughFactoryList { UserId = userId, Date = date });
                 }
 
                 foreach (var detail in doughFactoryListDetail)
@@ -73,17 +73,17 @@ namespace WebAPI.Controllers
                     if (isNewList)
                     {
                         detail.DoughFactoryListId = doughFactoryListId;
-                       await _doughFactoryListDetailService.AddAsync(detail);
+                        _doughFactoryListDetailService.Add(detail);
                     }
                     else
                     {
-                        if (await _doughFactoryListDetailService.IsExistAsync(detail.DoughFactoryProductId, doughFactoryListId))
+                        if (_doughFactoryListDetailService.IsExist(detail.DoughFactoryProductId, doughFactoryListId))
                         {
                             return Conflict(Messages.Conflict);
                         }
                         else
                         {
-                          await  _doughFactoryListDetailService.AddAsync(detail);
+                            _doughFactoryListDetailService.Add(detail);
                         }
                     }
                 }
@@ -97,13 +97,13 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAddedDoughFactoryListDetailByListId")]
-        public async Task<ActionResult> GetDoughFactoryListDetail(int doughFactoryListId)
+        public ActionResult GetDoughFactoryListDetail(int doughFactoryListId)
         {
 
             try
             {
 
-                List<DoughFactoryListDetail> doughFactoryListDetails = await _doughFactoryListDetailService.GetByDoughFactoryListAsync(doughFactoryListId);
+                List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryList(doughFactoryListId);
 
                 List<GetAddedDoughFactoryListDetailDto> List = new();
 
@@ -113,7 +113,7 @@ namespace WebAPI.Controllers
                     addedDoughFactoryListDetailDto.Id = doughFactoryListDetails[i].Id;
 
                     addedDoughFactoryListDetailDto.DoughFactoryProductId = doughFactoryListDetails[i].DoughFactoryProductId;
-                    addedDoughFactoryListDetailDto.DoughFactoryProductName =  _doughFactoryProductService.GetByIdAsync(doughFactoryListDetails[i].DoughFactoryProductId).Result.Name;
+                    addedDoughFactoryListDetailDto.DoughFactoryProductName = _doughFactoryProductService.GetById(doughFactoryListDetails[i].DoughFactoryProductId).Name;
 
                     addedDoughFactoryListDetailDto.Quantity = doughFactoryListDetails[i].Quantity;
                     addedDoughFactoryListDetailDto.DoughFactoryListId = doughFactoryListDetails[i].DoughFactoryListId;
@@ -132,11 +132,11 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetNotAddedDoughFactoryListDetailByListId")]
-        public async Task<ActionResult> GetMarketByServiceListId(int doughFactoryListId)
+        public ActionResult GetMarketByServiceListId(int doughFactoryListId)
         {
             try
             {
-                List<DoughFactoryProduct> allDoughFactoryProduct = await _doughFactoryProductService.GetAllAsync();
+                List<DoughFactoryProduct> allDoughFactoryProduct = _doughFactoryProductService.GetAll();
 
                 List<ProductNotAddedDto> getNotAddedDoughFactoryListDetailDto = new();
 
@@ -156,7 +156,7 @@ namespace WebAPI.Controllers
                 {
 
                 
-                List<DoughFactoryListDetail> doughFactoryListDetails = await _doughFactoryListDetailService.GetByDoughFactoryListAsync(doughFactoryListId);
+                List<DoughFactoryListDetail> doughFactoryListDetails = _doughFactoryListDetailService.GetByDoughFactoryList(doughFactoryListId);
 
                 List<int> addedDoughFactoryProductIds = new List<int>();
 
@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteDoughFactoryListDetail")]
-        public async Task<ActionResult> DeleteDoughFactoryListDetail(int detailId)
+        public ActionResult DeleteDoughFactoryListDetail(int detailId)
         {
             if (detailId <= 0)
             {
@@ -199,7 +199,7 @@ namespace WebAPI.Controllers
 
             try
             {
-                await _doughFactoryListDetailService.DeleteByIdAsync(detailId);
+                _doughFactoryListDetailService.DeleteById(detailId);
                 return Ok();
             } 
             catch (Exception e)
@@ -210,7 +210,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateDoughFactoryListDetail")]
-        public async Task<ActionResult> UpdateDoughFactoryListDetail(DoughFactoryListDetail doughFactoryListDetail)
+        public ActionResult UpdateDoughFactoryListDetail(DoughFactoryListDetail doughFactoryListDetail)
         {
             if (doughFactoryListDetail == null)
             {
@@ -218,7 +218,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                await _doughFactoryListDetailService.UpdateAsync(doughFactoryListDetail);
+                _doughFactoryListDetailService.Update(doughFactoryListDetail);
                 return Ok();
             }
             catch (Exception e)

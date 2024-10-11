@@ -24,17 +24,17 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetAddedPurchasedProductByDate")]
-        public async Task<ActionResult> GetAddedPurchasedProductByDate(DateTime date)
+        public ActionResult GetAddedPurchasedProductByDate(DateTime date)
         {
             try
             {
-                List<PurchasedProductListDetail> purchasedProductListDetail = await _purchasedProductListDetailService.GetPurchasedProductListDetailByDateAsync(date);
+                List<PurchasedProductListDetail> purchasedProductListDetail = _purchasedProductListDetailService.GetPurchasedProductListDetailByDate(date);
                 List<GetAddedPurchasedProduct> getAddedPurchasedProducts = new();
 
                 for (int i = 0; i < purchasedProductListDetail.Count; i++)
                 {
                     GetAddedPurchasedProduct getAddedPurchasedProduct = new();
-                    getAddedPurchasedProduct.ProductName =  _productService.GetByIdAsync(purchasedProductListDetail[i].ProductId).Result.Name;
+                    getAddedPurchasedProduct.ProductName = _productService.GetById(purchasedProductListDetail[i].ProductId).Name;
                     getAddedPurchasedProduct.ProductId = purchasedProductListDetail[i].ProductId;
                     getAddedPurchasedProduct.Quantity = purchasedProductListDetail[i].Quantity;
                     getAddedPurchasedProduct.Price = purchasedProductListDetail[i].Price;
@@ -54,11 +54,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetNotAddedPurchasedProductByDate")]
-        public async Task<ActionResult> GetNotAddedPurchasedProductByDate(DateTime date, int categoryId)
+        public ActionResult GetNotAddedPurchasedProductByDate(DateTime date, int categoryId)
         {
             try
             {
-                List<PurchasedProductListDetail> purchasedProductListDetail =await _purchasedProductListDetailService.GetPurchasedProductListDetailByDateAsync(date);
+                List<PurchasedProductListDetail> purchasedProductListDetail = _purchasedProductListDetailService.GetPurchasedProductListDetailByDate(date);
                 List<int> AddedProductsIds = new();
 
                 for (int i = 0; i < purchasedProductListDetail.Count; i++)
@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                List<Product> products = await _productService.GetAllByCategoryIdAsync(categoryId);
+                List<Product> products = _productService.GetAllByCategoryId(categoryId);
 
                 List<GetNotAddedPurchasedProduct> getNotAddedPurchasedProducts = new();
 
@@ -97,7 +97,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddPurchasedProducts")]
-        public async Task<ActionResult> AddPurchasedProductListDetail(List<PurchasedProductListDetail> purchasedProductListDetail)
+        public ActionResult AddPurchasedProductListDetail(List<PurchasedProductListDetail> purchasedProductListDetail)
         {
             try
             {             
@@ -112,14 +112,14 @@ namespace WebAPI.Controllers
                     {
                         return BadRequest(Messages.WrongInput);
                     }
-                    if (await _purchasedProductListDetailService.IsExistAsync(purchasedProductListDetail[i].ProductId, purchasedProductListDetail[i].Date))
+                    if (_purchasedProductListDetailService.IsExist(purchasedProductListDetail[i].ProductId, purchasedProductListDetail[i].Date))
                     {
                         return BadRequest(Messages.OncePerDay);
                     }
-                    purchasedProductListDetail[i].Price =  _productService.GetByIdAsync(purchasedProductListDetail[i].ProductId).Result.Price;                    
+                    purchasedProductListDetail[i].Price = _productService.GetById(purchasedProductListDetail[i].ProductId).Price;                    
                 }
 
-               await _purchasedProductListDetailService.AddListAsync(purchasedProductListDetail);
+                _purchasedProductListDetailService.AddList(purchasedProductListDetail);
                 return Ok();
             }
             catch (Exception e)
@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeletePurchasedProductById")]
-        public async Task<ActionResult> DeletePurchasedProductById(int id, int userId)
+        public ActionResult DeletePurchasedProductById(int id, int userId)
         {
             if (id <= 0 || userId <= 0)
             {
@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
             }
             try
             {
-                PurchasedProductListDetail purchasedProductListDetail = await _purchasedProductListDetailService.GetByIdAsync(id);
+                PurchasedProductListDetail purchasedProductListDetail = _purchasedProductListDetailService.GetById(id);
                 if (purchasedProductListDetail == null)
                 {
                     return BadRequest("Bu ürün zaten ekli değil!");
@@ -149,7 +149,7 @@ namespace WebAPI.Controllers
                     return BadRequest("Bu ürünü silmek için yetkiniz yok!");
                 }
 
-               await _purchasedProductListDetailService.DeleteByIdAsync(id, userId);
+                _purchasedProductListDetailService.DeleteById(id, userId);
                 return Ok();
             }
             catch (Exception e)
@@ -160,7 +160,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateProductsCounting")]
-        public async Task<ActionResult> UpdateProductsCounting(PurchasedProductListDetail purchasedProductListDetail, int userId)
+        public ActionResult UpdateProductsCounting(PurchasedProductListDetail purchasedProductListDetail, int userId)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace WebAPI.Controllers
 
                 PurchasedProductListDetail purchasedProductListDetail2 = new();
 
-                purchasedProductListDetail2 = await _purchasedProductListDetailService.GetByIdAsync(purchasedProductListDetail.Id);
+                purchasedProductListDetail2 = _purchasedProductListDetailService.GetById(purchasedProductListDetail.Id);
 
                 if (purchasedProductListDetail2 == null)
                 {
@@ -187,7 +187,7 @@ namespace WebAPI.Controllers
                     return BadRequest("Bu ürünü güncellemek için yetkiniz yok!");
                 }
 
-               await _purchasedProductListDetailService.UpdateAsync(purchasedProductListDetail);
+                _purchasedProductListDetailService.Update(purchasedProductListDetail);
                 return Ok();
             }
             catch (Exception e)

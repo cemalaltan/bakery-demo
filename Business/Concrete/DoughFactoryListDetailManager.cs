@@ -2,57 +2,57 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class DoughFactoryListDetailManager : IDoughFactoryListDetailService
     {
-        private readonly IDoughFactoryListDetailDal _doughFactoryListDetailDal;
+        IDoughFactoryListDetailDal _doughFactoryListDetailDal;
 
         public DoughFactoryListDetailManager(IDoughFactoryListDetailDal doughFactoryListDetailDal)
         {
             _doughFactoryListDetailDal = doughFactoryListDetailDal;
+
         }
 
-        public async Task AddAsync(DoughFactoryListDetail doughFactoryListDetail)
+        public void Add(DoughFactoryListDetail doughFactoryListDetail)
         {
-            await _doughFactoryListDetailDal.Add(doughFactoryListDetail);
+            _doughFactoryListDetailDal.Add(doughFactoryListDetail);
         }
 
-        public async Task DeleteAsync(DoughFactoryListDetail doughFactoryListDetail)
+        public void Delete(DoughFactoryListDetail doughFactoryListDetail)
         {
-            await _doughFactoryListDetailDal.Delete(doughFactoryListDetail);
+            _doughFactoryListDetailDal.Delete(doughFactoryListDetail);
+        }
+        public void DeleteById(int id)
+        {
+            _doughFactoryListDetailDal.DeleteById(id);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public List<DoughFactoryListDetail> GetAll()
         {
-            await _doughFactoryListDetailDal.DeleteById(id);
+            return _doughFactoryListDetailDal.GetAll();
         }
 
-        public async Task<List<DoughFactoryListDetail>> GetAllAsync()
+        public List<DoughFactoryListDetail> GetByDoughFactoryList(int id)
         {
-            return await _doughFactoryListDetailDal.GetAll();
+            return _doughFactoryListDetailDal.GetAll(d => d.DoughFactoryListId == id);
         }
 
-        public async Task<List<DoughFactoryListDetail>> GetByDoughFactoryListAsync(int id)
+        public DoughFactoryListDetail GetById(int id)
         {
-            return await _doughFactoryListDetailDal.GetAll(d => d.DoughFactoryListId == id);
+            return _doughFactoryListDetailDal.Get(d => d.Id == id);
+        }
+        
+        public bool IsExist(int id, int listId)
+        {
+            return _doughFactoryListDetailDal.IsExist(id,  listId);
         }
 
-        public async Task<DoughFactoryListDetail> GetByIdAsync(int id)
+        public void Update(DoughFactoryListDetail doughFactoryListDetail)
         {
-            return await _doughFactoryListDetailDal.Get(d => d.Id == id);
-        }
-
-        public async Task<bool> IsExistAsync(int id, int listId)
-        {
-            return await  _doughFactoryListDetailDal.IsExist(id, listId);
-        }
-
-        public async Task UpdateAsync(DoughFactoryListDetail doughFactoryListDetail)
-        {
-            await _doughFactoryListDetailDal.Update(doughFactoryListDetail);
+            _doughFactoryListDetailDal.Update(doughFactoryListDetail);
         }
     }
+
 }

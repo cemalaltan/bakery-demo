@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetExpensesByDate")]
-        public async Task<ActionResult> GetExpense(DateTime date)
+        public ActionResult GetExpense(DateTime date)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid date!");
                 }
                 Console.WriteLine(date.ToString());
-                var result =await _expenseService.GetExpensesByDateAsync(date);
+                var result = _expenseService.GetExpensesByDate(date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddExpense")]
-        public async Task<ActionResult> AddExpense(Expense expense)
+        public ActionResult AddExpense(Expense expense)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-              await  _expenseService.AddAsync(expense);
+                _expenseService.Add(expense);
                 return Ok();
             }
             catch (Exception e)
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteExpense")]
-        public async Task<ActionResult> DeleteExpense(int  id)
+        public ActionResult DeleteExpense(int  id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(Messages.WrongInput);
                 }
-               await _expenseService.DeleteByIdAsync(id);
+                _expenseService.DeleteById(id);
                 return Ok();
             }
             catch (Exception e)
@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateExpense")]
-        public async Task<ActionResult> UpdateExpense(Expense expense)
+        public ActionResult UpdateExpense(Expense expense)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest("There is no data!");
                 }
-               await _expenseService.UpdateAsync(expense);
+                _expenseService.Update(expense);
                 return Ok();
             }
             catch (Exception e)

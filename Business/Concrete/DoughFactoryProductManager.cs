@@ -1,49 +1,52 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class DoughFactoryProductManager : IDoughFactoryProductService
     {
-        private readonly IDoughFactoryProductDal _doughFactoryProductDal;
+        IDoughFactoryProductDal _doughFactoryProductDal;
 
         public DoughFactoryProductManager(IDoughFactoryProductDal doughFactoryProductDal)
         {
             _doughFactoryProductDal = doughFactoryProductDal;
+
+        }
+      
+        public void Add(DoughFactoryProduct doughFactoryProduct)
+        {
+            _doughFactoryProductDal.Add(doughFactoryProduct);
         }
 
-        public async Task AddAsync(DoughFactoryProduct doughFactoryProduct)
+        public void Delete(DoughFactoryProduct doughFactoryProduct)
         {
-            await _doughFactoryProductDal.Add(doughFactoryProduct);
+            _doughFactoryProductDal.Delete(doughFactoryProduct);
         }
 
-        public async Task DeleteAsync(DoughFactoryProduct doughFactoryProduct)
+        public List<DoughFactoryProduct> GetAll()
         {
-            await _doughFactoryProductDal.Delete(doughFactoryProduct);
+            return _doughFactoryProductDal.GetAll(d=> d.Status == true);
+        }
+        public List<DoughFactoryProduct> GetAllProducts()
+        {
+            return _doughFactoryProductDal.GetAll();
+        }
+        public DoughFactoryProduct GetById(int id)
+        {
+            return _doughFactoryProductDal.Get(d=>d.Id == id);
         }
 
-        public async Task<List<DoughFactoryProduct>> GetAllAsync()
+        public void Update(DoughFactoryProduct doughFactoryProduct)
         {
-            return await _doughFactoryProductDal.GetAll(d => d.Status == true);
-        }
-
-        public async Task<List<DoughFactoryProduct>> GetAllProductsAsync()
-        {
-            return await _doughFactoryProductDal.GetAll();
-        }
-
-        public async Task<DoughFactoryProduct> GetByIdAsync(int id)
-        {
-            return await _doughFactoryProductDal.Get(d => d.Id == id);
-        }
-
-        public async Task UpdateAsync(DoughFactoryProduct doughFactoryProduct)
-        {
-            await _doughFactoryProductDal.Update(doughFactoryProduct);
+            _doughFactoryProductDal.Update(doughFactoryProduct);
         }
     }
+
 }

@@ -7,29 +7,38 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfDebtMarketDal : EfEntityRepositoryBase<DebtMarket, BakeryAppContext>, IDebtMarketDal
     {
-        private readonly BakeryAppContext _context;
-        public EfDebtMarketDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<DebtMarket>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-        public async Task<bool> IsExist(int id)
+        public Dictionary<int, decimal> GetTotalDebtsForMarkets()
         {
-            return await _context.DebtMarkets.AnyAsync(p => p.Id == id);
+            using (BakeryAppContext context = new BakeryAppContext())
+            {
+                var totalAmounts = context.DebtMarkets
+                    .GroupBy(dm => dm.MarketId)
+                    .Select(group => new { MarketId = group.Key, TotalAmount = group.Sum(dm => dm.Amount) })
+                    .ToDictionary(result => result.MarketId, result => result.TotalAmount);
+
+                return totalAmounts;
+            }
         }
 
-        public async Task<Dictionary<int, decimal>> GetTotalDebtsForMarkets()
+        public bool IsExist(int id)
         {
-            var totalAmounts = await _context.DebtMarkets
-                .GroupBy(dm => dm.MarketId)
-                .Select(group => new
-                {
-                    MarketId = group.Key,
-                    TotalAmount = group.Sum(dm => dm.Amount)
-                })
-                .ToDictionaryAsync(result => result.MarketId, result => result.TotalAmount);
-
-            return totalAmounts;
+            using (var context = new BakeryAppContext())
+            {
+                var entity = context.DebtMarkets.FirstOrDefault(p => p.Id == id);
+                return entity != null;
+            }
         }
 
     }

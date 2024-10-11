@@ -17,19 +17,19 @@ namespace WebAPI.Controllers
 
 
         [HttpDelete("DeleteById/{id}")]
-        public async Task<ActionResult> DeleteById(int id)
+        public ActionResult DeleteById(int id)
         {
-           await _userService.DeleteByIdAsync(id);
+            _userService.DeleteById(id);
             return Ok();
         }
 
 
         [HttpGet("GetUsers")]
-        public async Task<ActionResult> GetAll()
+        public IActionResult GetAll()
 
         {
 
-            var users =  _userService.GetUsersAsync().Result
+            var users = _userService.GetUsers()
             .Select(u => new UserDto
             {
                 Id = u.Id,

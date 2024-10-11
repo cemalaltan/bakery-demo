@@ -6,9 +6,9 @@ namespace DataAccess.Abstract
 {
     public interface IGivenProductsToServiceDal : IEntityRepository<GivenProductsToService>
     {
-       
-        Task<List<GivenProductsToServiceTotalResultDto>> GetTotalQuantityResultByDate(DateTime date);
+        void DeleteById(int id);
+        List<GivenProductsToServiceTotalResultDto> GetTotalQuantityResultByDate(DateTime date);
 
-        Task<List<GivenProductsToService>> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId);
+        List<GivenProductsToService> GetAllByDateAndServisTypeId(DateTime date, int servisTypeId);
     }
 }

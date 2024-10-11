@@ -5,8 +5,8 @@ namespace DataAccess.Abstract
 {
     public interface IProductDal : IEntityRepository<Product>
     {
-    
+        void DeleteById(int id);
 
-        Task<List<Product>> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId);
+        List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId);
     }
 }

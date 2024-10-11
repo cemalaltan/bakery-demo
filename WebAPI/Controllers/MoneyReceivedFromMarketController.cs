@@ -39,13 +39,13 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetMoneyReceivedFromMarketByMarketId")]
-        public async Task<ActionResult> GetMoneyReceivedFromMarketByMarketId(int marketId, DateTime date)
+        public ActionResult GetMoneyReceivedFromMarketByMarketId(int marketId, DateTime date)
         {
 
             try
             {
                 //var result = _moneyReceivedFromMarketService.GetByMarketId(marketId);
-                var result = await _moneyReceivedFromMarketService.GetByMarketIdAndDateAsync(marketId, date);
+                var result = _moneyReceivedFromMarketService.GetByMarketIdAndDate(marketId, date);
                 return Ok(result);
             }
             catch (Exception e)
@@ -57,11 +57,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetMoneyReceivedMarketListByDate")]
-        public async Task<ActionResult> GetMoneyReceivedMarketListByDate(DateTime date)
+        public ActionResult GetMoneyReceivedMarketListByDate(DateTime date)
         {
             try
             {
-                return Ok(await _marketEndOfDayService.CalculateMarketEndOfDayAsync(date));
+                return Ok(_marketEndOfDayService.CalculateMarketEndOfDay(date));
             }
             catch (Exception e)
             {
@@ -71,11 +71,11 @@ namespace WebAPI.Controllers
 
         }
         [HttpGet("GetMarketsEndOfDayCalculationWithDetail")]
-        public async Task<ActionResult> GetMarketsEndOfDayCalculationWithDetail(DateTime date)
+        public ActionResult GetMarketsEndOfDayCalculationWithDetail(DateTime date)
         {
             try
             {
-                return Ok(await _marketEndOfDayService.MarketsEndOfDayCalculationWithDetailAsync(date));
+                return Ok(_marketEndOfDayService.MarketsEndOfDayCalculationWithDetail(date));
             }
             catch (Exception e)
             {
@@ -87,21 +87,21 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetNotMoneyReceivedMarketListByDate")]
-        public async Task<ActionResult> GetNotMoneyReceivedMarketListByDate(DateTime date)
+        public ActionResult GetNotMoneyReceivedMarketListByDate(DateTime date)
         {
             try
             {
                 List<int> MarketIds = new List<int>();
-                List<ServiceList> serviceList =await _serviceListService.GetByDateAsync(date);
+                List<ServiceList> serviceList = _serviceListService.GetByDate(date);
 
                 for (int i = 0; i < serviceList.Count; i++)
                 {
-                    List<ServiceListDetail> serviceListDetail =await _serviceListDetailService.GetByListIdAsync(serviceList[i].Id);
+                    List<ServiceListDetail> serviceListDetail = _serviceListDetailService.GetByListId(serviceList[i].Id);
 
                     for (int j = 0; j < serviceListDetail.Count; j++)
                     {
 
-                        var newMarketId =await _marketContractService.GetMarketIdByIdAsync(serviceListDetail[j].MarketContractId);
+                        var newMarketId = _marketContractService.GetMarketIdById(serviceListDetail[j].MarketContractId);
                         if (!MarketIds.Contains(newMarketId))
                         {
                             MarketIds.Add(newMarketId);
@@ -109,7 +109,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = await _moneyReceivedFromMarketService.GetByDateAsync(date);
+                List<MoneyReceivedFromMarket> moneyReceivedFromMarkets = _moneyReceivedFromMarketService.GetByDate(date);
 
                 List<int> filteredMarkets = MarketIds.Except(moneyReceivedFromMarkets.Select(m => m.MarketId)).ToList();
 
@@ -119,13 +119,13 @@ namespace WebAPI.Controllers
                 {
                     NotPaymentMarket notPaymentMarket = new();
                     notPaymentMarket.MarketId = filteredMarkets[i];
-                    notPaymentMarket.MarketName =await _marketService.GetNameByIdAsync(filteredMarkets[i]);
+                    notPaymentMarket.MarketName = _marketService.GetNameById(filteredMarkets[i]);
 
-                    var result = await CalculateTotalAmountAndBread(date, filteredMarkets[i]);
+                    var result = CalculateTotalAmountAndBread(date, filteredMarkets[i]);
                     
                     notPaymentMarket.TotalAmount = result.TotalAmount;
                     notPaymentMarket.GivenBread = result.TotalBread;
-                    notPaymentMarket.StaleBread = await _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketIdAsync(notPaymentMarket.MarketId, date);
+                    notPaymentMarket.StaleBread = _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketId(notPaymentMarket.MarketId, date);
                     NotPaymentMarkets.Add(notPaymentMarket);
                 }
 
@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddMoneyReceivedFromMarket")]
-        public async Task<ActionResult> AddMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public ActionResult AddMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
             try
             {
@@ -148,14 +148,14 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-                if (await _moneyReceivedFromMarketService.IsExistAsync(moneyReceivedFromMarket.MarketId, moneyReceivedFromMarket.Date))
+                if (_moneyReceivedFromMarketService.IsExist(moneyReceivedFromMarket.MarketId, moneyReceivedFromMarket.Date))
                 {
 
                     return BadRequest(Messages.Conflict);
                 }
 
                 
-                var result = await CalculateTotalAmountAndBread(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
+                var result = CalculateTotalAmountAndBread(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
                 decimal totalAmount = result.TotalAmount;
                 if (totalAmount < moneyReceivedFromMarket.Amount)
                 {
@@ -163,7 +163,7 @@ namespace WebAPI.Controllers
                 }
                 if (totalAmount > moneyReceivedFromMarket.Amount)
                 {
-                   await _debtMarketService.AddAsync(new DebtMarket
+                    _debtMarketService.Add(new DebtMarket
                     {
                         Amount = (totalAmount - moneyReceivedFromMarket.Amount),
                         Date = moneyReceivedFromMarket.Date,
@@ -171,7 +171,7 @@ namespace WebAPI.Controllers
                     });
                 }
 
-               await _moneyReceivedFromMarketService.AddAsync(moneyReceivedFromMarket);
+                _moneyReceivedFromMarketService.Add(moneyReceivedFromMarket);
             }
             catch (Exception e)
             {
@@ -183,7 +183,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteMoneyReceivedFromMarket")]
-        public async Task<ActionResult> DeleteMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public ActionResult DeleteMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
             try
             {
@@ -193,14 +193,14 @@ namespace WebAPI.Controllers
                 }
 
 
-                int debtId =await _debtMarketService.GetDebtIdByDateAndMarketIdAsync(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
+                int debtId = _debtMarketService.GetDebtIdByDateAndMarketId(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
           
                 if(debtId != 0)
                 {
-                   await _debtMarketService.DeleteByIdAsync(debtId);
+                    _debtMarketService.DeleteById(debtId);
                 }
 
-               await _moneyReceivedFromMarketService.DeleteByIdAsync(moneyReceivedFromMarket.Id);
+                _moneyReceivedFromMarketService.DeleteById(moneyReceivedFromMarket.Id);
             }
             catch (Exception e)
             {
@@ -213,7 +213,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateMoneyReceivedFromMarket")]
-        public async Task<ActionResult> UpdateMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
+        public ActionResult UpdateMoneyReceivedFromMarket(MoneyReceivedFromMarket moneyReceivedFromMarket)
         {
             try
             {
@@ -222,13 +222,13 @@ namespace WebAPI.Controllers
                     return BadRequest(Messages.WrongInput);
                 }
 
-                if (!await _moneyReceivedFromMarketService.IsExistAsync(moneyReceivedFromMarket.MarketId, moneyReceivedFromMarket.Date))
+                if (!_moneyReceivedFromMarketService.IsExist(moneyReceivedFromMarket.MarketId, moneyReceivedFromMarket.Date))
                 {
 
                     return BadRequest(Messages.WrongInput);
                 }
 
-                var result = await CalculateTotalAmountAndBread(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
+                var result = CalculateTotalAmountAndBread(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId);
                 decimal totalAmount = result.TotalAmount;
                 if (totalAmount < moneyReceivedFromMarket.Amount)
                 {
@@ -236,19 +236,19 @@ namespace WebAPI.Controllers
                 }
                 if (totalAmount > moneyReceivedFromMarket.Amount)
                 {
-                    if (await _debtMarketService.IsExistAsync(await _debtMarketService.GetDebtIdByDateAndMarketIdAsync(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)))
+                    if (_debtMarketService.IsExist(_debtMarketService.GetDebtIdByDateAndMarketId(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)))
                     {
-                      await  _debtMarketService.UpdateAsync(new DebtMarket
+                        _debtMarketService.Update(new DebtMarket
                         {
                             Amount = (totalAmount - moneyReceivedFromMarket.Amount),
                             Date = moneyReceivedFromMarket.Date,
                             MarketId = moneyReceivedFromMarket.MarketId,
-                            Id = await _debtMarketService.GetDebtIdByDateAndMarketIdAsync(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)
+                            Id = _debtMarketService.GetDebtIdByDateAndMarketId(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)
                         });
                     }
                     else
                     {
-                      await  _debtMarketService.AddAsync(new DebtMarket
+                        _debtMarketService.Add(new DebtMarket
                         {
                             Amount = (totalAmount - moneyReceivedFromMarket.Amount),
                             Date = moneyReceivedFromMarket.Date,
@@ -258,14 +258,14 @@ namespace WebAPI.Controllers
                 }
                 if (totalAmount == moneyReceivedFromMarket.Amount)
                 {
-                  await  _debtMarketService.DeleteAsync(new DebtMarket
+                    _debtMarketService.Delete(new DebtMarket
                     {
                         Date = moneyReceivedFromMarket.Date,
                         MarketId = moneyReceivedFromMarket.MarketId,
-                        Id = await _debtMarketService.GetDebtIdByDateAndMarketIdAsync(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)
+                        Id = _debtMarketService.GetDebtIdByDateAndMarketId(moneyReceivedFromMarket.Date, moneyReceivedFromMarket.MarketId)
                     });
                 }
-             await   _moneyReceivedFromMarketService.UpdateAsync(moneyReceivedFromMarket);
+                _moneyReceivedFromMarketService.Update(moneyReceivedFromMarket);
             }
             catch (Exception e)
             {
@@ -277,17 +277,17 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        private async Task<(decimal TotalAmount, int TotalBread)> CalculateTotalAmountAndBread(DateTime date, int marketId)
+        private (decimal TotalAmount, int TotalBread) CalculateTotalAmountAndBread(DateTime date, int marketId)
         {
 
-            List<ServiceList> serviceLists = await _serviceListService.GetByDateAsync(date);
+            List<ServiceList> serviceLists = _serviceListService.GetByDate(date);
 
             int TotalBread = 0;
             decimal Price = 0;
             for (int i = 0; i < serviceLists.Count; i++)
             {
 
-                ServiceListDetail serviceListDetail = await _serviceListDetailService.GetByServiceListIdAndMarketContractIdAsync(serviceLists[i].Id, await _marketContractService.GetIdByMarketIdAsync(marketId));
+                ServiceListDetail serviceListDetail = _serviceListDetailService.GetByServiceListIdAndMarketContractId(serviceLists[i].Id, _marketContractService.GetIdByMarketId(marketId));
                 if (serviceListDetail != null)
                 {
                     TotalBread += serviceListDetail.Quantity;
@@ -295,7 +295,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            int StaleBreadCount = await _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketIdAsync(marketId, date);
+            int StaleBreadCount = _staleBreadReceivedFromMarketService.GetStaleBreadCountByMarketId(marketId, date);
 
             decimal TotalAmount = (TotalBread - StaleBreadCount) * Price;
 

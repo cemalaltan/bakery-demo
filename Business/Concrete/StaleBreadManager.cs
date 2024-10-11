@@ -2,69 +2,67 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class StaleBreadManager : IStaleBreadService
     {
-        private readonly IStaleBreadDal _staleBreadDal;
+
+
+        IStaleBreadDal _staleBreadDal;
 
         public StaleBreadManager(IStaleBreadDal staleBreadDal)
         {
             _staleBreadDal = staleBreadDal;
         }
 
-        public async Task AddAsync(StaleBread staleBread)
+        public void Add(StaleBread staleBread)
         {
-            await _staleBreadDal.Add(staleBread);
+            _staleBreadDal.Add(staleBread);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _staleBreadDal.DeleteById(id);
+            _staleBreadDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(StaleBread staleBread)
+        public void Delete(StaleBread staleBread)
         {
-            await _staleBreadDal.Delete(staleBread);
+            _staleBreadDal.Delete(staleBread);
+        }
+        public List<StaleBread> GetAll()
+        {
+            return _staleBreadDal.GetAll();
         }
 
-        public async Task<List<StaleBread>> GetAllAsync()
+        public StaleBread GetById(int id)
         {
-            return await _staleBreadDal.GetAll();
+            return _staleBreadDal.Get(d => d.Id == id);
         }
 
-        public async Task<StaleBread> GetByIdAsync(int id)
+        public void Update(StaleBread staleBread)
         {
-            return await _staleBreadDal.Get(d => d.Id == id);
+            _staleBreadDal.Update(staleBread);
         }
 
-        public async Task UpdateAsync(StaleBread staleBread)
+        public double GetStaleBreadDailyReport(DateTime date)
         {
-            await _staleBreadDal.Update(staleBread);
+            return _staleBreadDal.GetReport(date);
         }
 
-        public async Task<double> GetStaleBreadDailyReportAsync(DateTime date)
+        public List<DoughFactoryProduct> GetDoughFactoryProducts(DateTime date)
         {
-            return  await _staleBreadDal.GetReport(date);
+            return _staleBreadDal.GetDoughFactoryProductsByDate(date);
         }
 
-        public async Task<List<DoughFactoryProduct>> GetDoughFactoryProductsAsync(DateTime date)
+        public List<StaleBreadDto> GetAllByDate(DateTime date)
         {
-            return  await _staleBreadDal.GetDoughFactoryProductsByDate(date);
+            return _staleBreadDal.GetAllByDate(date);
         }
 
-        public async Task<List<StaleBreadDto>> GetAllByDateAsync(DateTime date)
+        public bool IsExist(int doughFactoryProductId, DateTime date)
         {
-            return  await _staleBreadDal.GetAllByDate(date);
-        }
-
-        public async Task<bool> IsExistAsync(int doughFactoryProductId, DateTime date)
-        {
-            return  await _staleBreadDal.IsExist(doughFactoryProductId, date);
+            return _staleBreadDal.IsExist(doughFactoryProductId, date);
         }
     }
 }

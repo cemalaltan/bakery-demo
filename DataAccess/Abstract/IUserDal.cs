@@ -10,7 +10,7 @@ namespace DataAccess.Abstract
 {
     public interface IUserDal : IEntityRepository<User>
     {
-        Task<List<OperationClaim>> GetClaims(User user);
-      
+        List<OperationClaim> GetClaims(User user);
+        void DeleteById(int id);
     }
 }

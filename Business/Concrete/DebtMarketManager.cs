@@ -1,70 +1,68 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class DebtMarketManager : IDebtMarketService
     {
-        private readonly IDebtMarketDal _debtMarketDal;
 
+
+        IDebtMarketDal _debtMarketDal;
+        
         public DebtMarketManager(IDebtMarketDal debtMarketDal)
         {
-            _debtMarketDal = debtMarketDal;
+            _debtMarketDal = debtMarketDal;  
         }
 
-        public async Task AddAsync(DebtMarket debtMarket)
+        public void Add(DebtMarket debtMarket)
         {
-            await _debtMarketDal.Add(debtMarket);
+            _debtMarketDal.Add(debtMarket);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _debtMarketDal.DeleteById(id);
+            _debtMarketDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(DebtMarket debtMarket)
+        public void Delete(DebtMarket debtMarket)
         {
-            await _debtMarketDal.Delete(debtMarket);
+            _debtMarketDal.Delete(debtMarket);
+        }
+        public List<DebtMarket> GetAll()
+        {
+           return _debtMarketDal.GetAll();
         }
 
-        public async Task<List<DebtMarket>> GetAllAsync()
+        public DebtMarket GetById(int id)
         {
-            return await _debtMarketDal.GetAll();
+            return _debtMarketDal.Get(d => d.Id == id);
         }
 
-        public async Task<DebtMarket> GetByIdAsync(int id)
+        public void Update(DebtMarket debtMarket)
         {
-            return await _debtMarketDal.Get(d => d.Id == id);
+            _debtMarketDal.Update(debtMarket);
         }
 
-        public async Task UpdateAsync(DebtMarket debtMarket)
+        public int GetDebtIdByDateAndMarketId(DateTime date, int marketId)
         {
-            await _debtMarketDal.Update(debtMarket);
-        }
-
-        public async Task<int> GetDebtIdByDateAndMarketIdAsync(DateTime date, int marketId)
-        {
-            DebtMarket debtMarket = await _debtMarketDal.Get(d => d.Date.Date == date.Date && d.MarketId == marketId && d.Amount > 0);
+            DebtMarket debtMarket = _debtMarketDal.Get(d => d.Date.Date == date.Date && d.MarketId == marketId && d.Amount>0);
             return debtMarket == null ? 0 : debtMarket.Id;
         }
 
-        public async Task<bool> IsExistAsync(int id)
+        public bool IsExist(int id)
         {
-            return await _debtMarketDal.IsExist(id);
+            return _debtMarketDal.IsExist(id);
         }
 
-        public async Task<List<DebtMarket>> GetDebtByMarketIdAsync(int marketId)
+        public List<DebtMarket> GetDebtByMarketId(int marketId)
         {
-            return await _debtMarketDal.GetAll(d => d.MarketId == marketId);
+            return _debtMarketDal.GetAll(d=> d.MarketId == marketId);
         }
-
-        public async Task<Dictionary<int, decimal>> GetTotalDebtsForMarketsAsync()
+     
+        public Dictionary<int, decimal> GetTotalDebtsForMarkets()
         {
-            return await  _debtMarketDal.GetTotalDebtsForMarkets();
+            return _debtMarketDal.GetTotalDebtsForMarkets();
         }
     }
 }

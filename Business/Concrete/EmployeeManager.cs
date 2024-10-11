@@ -1,53 +1,53 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
     public class EmployeeManager : IEmployeeService
     {
-        private readonly IEmployeeDal _employeeDal;
 
-        public EmployeeManager(IEmployeeDal employeeDal)
+
+        IEmployeeDal _employeeDal;
+
+        public EmployeeManager(IEmployeeDal EmployeeDal)
         {
-            _employeeDal = employeeDal;
+            _employeeDal = EmployeeDal;
         }
 
-        public async Task AddAsync(Employee employee)
+        public void Add(Employee Employee)
         {
-            await _employeeDal.Add(employee);
+            _employeeDal.Add(Employee);
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public void DeleteById(int id)
         {
-            await _employeeDal.DeleteById(id);
+            _employeeDal.DeleteById(id);
         }
 
-        public async Task DeleteAsync(Employee employee)
+        public void Delete(Employee Employee)
         {
-            await _employeeDal.Delete(employee);
+            _employeeDal.Delete(Employee);
+        }
+        public List<Employee> GetAll()
+        {
+            return _employeeDal.GetAll();
         }
 
-        public async Task<List<Employee>> GetAllAsync()
+        public Employee GetById(int id)
         {
-            return await _employeeDal.GetAll();
+            return _employeeDal.Get(d => d.Id == id);
         }
 
-        public async Task<Employee> GetByIdAsync(int id)
+        public void Update(Employee Employee)
         {
-            return await _employeeDal.Get(d => d.Id == id);
+            _employeeDal.Update(Employee);
         }
 
-        public async Task UpdateAsync(Employee employee)
+        public List<Employee> GetAllActive()
         {
-            await _employeeDal.Update(employee);
-        }
-
-        public async Task<List<Employee>> GetAllActiveAsync()
-        {
-            return await _employeeDal.GetAll(d => d.Status == true);
+            return _employeeDal.GetAll(d => d.Status == true);
         }
     }
+
 }

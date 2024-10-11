@@ -5,13 +5,13 @@ namespace Business.Abstract
 {
     public interface IServiceListService 
     {
-        Task<List<ServiceList>> GetAllAsync();
-        Task<int> AddAsync(ServiceList serviceList);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(ServiceList serviceList);
-        Task UpdateAsync(ServiceList serviceList);
-        Task<ServiceList> GetByIdAsync(int id);
-        Task<List<ServiceList>> GetByDateAsync(DateTime date);
+        List<ServiceList> GetAll();
+        int Add(ServiceList serviceList);
+        void DeleteById(int id);
+        void Delete(ServiceList serviceList);
+        void Update(ServiceList serviceList);
+        ServiceList GetById(int id);
 
+        List<ServiceList> GetByDate(DateTime date);
     }
 }

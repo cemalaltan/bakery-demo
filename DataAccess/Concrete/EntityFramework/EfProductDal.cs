@@ -7,34 +7,45 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductDal : EfEntityRepositoryBase<Product, BakeryAppContext>, IProductDal
     {
-        private readonly BakeryAppContext _context;
-        public EfProductDal(BakeryAppContext context) : base(context)
+
+        public void DeleteById(int id)
         {
-            _context = context;
+            using (BakeryAppContext context = new())
+            {
+                var deletedEntity = context.Entry(context.Set<Product>().Find(id));
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+
+            }
         }
 
-        public async Task<List<Product>> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
+        public List<Product> GetNotAddedProductsByListAndCategoryId(int listId, int categoryId)
         {
-            if (listId == 0)
+            using (BakeryAppContext context = new())
             {
-                return await _context.Products
-                    .Where(p => p.CategoryId == categoryId && p.Status == true)
-                    .ToListAsync();
-            }
-            else
-            {
-                var productIdsInProductionList = await _context.ProductionListDetails
-                    .Where(m => m.ProductionListId == listId)
-                    .Select(q => q.ProductId)
-                    .ToListAsync();
+                if (listId == 0)
+                {
+                    var getCategoryProducts = context.Products
+                         .Where(p => p.CategoryId == categoryId && p.Status == true)
+                         .ToList();
 
-                var productsNotInProductionList = await _context.Products
-                    .Where(p => p.CategoryId == categoryId && !productIdsInProductionList.Contains(p.Id) && p.Status == true)
-                    .ToListAsync();
+                    return getCategoryProducts;
+                }
+                else
+                {
+                    var productIdsInProductionList = context.ProductionListDetails
+                   .Where(m => m.ProductionListId == listId)
+                   .Select(q => q.ProductId)
+                   .ToList();
 
-                return productsNotInProductionList;
+                    var productsNotInProductionList = context.Products
+                        .Where(p => p.CategoryId == categoryId && !productIdsInProductionList.Contains(p.Id) && p.Status == true)
+                        .ToList();
+
+                    return productsNotInProductionList;
+                }
+
             }
         }
     }
-    }
-
+}

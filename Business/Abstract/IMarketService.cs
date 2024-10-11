@@ -4,14 +4,13 @@ namespace Business.Abstract
 {
     public interface IMarketService
     {
-        Task<List<Market>> GetAllAsync();
-        Task<List<Market>> GetAllActiveAsync();
-        Task AddAsync(Market market);
-        Task DeleteByIdAsync(int id);
-        Task DeleteAsync(Market market);
-        Task UpdateAsync(Market market);
-        Task<Market> GetByIdAsync(int id);
-        Task<string> GetNameByIdAsync(int id);
-
+        List<Market> GetAll();
+        List<Market> GetAllActive();
+        void Add(Market market);
+        void DeleteById(int id);
+        void Delete(Market market);
+        void Update(Market market);
+        Market GetById(int id);
+        string GetNameById(int id);
     }
 }
