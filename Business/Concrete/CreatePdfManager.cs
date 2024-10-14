@@ -172,6 +172,7 @@ namespace Business.Concrete
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
+				throw e;
 			}
 		}
 		public byte[] CreatePdf(DateTime date)
@@ -271,6 +272,7 @@ namespace Business.Concrete
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
+				throw e;
 			}
 		}
 		public byte[] CreatePdfForHamurhane(DateTime date)
@@ -349,6 +351,7 @@ namespace Business.Concrete
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
+				throw e;
 			}
 		}
 		public byte[] CreatePdfForMarketService(DateTime date)
@@ -436,6 +439,7 @@ namespace Business.Concrete
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
+				throw e;
 			}
 		}
 
