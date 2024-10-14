@@ -28,6 +28,9 @@ namespace Business.Concrete
 
 		private IMarketEndOfDayService _marketEndOfDayService;
 		private IExpenseService _expenseService;
+		
+		private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+
 		public CreatePdfManager(IMarketEndOfDayService marketEndOfDayService,
 			IBreadPriceService breadPriceService,
 			IDoughFactoryProductService doughFactoryProductService, IDoughFactoryAPIService doughFactoryAPIService,
@@ -65,8 +68,7 @@ namespace Business.Concrete
 					using (var pdf = new PdfDocument(writer))
 					{
 
-                        string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business\Fonts\", "Roboto-Regular.ttf");
-                        PdfFont font = PdfFontFactory.CreateFont(path, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
 						var document = new Document(pdf);
 						document.SetFont(font);
@@ -174,8 +176,8 @@ namespace Business.Concrete
 					{
 						int CategoryId = 0;
 
-                        string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business\Fonts\", "Roboto-Regular.ttf");
-                        PdfFont font = PdfFontFactory.CreateFont(path, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+					
+						PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
                         var document = new Document(pdf);
 						document.SetFont(font);
@@ -265,8 +267,7 @@ namespace Business.Concrete
 					using (var pdf = new PdfDocument(writer))
 					{
 
-                        string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business\Fonts\", "Roboto-Regular.ttf");
-                        PdfFont font = PdfFontFactory.CreateFont(path, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
                         var document = new Document(pdf);
 						document.SetFont(font);
@@ -336,8 +337,7 @@ namespace Business.Concrete
 					using (var pdf = new PdfDocument(writer))
 					{
 
-                        string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business\Fonts\", "Roboto-Regular.ttf");
-                        PdfFont font = PdfFontFactory.CreateFont(path, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
                         var document = new Document(pdf);
 						document.SetFont(font);
