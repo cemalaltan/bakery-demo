@@ -23,4 +23,5 @@ RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY Business/Fonts/Roboto-Regular.ttf /app/Business/Fonts/
 ENTRYPOINT ["dotnet", "WebAPI.dll"]

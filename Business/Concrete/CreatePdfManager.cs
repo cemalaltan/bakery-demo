@@ -29,7 +29,9 @@ namespace Business.Concrete
 		private IMarketEndOfDayService _marketEndOfDayService;
 		private IExpenseService _expenseService;
 
-		private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+		// private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+		private string fontPath = string fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Business", "Fonts", "Roboto-Regular.ttf");
+
 
 		public CreatePdfManager(IMarketEndOfDayService marketEndOfDayService,
 			IBreadPriceService breadPriceService,
