@@ -28,7 +28,7 @@ namespace Business.Concrete
 
 		private IMarketEndOfDayService _marketEndOfDayService;
 		private IExpenseService _expenseService;
-		
+
 		private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
 
 		public CreatePdfManager(IMarketEndOfDayService marketEndOfDayService,
@@ -60,186 +60,277 @@ namespace Business.Concrete
 		};
 		public byte[] EndOfDayAccountCreatePdf(DateTime date, EndOfDayResult endOfDayResult, decimal ProductsSoldInTheBakery)
 		{
-			using (var stream = new MemoryStream())
+			try
 			{
-				string formattedDate;
-				using (var writer = new PdfWriter(stream))
+
+				using (var stream = new MemoryStream())
 				{
-					using (var pdf = new PdfDocument(writer))
+					string formattedDate;
+					using (var writer = new PdfWriter(stream))
 					{
-
-                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
-
-						var document = new Document(pdf);
-						document.SetFont(font);
-
-
-
-						formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
-						var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
-
-						var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
-							.SetTextAlignment(TextAlignment.RIGHT)
-						   ;
-
-						document.Add(date2);
-
-
-						var companyName = "ASLANOĞLU Fırın";
-						var company = new Paragraph(companyName)
-							.SetTextAlignment(TextAlignment.LEFT)
-							.SetFontSize(16);
-
-						document.Add(company);
-
-
-						var title = new Paragraph("Gün Sonu Hesap")
-							.SetTextAlignment(TextAlignment.CENTER)
-							.SetFontSize(16);
-
-						document.Add(title);
-
-                        var expenses = RegularDataForExpenses(date);
-
-                        (Table table1, Table table2, double TotalBread) = CreateTable1(endOfDayResult.EndOfDayAccount);
-						decimal breadRevenue = (decimal)TotalBread * endOfDayResult.EndOfDayAccount.Price;
-
-                        var table3 = CreateTable3(breadRevenue, endOfDayResult.Account, endOfDayResult.PastaneRevenue, expenses.Item2);
-
-						// Tabloları yan yana eklemek için bir layout
-						var layout = new Table(3)
-								 .UseAllAvailableWidth()
-								 .SetBorder(Border.NO_BORDER);
-
-						// Tabloları layout içine ekleyin
-						layout.AddCell(new Cell().Add(table1).SetBorder(Border.NO_BORDER));
-						layout.AddCell(new Cell().Add(table2).SetBorder(Border.NO_BORDER));
-						layout.AddCell(new Cell().Add(table3).SetBorder(Border.NO_BORDER));
-
-						document.Add(layout);
-
-						//***************   Giderler ***************
-
-						var giderler = new Paragraph("Giderler")
-							.SetTextAlignment(TextAlignment.LEFT)
-							.SetFontSize(16);
-
-						document.Add(giderler);
-
-						
-						var giderlerTable = GiderlerCreateTable(expenses.Item1);
-						giderlerTable.SetWidth(UnitValue.CreatePercentValue(33));
-
-
-
-						document.Add(giderlerTable);
-
-						var KrediKartıAmount = endOfDayResult.Account.CreditCard;
-						var NetEldenAmount = (endOfDayResult.Account.KasaDevir + endOfDayResult.Account.ServisGelir + endOfDayResult.PastaneRevenue + breadRevenue) - expenses.Item2 - endOfDayResult.Account.Devir;
-
-						var KrediKartı = new Paragraph($"Kredi Kartı: {KrediKartıAmount}TL")
-							.SetTextAlignment(TextAlignment.RIGHT)
-							.SetFontSize(16);
-						document.Add(KrediKartı);
-
-						var NetElden = new Paragraph($"Net Elden: {NetEldenAmount}TL")
-							.SetTextAlignment(TextAlignment.RIGHT)
-							.SetFontSize(16);
-						document.Add(NetElden);
-
-						var Total = new Paragraph($"Toplam: {NetEldenAmount + KrediKartıAmount}TL")
-						   .SetTextAlignment(TextAlignment.RIGHT)
-						   .SetFontSize(16);
-						document.Add(Total);
-
-						document.Close();
-					}
-				}
-
-
-				//stream.Seek(0, SeekOrigin.Begin);
-
-				// Dosyayı döndür
-				// return File(stream.ToArray(), "application/pdf", $"GünSonuHesap_{formattedDate}.pdf");
-
-				return stream.ToArray();
-			}
-		}
-		public byte[] CreatePdf(DateTime date)
-		{
-			using (var stream = new MemoryStream())
-			{
-				string formattedDate;
-				using (var writer = new PdfWriter(stream))
-				{
-					using (var pdf = new PdfDocument(writer))
-					{
-						int CategoryId = 0;
-
-					
-						PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
-
-                        var document = new Document(pdf);
-						document.SetFont(font);
-
-
-						formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
-						var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
-
-						var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
-							.SetTextAlignment(TextAlignment.RIGHT);
-						document.Add(date2);
-
-						var companyName = "ASLANOĞLU Fırın";
-						var company = new Paragraph(companyName)
-							.SetTextAlignment(TextAlignment.LEFT)
-							.SetFontSize(16);
-						document.Add(company);
-
-						decimal AllProductTotalRevenue = 0;
-
-						for (int i = 0; i < 3; i++)
+						using (var pdf = new PdfDocument(writer))
 						{
-							CategoryId = i + 1;
+							Console.WriteLine("this the path of the font: " + fontPath);
+							PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
-							var title = new Paragraph($"{CategoryNameByCategoryId[CategoryId]}")
+							var document = new Document(pdf);
+							document.SetFont(font);
+
+
+
+							formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+							var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
+
+							var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
+								.SetTextAlignment(TextAlignment.RIGHT)
+							   ;
+
+							document.Add(date2);
+
+
+							var companyName = "ASLANOĞLU Fırın";
+							var company = new Paragraph(companyName)
 								.SetTextAlignment(TextAlignment.LEFT)
+								.SetFontSize(16);
+
+							document.Add(company);
+
+
+							var title = new Paragraph("Gün Sonu Hesap")
+								.SetTextAlignment(TextAlignment.CENTER)
 								.SetFontSize(16);
 
 							document.Add(title);
 
-							List<ProductionListDetailDto> detail = RegularData(date, CategoryId);
+							var expenses = RegularDataForExpenses(date);
 
-							if (detail.Count > 0)
+							(Table table1, Table table2, double TotalBread) = CreateTable1(endOfDayResult.EndOfDayAccount);
+							decimal breadRevenue = (decimal)TotalBread * endOfDayResult.EndOfDayAccount.Price;
+
+							var table3 = CreateTable3(breadRevenue, endOfDayResult.Account, endOfDayResult.PastaneRevenue, expenses.Item2);
+
+							// Tabloları yan yana eklemek için bir layout
+							var layout = new Table(3)
+									 .UseAllAvailableWidth()
+									 .SetBorder(Border.NO_BORDER);
+
+							// Tabloları layout içine ekleyin
+							layout.AddCell(new Cell().Add(table1).SetBorder(Border.NO_BORDER));
+							layout.AddCell(new Cell().Add(table2).SetBorder(Border.NO_BORDER));
+							layout.AddCell(new Cell().Add(table3).SetBorder(Border.NO_BORDER));
+
+							document.Add(layout);
+
+							//***************   Giderler ***************
+
+							var giderler = new Paragraph("Giderler")
+								.SetTextAlignment(TextAlignment.LEFT)
+								.SetFontSize(16);
+
+							document.Add(giderler);
+
+
+							var giderlerTable = GiderlerCreateTable(expenses.Item1);
+							giderlerTable.SetWidth(UnitValue.CreatePercentValue(33));
+
+
+
+							document.Add(giderlerTable);
+
+							var KrediKartıAmount = endOfDayResult.Account.CreditCard;
+							var NetEldenAmount = (endOfDayResult.Account.KasaDevir + endOfDayResult.Account.ServisGelir + endOfDayResult.PastaneRevenue + breadRevenue) - expenses.Item2 - endOfDayResult.Account.Devir;
+
+							var KrediKartı = new Paragraph($"Kredi Kartı: {KrediKartıAmount}TL")
+								.SetTextAlignment(TextAlignment.RIGHT)
+								.SetFontSize(16);
+							document.Add(KrediKartı);
+
+							var NetElden = new Paragraph($"Net Elden: {NetEldenAmount}TL")
+								.SetTextAlignment(TextAlignment.RIGHT)
+								.SetFontSize(16);
+							document.Add(NetElden);
+
+							var Total = new Paragraph($"Toplam: {NetEldenAmount + KrediKartıAmount}TL")
+							   .SetTextAlignment(TextAlignment.RIGHT)
+							   .SetFontSize(16);
+							document.Add(Total);
+
+							document.Close();
+						}
+					}
+
+
+					//stream.Seek(0, SeekOrigin.Begin);
+
+					// Dosyayı döndür
+					// return File(stream.ToArray(), "application/pdf", $"GünSonuHesap_{formattedDate}.pdf");
+
+					return stream.ToArray();
+				}
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
+		}
+		public byte[] CreatePdf(DateTime date)
+		{
+			try
+			{
+				using (var stream = new MemoryStream())
+				{
+					string formattedDate;
+					using (var writer = new PdfWriter(stream))
+					{
+						using (var pdf = new PdfDocument(writer))
+						{
+							int CategoryId = 0;
+
+							Console.WriteLine("this the path of the font: " + fontPath);
+							PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+
+							var document = new Document(pdf);
+							document.SetFont(font);
+
+
+							formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+							var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
+
+							var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
+								.SetTextAlignment(TextAlignment.RIGHT);
+							document.Add(date2);
+
+							var companyName = "ASLANOĞLU Fırın";
+							var company = new Paragraph(companyName)
+								.SetTextAlignment(TextAlignment.LEFT)
+								.SetFontSize(16);
+							document.Add(company);
+
+							decimal AllProductTotalRevenue = 0;
+
+							for (int i = 0; i < 3; i++)
 							{
-								var Table = CreateTable(detail);
+								CategoryId = i + 1;
+
+								var title = new Paragraph($"{CategoryNameByCategoryId[CategoryId]}")
+									.SetTextAlignment(TextAlignment.LEFT)
+									.SetFontSize(16);
+
+								document.Add(title);
+
+								List<ProductionListDetailDto> detail = RegularData(date, CategoryId);
+
+								if (detail.Count > 0)
+								{
+									var Table = CreateTable(detail);
+
+									//Table.SetWidth(UnitValue.CreatePercentValue(33));
+
+									document.Add(Table);
+
+									decimal TotalRevenueAmount = 0;
+
+									foreach (var item in detail)
+									{
+										TotalRevenueAmount += (item.ProductedToday + item.RemainingYesterday - item.StaleProductToday - item.RemainingToday) * item.Price;
+									}
+
+
+									AllProductTotalRevenue += TotalRevenueAmount;
+
+									var TotalRevenue = new Paragraph($"Toplam Gelir:  {TotalRevenueAmount}TL")
+										.SetTextAlignment(TextAlignment.RIGHT)
+										.SetFontSize(16);
+
+									document.Add(TotalRevenue);
+
+
+									var AllProductTotalRevenueText = new Paragraph($"Tüm Ürünlerin Toplam Geliri:  {AllProductTotalRevenue}TL")
+									   .SetTextAlignment(TextAlignment.RIGHT)
+									   .SetFontSize(16);
+
+								}
+								else
+								{
+									document.Add(new Paragraph("Bugün eklenen ürün yok maalesef."));
+								}
+
+
+
+							}
+
+							document.Close();
+						}
+					}
+
+					return stream.ToArray();
+				}
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
+		}
+		public byte[] CreatePdfForHamurhane(DateTime date)
+		{
+			try
+			{
+				using (var stream = new MemoryStream())
+				{
+					string formattedDate;
+					using (var writer = new PdfWriter(stream))
+					{
+						using (var pdf = new PdfDocument(writer))
+						{
+							Console.WriteLine("this the path of the font: " + fontPath);
+							PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+
+							var document = new Document(pdf);
+							document.SetFont(font);
+
+
+							formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+							var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
+
+							var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
+								.SetTextAlignment(TextAlignment.RIGHT);
+							document.Add(date2);
+
+							var companyName = "ASLANOĞLU Fırın";
+							var company = new Paragraph(companyName)
+								.SetTextAlignment(TextAlignment.LEFT)
+								.SetFontSize(16);
+							document.Add(company);
+
+
+							var title = new Paragraph("Hamurhane")
+								.SetTextAlignment(TextAlignment.CENTER)
+								.SetFontSize(16);
+
+							document.Add(title);
+
+							var data = RegularDataForHamurhane(date);
+
+							if (data.Item1.Count > 0)
+							{
+								var Table = CreateTableForHamurhane(data.Item1);
 
 								//Table.SetWidth(UnitValue.CreatePercentValue(33));
 
 								document.Add(Table);
 
-								decimal TotalRevenueAmount = 0;
 
-								foreach (var item in detail)
-								{
-									TotalRevenueAmount += (item.ProductedToday + item.RemainingYesterday - item.StaleProductToday - item.RemainingToday) * item.Price;
-								}
-
-
-								AllProductTotalRevenue += TotalRevenueAmount;
+								var TotalRevenueAmount = data.Item2;
 
 								var TotalRevenue = new Paragraph($"Toplam Gelir:  {TotalRevenueAmount}TL")
 									.SetTextAlignment(TextAlignment.RIGHT)
 									.SetFontSize(16);
-
 								document.Add(TotalRevenue);
 
-
-								var AllProductTotalRevenueText = new Paragraph($"Tüm Ürünlerin Toplam Geliri:  {AllProductTotalRevenue}TL")
-								   .SetTextAlignment(TextAlignment.RIGHT)
-								   .SetFontSize(16);
-
 							}
+
 							else
 							{
 								document.Add(new Paragraph("Bugün eklenen ürün yok maalesef."));
@@ -247,163 +338,104 @@ namespace Business.Concrete
 
 
 
+							document.Close();
 						}
-
-						document.Close();
 					}
+
+					return stream.ToArray();
 				}
 
-				return stream.ToArray();
 			}
-
-		}
-		public byte[] CreatePdfForHamurhane(DateTime date)
-		{
-			using (var stream = new MemoryStream())
+			catch (Exception e)
 			{
-				string formattedDate;
-				using (var writer = new PdfWriter(stream))
-				{
-					using (var pdf = new PdfDocument(writer))
-					{
-
-                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
-
-                        var document = new Document(pdf);
-						document.SetFont(font);
-
-
-						formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
-						var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
-
-						var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
-							.SetTextAlignment(TextAlignment.RIGHT);
-						document.Add(date2);
-
-						var companyName = "ASLANOĞLU Fırın";
-						var company = new Paragraph(companyName)
-							.SetTextAlignment(TextAlignment.LEFT)
-							.SetFontSize(16);
-						document.Add(company);
-
-
-						var title = new Paragraph("Hamurhane")
-							.SetTextAlignment(TextAlignment.CENTER)
-							.SetFontSize(16);
-
-						document.Add(title);
-
-						var data = RegularDataForHamurhane(date);
-
-						if (data.Item1.Count > 0)
-						{
-							var Table = CreateTableForHamurhane(data.Item1);
-
-							//Table.SetWidth(UnitValue.CreatePercentValue(33));
-
-							document.Add(Table);
-
-
-							var TotalRevenueAmount = data.Item2;
-
-							var TotalRevenue = new Paragraph($"Toplam Gelir:  {TotalRevenueAmount}TL")
-								.SetTextAlignment(TextAlignment.RIGHT)
-								.SetFontSize(16);
-							document.Add(TotalRevenue);
-
-						}
-
-						else
-						{
-							document.Add(new Paragraph("Bugün eklenen ürün yok maalesef."));
-						}
-
-
-
-						document.Close();
-					}
-				}
-
-				return stream.ToArray();
+				Console.WriteLine(e.Message);
 			}
 		}
 		public byte[] CreatePdfForMarketService(DateTime date)
 		{
-			using (var stream = new MemoryStream())
+			try
 			{
-				string formattedDate;
-				using (var writer = new PdfWriter(stream))
+				using (var stream = new MemoryStream())
 				{
-					using (var pdf = new PdfDocument(writer))
+					string formattedDate;
+					using (var writer = new PdfWriter(stream))
 					{
-
-                        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
-
-                        var document = new Document(pdf);
-						document.SetFont(font);
-
-
-						formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
-						var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
-
-						var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
-							.SetTextAlignment(TextAlignment.RIGHT);
-						document.Add(date2);
-
-						var companyName = "ASLANOĞLU Fırın";
-						var company = new Paragraph(companyName)
-							.SetTextAlignment(TextAlignment.LEFT)
-							.SetFontSize(16);
-						document.Add(company);
-
-
-						var title = new Paragraph("Market Servis")
-							.SetTextAlignment(TextAlignment.CENTER)
-							.SetFontSize(16);
-
-						document.Add(title);
-
-						var data = RegularDataForMarketService(date);
-
-						if (data.Item1.Count > 0)
+						using (var pdf = new PdfDocument(writer))
 						{
+							Console.WriteLine("this the path of the font: " + fontPath);
+							PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
-							var Table = CreateTableForMarketService(data.Item1);
+							var document = new Document(pdf);
+							document.SetFont(font);
 
-							//Table.SetWidth(UnitValue.CreatePercentValue(33));
 
-							document.Add(Table);
-							var TotalAmount = data.Item2;
-							var TotalReceivedMoney = data.Item3;
+							formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+							var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
 
-							var TotalAmountPrg = new Paragraph($"Toplam Para:  {TotalAmount}TL")
-								.SetTextAlignment(TextAlignment.RIGHT)
+							var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
+								.SetTextAlignment(TextAlignment.RIGHT);
+							document.Add(date2);
+
+							var companyName = "ASLANOĞLU Fırın";
+							var company = new Paragraph(companyName)
+								.SetTextAlignment(TextAlignment.LEFT)
 								.SetFontSize(16);
-							document.Add(TotalAmountPrg);
+							document.Add(company);
 
-							var ReceivedMoney = new Paragraph($"Toplam Alınan Para:  {TotalReceivedMoney}TL")
-								.SetTextAlignment(TextAlignment.RIGHT)
+
+							var title = new Paragraph("Market Servis")
+								.SetTextAlignment(TextAlignment.CENTER)
 								.SetFontSize(16);
-							document.Add(ReceivedMoney);
 
-							var Revenue = new Paragraph($"Toplam Kalan Para:  {TotalAmount - TotalReceivedMoney}TL")
-								.SetTextAlignment(TextAlignment.RIGHT)
-								.SetFontSize(16);
-							document.Add(Revenue);
+							document.Add(title);
 
+							var data = RegularDataForMarketService(date);
+
+							if (data.Item1.Count > 0)
+							{
+
+								var Table = CreateTableForMarketService(data.Item1);
+
+								//Table.SetWidth(UnitValue.CreatePercentValue(33));
+
+								document.Add(Table);
+								var TotalAmount = data.Item2;
+								var TotalReceivedMoney = data.Item3;
+
+								var TotalAmountPrg = new Paragraph($"Toplam Para:  {TotalAmount}TL")
+									.SetTextAlignment(TextAlignment.RIGHT)
+									.SetFontSize(16);
+								document.Add(TotalAmountPrg);
+
+								var ReceivedMoney = new Paragraph($"Toplam Alınan Para:  {TotalReceivedMoney}TL")
+									.SetTextAlignment(TextAlignment.RIGHT)
+									.SetFontSize(16);
+								document.Add(ReceivedMoney);
+
+								var Revenue = new Paragraph($"Toplam Kalan Para:  {TotalAmount - TotalReceivedMoney}TL")
+									.SetTextAlignment(TextAlignment.RIGHT)
+									.SetFontSize(16);
+								document.Add(Revenue);
+
+							}
+
+							else
+							{
+								document.Add(new Paragraph("Bugün market servisi yok maalesef."));
+							}
+
+
+							document.Close();
 						}
-
-						else
-						{
-							document.Add(new Paragraph("Bugün market servisi yok maalesef."));
-						}
-
-
-						document.Close();
 					}
+
+					return stream.ToArray();
 				}
 
-				return stream.ToArray();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
 			}
 		}
 
@@ -524,21 +556,21 @@ namespace Business.Concrete
 			return (marketBreadDetails, TotalAmount, TotalReceivedMoney);
 		}
 
-        public (List<Expense>, decimal) RegularDataForExpenses(DateTime date)
-        {
-            var expensesList = _expenseService.GetExpensesByDate(date);
-            decimal totalExpense = 0;
+		public (List<Expense>, decimal) RegularDataForExpenses(DateTime date)
+		{
+			var expensesList = _expenseService.GetExpensesByDate(date);
+			decimal totalExpense = 0;
 
-            // Calculate total expense
-            foreach (var expense in expensesList)
-            {
-                totalExpense += expense.Amount;
-            }
+			// Calculate total expense
+			foreach (var expense in expensesList)
+			{
+				totalExpense += expense.Amount;
+			}
 
-            return (expensesList, totalExpense);
-        }
+			return (expensesList, totalExpense);
+		}
 
-        public class DoughFactoryListAndDetailDto
+		public class DoughFactoryListAndDetailDto
 		{
 			public Dictionary<string, int> DoughFactoryProductQuantity { get; set; }
 			public string Name { get; set; }
@@ -781,7 +813,7 @@ namespace Business.Concrete
 			var table3 = new Table(2)
 				.UseAllAvailableWidth()
 				.SetHorizontalAlignment(HorizontalAlignment.CENTER);
-			
+
 			// Kasa Devir
 			table3.AddCell(new Cell().Add(new Paragraph("Kasa Devir")));
 			table3.AddCell(new Cell().Add(new Paragraph($"{account.KasaDevir} TL")));
@@ -801,7 +833,7 @@ namespace Business.Concrete
 			// Gelir
 			decimal gelir = account.ServisGelir + TotalBread + PastaneRevenue;
 
-            table3.AddCell(new Cell().Add(new Paragraph("Gelir")));
+			table3.AddCell(new Cell().Add(new Paragraph("Gelir")));
 			table3.AddCell(new Cell().Add(new Paragraph($"{gelir} TL")));
 
 			// Toplam
