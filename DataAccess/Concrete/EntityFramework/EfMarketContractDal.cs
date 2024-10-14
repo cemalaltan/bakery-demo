@@ -24,7 +24,17 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (BakeryAppContext context = new())
             {
-                var list = context.MarketContractView.ToList();
+                var list = (from mc in context.MarketContracts
+                            join m in context.Markets on mc.MarketId equals m.Id
+                            select new MarketContractDto
+                            {
+                                Id = mc.Id,
+                                ServiceProductId = mc.ServiceProductId,
+                                Price = mc.Price,
+                                MarketId = mc.MarketId,
+                                MarketName = m.Name,
+                                IsActive = mc.IsActive
+                            }).ToList();
                 return list;
             }
         }
@@ -43,7 +53,7 @@ namespace DataAccess.Concrete.EntityFramework
 
                 return marketList;
             }
-            
+
         }
     }
 }
