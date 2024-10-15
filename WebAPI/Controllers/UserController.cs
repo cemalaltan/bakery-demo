@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,21 +15,10 @@ namespace WebAPI.Controllers
         {
                  _userService = userService;
         }
-
-
-        [HttpDelete("DeleteById/{id}")]
-        public ActionResult DeleteById(int id)
-        {
-            _userService.DeleteById(id);
-            return Ok();
-        }
-
-
+        
         [HttpGet("GetUsers")]
         public IActionResult GetAll()
-
         {
-
             var users = _userService.GetUsers()
             .Select(u => new UserDto
             {
@@ -37,13 +27,36 @@ namespace WebAPI.Controllers
                 Surname = u.LastName,
                 UserName = u.Email,
                 OperationClaimId = u.OperationClaimId,
+                Status = u.Status,  
+                
             })
             .ToList();
 
             return Ok(users);
-
+        }
+        
+        [HttpPut("UpdateUser")]
+        public IActionResult UpdateUser(User user)
+        {
+            _userService.Update(user);
+            return Ok();
+        }
+        
+        [HttpPost("AddUser")]
+        public IActionResult AddUser(UserForRegisterDto user)
+        {
+            _userService.AddUser(user);
+            return Ok();
+        }
+        
+        [HttpPut("ChangePassword")]
+        public IActionResult ChangePassword(int id , String password)
+        {
+           // _userService.Update(user);
+            return Ok();
         }
 
+        
 
     }
 }

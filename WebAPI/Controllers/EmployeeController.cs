@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
             return Ok(employee);
         }
 
-        [HttpPost]
+        [HttpPost("AddEmployee")]
         public ActionResult Add(Employee employee)
         {
             if (employee == null)
