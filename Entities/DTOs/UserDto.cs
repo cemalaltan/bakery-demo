@@ -13,6 +13,7 @@ namespace Entities.DTOs
         public string Surname { get; set; }
         public string UserName { get; set; }
         public int OperationClaimId { get; set; }
+        public bool Status { get; set; }
 
 
     }
