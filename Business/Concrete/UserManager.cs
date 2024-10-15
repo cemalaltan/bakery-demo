@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.DTOs;
 
 namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
         IUserDal _userDal;
+        private IAuthService _authService;
 
-        public UserManager(IUserDal userDal)
+        public UserManager(IUserDal userDal, IAuthService authService)
         {
             _userDal = userDal;
+            _authService = authService; 
         }
 
         public List<OperationClaim> GetClaims(User user)
@@ -25,7 +28,12 @@ namespace Business.Concrete
 
         public void Add(User user)
         {
-            _userDal.Add(user);
+            _userDal.Add(user); 
+        }
+
+        public void AddUser(UserForRegisterDto user)
+        {
+            _authService.Register(user, user.Password);
         }
 
         public User GetByMail(string email)
@@ -36,6 +44,18 @@ namespace Business.Concrete
         public List<User> GetUsers()
         {
             return _userDal.GetAll();
+        }
+
+        public void Update(User user)
+        {
+           var userE = _userDal.Get(u => u.Id == user.Id);
+           userE.FirstName = user.FirstName;
+           userE.LastName = user.LastName;
+           userE.Email = user.Email;
+           userE.Status = user.Status;
+           
+            
+            _userDal.Update(user);
         }
 
         public void DeleteById(int id)
