@@ -20,11 +20,11 @@ namespace WebAPI.Controllers
         public IActionResult GetAll()
         {
             var users = _userService.GetUsers()
-            .Select(u => new UserDto
+            .Select(u => new UserForRegisterDto
             {
                 Id = u.Id,
-                Name = u.FirstName,
-                Surname = u.LastName,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
                 UserName = u.Email,
                 OperationClaimId = u.OperationClaimId,
                 Status = u.Status,  
