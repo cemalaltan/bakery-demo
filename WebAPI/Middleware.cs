@@ -16,7 +16,7 @@ namespace WebAPI
 
         public async Task Invoke(HttpContext httpContext)
         {
-            // Always allow access to login endpoint
+            // Always allow access to lo gin endpoint
             if (httpContext.Request.Path.StartsWithSegments("/api/Auth/login"))
             {
                 await _next(httpContext);

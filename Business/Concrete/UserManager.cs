@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business.Constants;
+using Core.Utilities.Results;
+using Core.Utilities.Security.Hashing;
 using Entities.DTOs;
 
 namespace Business.Concrete
@@ -13,12 +16,10 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         IUserDal _userDal;
-        private IAuthService _authService;
 
-        public UserManager(IUserDal userDal, IAuthService authService)
+        public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
-            _authService = authService; 
         }
 
         public List<OperationClaim> GetClaims(User user)
@@ -33,7 +34,20 @@ namespace Business.Concrete
 
         public void AddUser(UserForRegisterDto user)
         {
-            _authService.Register(user, user.Password);
+            byte[] passwordHash, passwordSalt;
+            HashingHelper.CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+            var newUser = new User
+            {
+                Email = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Status = true,
+                OperationClaimId= user.OperationClaimId
+
+            };
+            _userDal.Add(newUser);
         }
 
         public User GetByMail(string email)
