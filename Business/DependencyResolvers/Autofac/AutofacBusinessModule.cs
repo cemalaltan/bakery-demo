@@ -15,6 +15,9 @@ namespace Business.DependencyResolvers.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<SourceFileManager>().As<ISourceFileService>();
+            builder.RegisterType<EfSourceFileDal>().As<ISourceFileDal>();
+            
             builder.RegisterType<CategoryManager>().As<ICategoryService>();
             builder.RegisterType<EfCategoryDal>().As<ICategoryDal>();
 

@@ -7,16 +7,18 @@ using Microsoft.IdentityModel.Tokens;
 using Core.Utilities.IoC;
 using WebAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DataAccess.Concrete.EntityFramework;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using WebAPI.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Autofac kullanmak i�in burda 
+
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.RegisterModule(new AutofacBusinessModule());
+    builder.RegisterType<FileService>().As<IFileService>();
 });
 
 
@@ -54,8 +56,31 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<FileService>();
 
 var app = builder.Build();
+
+var sourceFilesPath = Path.Combine(builder.Environment.ContentRootPath, "SourceFiles");
+
+// Ensure the directories exist
+if (!Directory.Exists(sourceFilesPath))
+{
+    Directory.CreateDirectory(sourceFilesPath);
+}
+
+
+
+var fileProvider = new CompositeFileProvider(
+    new PhysicalFileProvider(sourceFilesPath)
+);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = fileProvider,
+    RequestPath = "/Resources"
+});
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -63,9 +88,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
-app.UseHttpsRedirection();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors(builder => builder
+    .WithOrigins("http://localhost:4200")
+    .AllowAnyHeader()
+    .AllowAnyMethod());
+
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

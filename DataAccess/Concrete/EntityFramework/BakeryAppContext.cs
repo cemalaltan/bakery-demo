@@ -27,7 +27,7 @@ namespace DataAccess.Concrete.EntityFramework
             }
 
         }
-
+        public DbSet<SourceFile> SourceFiles { get; set; }
         public DbSet<MonthlyProductCount> MonthlyProductCounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Advance> Advances { get; set; }

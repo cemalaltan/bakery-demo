@@ -111,6 +111,19 @@ BEGIN
     );
 END
 
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Users')
+BEGIN
+CREATE TABLE SourceFiles (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Title NVARCHAR(50) NOT NULL,
+    Description NVARCHAR(255) NULL,
+    DataPath NVARCHAR(255) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UserId INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id) 
+);
+END
+
 -- Create Products table
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Products')
 BEGIN
@@ -566,6 +579,9 @@ IF NOT EXISTS (SELECT 1 FROM OperationClaims WHERE Id = 5)
 IF NOT EXISTS (SELECT 1 FROM OperationClaims WHERE Id = 6)
     INSERT INTO OperationClaims (Id, Name) VALUES (6, 'Admin');
 
+IF NOT EXISTS (SELECT 1 FROM OperationClaims WHERE Id = 7)
+    INSERT INTO OperationClaims (Id, Name) VALUES (6, 'Pideci');
+
 -- SystemAvailabilityTime
 IF NOT EXISTS (SELECT 1 FROM SystemAvailabilityTime WHERE Id = 1)
     INSERT INTO SystemAvailabilityTime (Id, OpenTime, CloseTime) VALUES (1, 1, 23);
@@ -573,3 +589,6 @@ IF NOT EXISTS (SELECT 1 FROM SystemAvailabilityTime WHERE Id = 1)
 -- BreadPrices
 IF NOT EXISTS (SELECT 1 FROM BreadPrices)
     INSERT INTO BreadPrices (Date, Price) VALUES (GETDATE(), 10.00);
+
+IF NOT EXISTS (SELECT 1 FROM ServiceProducts)
+    INSERT INTO BreadPrices (Id, Name) VALUES (1, 'Ekmek');
