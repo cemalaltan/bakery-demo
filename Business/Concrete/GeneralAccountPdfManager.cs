@@ -15,7 +15,8 @@ using PdfWriter = iText.Kernel.Pdf.PdfWriter;
 
 public class GeneralAccountPdfManager : IGeneralAccountPdfService
 {
-    private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+    //private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+    private string fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Business", "Fonts", "Roboto-Regular.ttf");
 
     public byte[] GetGeneralAccountPdfByDate(DateTime date)
     {
@@ -34,7 +35,7 @@ public class GeneralAccountPdfManager : IGeneralAccountPdfService
 
         PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
         document.SetFont(font);
-        
+
         string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
         var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
 
@@ -44,12 +45,12 @@ public class GeneralAccountPdfManager : IGeneralAccountPdfService
             .SetFontSize(24)
             .SetBold()
             .SetMarginBottom(10));
-            
+
         document.Add(new Paragraph("Genel Hesap")
             .SetTextAlignment(TextAlignment.CENTER)
             .SetFontSize(18)
             .SetMarginBottom(5));
-            
+
         document.Add(new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
             .SetTextAlignment(TextAlignment.RIGHT)
             .SetMarginBottom(20));
@@ -94,11 +95,11 @@ public class GeneralAccountPdfManager : IGeneralAccountPdfService
         mainTable.AddCell(new Cell().Add(leftTable)
             .SetBorder(Border.NO_BORDER)
             .SetPaddingRight(20));
-            
+
         mainTable.AddCell(new Cell()
             .SetBorder(Border.NO_BORDER)
             .SetWidth(20)); // Spacer column
-            
+
         mainTable.AddCell(new Cell().Add(rightTable)
             .SetBorder(Border.NO_BORDER)
             .SetPaddingLeft(20));
@@ -123,7 +124,7 @@ public class GeneralAccountPdfManager : IGeneralAccountPdfService
             .Add(new Paragraph(label))
             .SetPadding(5)
             .SetBorder(new SolidBorder(ColorConstants.GRAY, 0.5f)));
-            
+
         table.AddCell(new Cell()
             .Add(new Paragraph(value))
             .SetTextAlignment(TextAlignment.RIGHT)
