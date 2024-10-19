@@ -10,9 +10,11 @@ namespace WebAPI.Controllers
 	{
 
 		private ICreatePdfService _createPdfService;
-		public CreatePdfController(ICreatePdfService createPdfService)
+		private IGeneralAccountPdfService _generalAccountPdfService;
+		public CreatePdfController(ICreatePdfService createPdfService, IGeneralAccountPdfService generalAccountPdfService)
 		{
 			_createPdfService = createPdfService;
+			_generalAccountPdfService = generalAccountPdfService;
 		}
 
 		[HttpGet("CreatePdf")]
@@ -101,5 +103,35 @@ namespace WebAPI.Controllers
 				return StatusCode(500, e.Message);
 			}
 		}
+		
+		[HttpGet("CreateGeneralAccountPdf")]
+		public IActionResult CreateGeneralAccountPdf(DateTime date)
+		{
+
+			try
+			{
+
+				byte[] pdfContent = _generalAccountPdfService.GetGeneralAccountPdfByDate(date);
+				string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+
+				string fileName = $"GenelHesap_{formattedDate}.pdf";
+				string contentType = "application/pdf";
+
+
+				FileContentResult fileContentResult = new FileContentResult(pdfContent, contentType)
+				{
+					FileDownloadName = fileName
+				};
+
+				return fileContentResult;
+
+			}
+			catch (Exception e)
+			{
+
+				return StatusCode(500, e.Message);
+			}
+		}
+		
 	}
 }

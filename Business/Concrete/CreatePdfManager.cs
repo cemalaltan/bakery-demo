@@ -1,7 +1,5 @@
 ﻿using Business.Abstract;
 using Entities.DTOs;
-
-using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
@@ -10,6 +8,9 @@ using iText.Kernel.Font;
 using Entities.Concrete;
 using Business.AbstractAPI;
 using System.Globalization;
+using PdfDocument = iText.Kernel.Pdf.PdfDocument;
+using PdfFont = iText.Kernel.Font.PdfFont;
+using PdfWriter = iText.Kernel.Pdf.PdfWriter;
 
 
 namespace Business.Concrete
@@ -29,8 +30,8 @@ namespace Business.Concrete
 		private IMarketEndOfDayService _marketEndOfDayService;
 		private IExpenseService _expenseService;
 
-		// private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
-		private string fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Business", "Fonts", "Roboto-Regular.ttf");
+		 private string fontPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, @"Business/Fonts/Roboto-Regular.ttf");
+		//private string fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Business", "Fonts", "Roboto-Regular.ttf");
 
 
 		public CreatePdfManager(IMarketEndOfDayService marketEndOfDayService,
@@ -177,106 +178,92 @@ namespace Business.Concrete
 				throw e;
 			}
 		}
-		public byte[] CreatePdf(DateTime date)
-		{
-			try
-			{
-				using (var stream = new MemoryStream())
-				{
-					string formattedDate;
-					using (var writer = new PdfWriter(stream))
-					{
-						using (var pdf = new PdfDocument(writer))
-						{
-							int CategoryId = 0;
+	public byte[] CreatePdf(DateTime date)
+{
+    try
+    {
+        using var stream = new MemoryStream();
+        using var writer = new PdfWriter(stream);
+        using var pdf = new PdfDocument(writer);
+        using var document = new Document(pdf);
 
-							Console.WriteLine("this the path of the font: " + fontPath);
-							PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
+        // Check font path
+        if (!File.Exists(fontPath))
+        {
+            throw new FileNotFoundException("Font file not found.", fontPath);
+        }
 
-							var document = new Document(pdf);
-							document.SetFont(font);
+        // Create font with embedded strategy
+        PdfFont font = PdfFontFactory.CreateFont(fontPath, "CP1254", PdfFontFactory.EmbeddingStrategy.FORCE_NOT_EMBEDDED);
 
+        document.SetFont(font);
 
-							formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
-							var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
+        // Set up date and company name
+        string formattedDate = date.ToString("dd.MM.yyyy", new CultureInfo("tr-TR"));
+        var dayOfWeek = date.ToString("dddd", new CultureInfo("tr-TR"));
+        document.Add(new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
+            .SetTextAlignment(TextAlignment.RIGHT));
+        document.Add(new Paragraph("ASLANOĞLU Fırın")
+            .SetTextAlignment(TextAlignment.LEFT)
+            .SetFontSize(16));
 
-							var date2 = new Paragraph($"Tarih: {formattedDate} - {dayOfWeek}")
-								.SetTextAlignment(TextAlignment.RIGHT);
-							document.Add(date2);
+        decimal AllProductTotalRevenue = 0;
 
-							var companyName = "ASLANOĞLU Fırın";
-							var company = new Paragraph(companyName)
-								.SetTextAlignment(TextAlignment.LEFT)
-								.SetFontSize(16);
-							document.Add(company);
+        for (int i = 0; i < 3; i++)
+        {
+            int CategoryId = i + 1;
 
-							decimal AllProductTotalRevenue = 0;
+            // Ensure category exists
+            if (!CategoryNameByCategoryId.ContainsKey(CategoryId))
+            {
+                throw new ArgumentOutOfRangeException(nameof(CategoryId), 
+                    "Category ID is out of range.");
+            }
 
-							for (int i = 0; i < 3; i++)
-							{
-								CategoryId = i + 1;
+            var title = new Paragraph(CategoryNameByCategoryId[CategoryId])
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetFontSize(16);
+            document.Add(title);
 
-								var title = new Paragraph($"{CategoryNameByCategoryId[CategoryId]}")
-									.SetTextAlignment(TextAlignment.LEFT)
-									.SetFontSize(16);
+            List<ProductionListDetailDto> detail = RegularData(date, CategoryId);
+            if (detail == null || detail.Count == 0)
+            {
+                document.Add(new Paragraph("Bugün eklenen ürün yok maalesef."));
+                continue;
+            }
 
-								document.Add(title);
+            var table = CreateTable(detail);
+            document.Add(table);
 
-								List<ProductionListDetailDto> detail = RegularData(date, CategoryId);
+            decimal TotalRevenueAmount = 0;
+            foreach (var item in detail)
+            {
+                TotalRevenueAmount += (item.ProductedToday + item.RemainingYesterday 
+                    - item.StaleProductToday - item.RemainingToday) * item.Price;
+            }
 
-								if (detail.Count > 0)
-								{
-									var Table = CreateTable(detail);
+            AllProductTotalRevenue += TotalRevenueAmount;
+            document.Add(new Paragraph($"Toplam Gelir:  {TotalRevenueAmount}TL")
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .SetFontSize(16));
+        }
 
-									//Table.SetWidth(UnitValue.CreatePercentValue(33));
+        document.Add(new Paragraph($"Tüm Ürünlerin Toplam Geliri:  {AllProductTotalRevenue}TL")
+            .SetTextAlignment(TextAlignment.RIGHT)
+            .SetFontSize(16));
 
-									document.Add(Table);
-
-									decimal TotalRevenueAmount = 0;
-
-									foreach (var item in detail)
-									{
-										TotalRevenueAmount += (item.ProductedToday + item.RemainingYesterday - item.StaleProductToday - item.RemainingToday) * item.Price;
-									}
-
-
-									AllProductTotalRevenue += TotalRevenueAmount;
-
-									var TotalRevenue = new Paragraph($"Toplam Gelir:  {TotalRevenueAmount}TL")
-										.SetTextAlignment(TextAlignment.RIGHT)
-										.SetFontSize(16);
-
-									document.Add(TotalRevenue);
-
-
-									var AllProductTotalRevenueText = new Paragraph($"Tüm Ürünlerin Toplam Geliri:  {AllProductTotalRevenue}TL")
-									   .SetTextAlignment(TextAlignment.RIGHT)
-									   .SetFontSize(16);
-
-								}
-								else
-								{
-									document.Add(new Paragraph("Bugün eklenen ürün yok maalesef."));
-								}
-
-
-
-							}
-
-							document.Close();
-						}
-					}
-
-					return stream.ToArray();
-				}
-
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e.Message);
-				throw e;
-			}
-		}
+        document.Close();
+        
+        // Get the bytes after the document is closed
+        return stream.ToArray();
+    }
+    catch (Exception e)
+    {
+        // Log the error properly
+        Console.WriteLine($"Error: {e.Message}\nStack Trace: {e.StackTrace}");
+        throw; // Throw the exception without wrapping it
+    }
+}
 		public byte[] CreatePdfForHamurhane(DateTime date)
 		{
 			try
@@ -444,6 +431,7 @@ namespace Business.Concrete
 				throw e;
 			}
 		}
+
 
 		// -------------------------   Data Func  ------------------------------
 		public List<ProductionListDetailDto> RegularData(DateTime date, int categoryId)
@@ -613,7 +601,7 @@ namespace Business.Concrete
 				var Satilan = ToplamNet - item.RemainingToday;
 
 
-				table.AddCell(new Cell().Add(new Paragraph(item.ProductName)));
+				table.AddCell(new Cell().Add(new Paragraph(item.ProductName ?? string.Empty )));
 				table.AddCell(new Cell().Add(new Paragraph(item.RemainingYesterday.ToString())));
 				table.AddCell(new Cell().Add(new Paragraph(item.ProductedToday.ToString())));
 				table.AddCell(new Cell().Add(new Paragraph(ToplamNet.ToString())));

@@ -8,6 +8,7 @@ namespace Business.Abstract
 		byte[] CreatePdf(DateTime date);
 		byte[] CreatePdfForHamurhane(DateTime date);
 		byte[] CreatePdfForMarketService(DateTime date);
+		
 
 	}
 }
