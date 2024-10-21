@@ -591,4 +591,4 @@ IF NOT EXISTS (SELECT 1 FROM BreadPrices)
     INSERT INTO BreadPrices (Date, Price) VALUES (GETDATE(), 10.00);
 
 IF NOT EXISTS (SELECT 1 FROM ServiceProducts)
-    INSERT INTO BreadPrices (Id, Name) VALUES (1, 'Ekmek');
+    INSERT INTO ServiceProducts ( Name) VALUES ('Ekmek');
